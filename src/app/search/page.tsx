@@ -11,125 +11,30 @@ import {
   X,
   Clock,
   Shield,
-  ChevronDown
+  ChevronDown,
+  SlidersHorizontal,
+  Stethoscope,
+  Calendar,
+  DollarSign
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Select } from "@/components/ui/select";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Avatar } from "@/components/ui/avatar";
-import { Skeleton } from "@/components/ui/skeleton";
 import { formatCurrency } from "@/lib/utils";
 
 const mockProfessionals = [
-  {
-    id: "1",
-    name: "Dr. Elena Martínez",
-    specialty: "Cardiology",
-    location: "Madrid, Spain",
-    rating: 4.9,
-    reviewCount: 127,
-    languages: ["Spanish", "English", "Portuguese"],
-    price: 15000,
-    verified: true,
-    imageUrl: "",
-    nextAvailable: "Tomorrow",
-  },
-  {
-    id: "2",
-    name: "Dr. Michael Chen",
-    specialty: "Dermatology",
-    location: "San Francisco, USA",
-    rating: 4.8,
-    reviewCount: 89,
-    languages: ["English", "Mandarin"],
-    price: 20000,
-    verified: true,
-    imageUrl: "",
-    nextAvailable: "Today",
-  },
-  {
-    id: "3",
-    name: "Dra. Carolina Silva",
-    specialty: "Pediatrics",
-    location: "São Paulo, Brazil",
-    rating: 4.7,
-    reviewCount: 203,
-    languages: ["Portuguese", "Spanish", "English"],
-    price: 12000,
-    verified: true,
-    imageUrl: "",
-    nextAvailable: "In 2 days",
-  },
-  {
-    id: "4",
-    name: "Dr. Andreas Mueller",
-    specialty: "Orthopedics",
-    location: "Berlin, Germany",
-    rating: 4.9,
-    reviewCount: 156,
-    languages: ["German", "English", "French"],
-    price: 18000,
-    verified: true,
-    imageUrl: "",
-    nextAvailable: "This week",
-  },
-  {
-    id: "5",
-    name: "Dra. María González",
-    specialty: "Neurology",
-    location: "Mexico City, Mexico",
-    rating: 4.6,
-    reviewCount: 78,
-    languages: ["Spanish", "English"],
-    price: 14000,
-    verified: true,
-    imageUrl: "",
-    nextAvailable: "Tomorrow",
-  },
-  {
-    id: "6",
-    name: "Dr. James Wilson",
-    specialty: "General Medicine",
-    location: "London, UK",
-    rating: 4.8,
-    reviewCount: 312,
-    languages: ["English"],
-    price: 13000,
-    verified: true,
-    imageUrl: "",
-    nextAvailable: "Today",
-  },
+  { id: "1", name: "Dr. Elena Martínez", specialty: "Cardiology", location: "Miami, FL", rating: 4.9, reviewCount: 127, languages: ["Spanish", "English"], price: 15000, verified: true, nextAvailable: "Tomorrow", bio: "Board-certified cardiologist with 15+ years of experience" },
+  { id: "2", name: "Dr. Michael Chen", specialty: "Dermatology", location: "San Francisco, CA", rating: 4.8, reviewCount: 89, languages: ["English", "Mandarin"], price: 20000, verified: true, nextAvailable: "Today", bio: "Specialist in cosmetic and medical dermatology" },
+  { id: "3", name: "Dr. Sarah Johnson", specialty: "Pediatrics", location: "New York, NY", rating: 4.9, reviewCount: 203, languages: ["English"], price: 12000, verified: true, nextAvailable: "Today", bio: "Compassionate care for children of all ages" },
+  { id: "4", name: "Dr. David Park", specialty: "Orthopedics", location: "Los Angeles, CA", rating: 4.8, reviewCount: 156, languages: ["English", "Korean"], price: 18000, verified: true, nextAvailable: "In 2 days", bio: "Expert in sports medicine and joint replacement" },
+  { id: "5", name: "Dr. Maria Garcia", specialty: "Neurology", location: "Houston, TX", rating: 4.7, reviewCount: 78, languages: ["Spanish", "English"], price: 16000, verified: true, nextAvailable: "Tomorrow", bio: "Specializing in headache and movement disorders" },
+  { id: "6", name: "Dr. James Wilson", specialty: "Internal Medicine", location: "Chicago, IL", rating: 4.9, reviewCount: 312, languages: ["English"], price: 10000, verified: true, nextAvailable: "Today", bio: "Preventive care and chronic disease management" },
 ];
 
-const specialties = [
-  { value: "", label: "All Specialties" },
-  { value: "cardiology", label: "Cardiology" },
-  { value: "dermatology", label: "Dermatology" },
-  { value: "orthopedics", label: "Orthopedics" },
-  { value: "neurology", label: "Neurology" },
-  { value: "pediatrics", label: "Pediatrics" },
-  { value: "ophthalmology", label: "Ophthalmology" },
-  { value: "general", label: "General Medicine" },
-  { value: "dentistry", label: "Dentistry" },
-];
-
-const countries = [
-  { value: "", label: "All Countries" },
-  { value: "US", label: "United States" },
-  { value: "ES", label: "Spain" },
-  { value: "MX", label: "Mexico" },
-  { value: "BR", label: "Brazil" },
-  { value: "AR", label: "Argentina" },
-  { value: "CO", label: "Colombia" },
-  { value: "DE", label: "Germany" },
-  { value: "GB", label: "United Kingdom" },
-];
+const specialties = ["Cardiology", "Dermatology", "Pediatrics", "Orthopedics", "Neurology", "Internal Medicine", "Psychiatry", "Ophthalmology"];
+const conditions = ["Chest Pain", "Skin Rash", "Joint Pain", "Headache", "Fatigue", "High Blood Pressure"];
 
 export default function SearchPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-[--background] flex items-center justify-center">Loading...</div>}>
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
       <SearchContent />
     </Suspense>
   );
@@ -139,269 +44,256 @@ function SearchContent() {
   const searchParams = useSearchParams();
   const [isLoading, setIsLoading] = useState(true);
   const [showFilters, setShowFilters] = useState(false);
-  const [filters, setFilters] = useState({
-    query: searchParams.get("q") || "",
-    specialty: searchParams.get("specialty") || "",
-    country: "",
-    minRating: "",
-    maxPrice: "",
-    verified: false,
-  });
+  const [selectedSpecialty, setSelectedSpecialty] = useState(searchParams.get("specialty") || "");
+  const [selectedLocation, setSelectedLocation] = useState("");
+  const [selectedRating, setSelectedRating] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     const timer = setTimeout(() => setIsLoading(false), 800);
     return () => clearTimeout(timer);
   }, []);
 
-  const filteredProfessionals = mockProfessionals.filter((p) => {
-    if (filters.specialty && !p.specialty.toLowerCase().includes(filters.specialty.toLowerCase())) {
-      return false;
-    }
-    if (filters.country && !p.location.includes(filters.country)) {
-      return false;
-    }
-    if (filters.query && !p.name.toLowerCase().includes(filters.query.toLowerCase())) {
-      return false;
-    }
-    if (filters.minRating && p.rating < parseFloat(filters.minRating)) {
-      return false;
-    }
-    if (filters.maxPrice && p.price > parseInt(filters.maxPrice) * 100) {
-      return false;
-    }
+  const filteredDoctors = mockProfessionals.filter((doctor) => {
+    if (selectedSpecialty && !doctor.specialty.toLowerCase().includes(selectedSpecialty.toLowerCase())) return false;
+    if (selectedLocation && !doctor.location.toLowerCase().includes(selectedLocation.toLowerCase())) return false;
+    if (selectedRating && doctor.rating < parseFloat(selectedRating)) return false;
+    if (searchQuery && !doctor.name.toLowerCase().includes(searchQuery.toLowerCase()) && !doctor.specialty.toLowerCase().includes(searchQuery.toLowerCase())) return false;
     return true;
   });
 
-  const clearFilters = () => {
-    setFilters({
-      query: "",
-      specialty: "",
-      country: "",
-      minRating: "",
-      maxPrice: "",
-      verified: false,
-    });
+  const clearAllFilters = () => {
+    setSelectedSpecialty("");
+    setSelectedLocation("");
+    setSelectedRating("");
+    setSearchQuery("");
   };
 
-  const hasActiveFilters = Object.entries(filters).some(([key, value]) => {
-    if (key === 'verified') return value === true;
-    return typeof value === 'string' && value !== '';
-  });
+  const hasActiveFilters = selectedSpecialty || selectedLocation || selectedRating || searchQuery;
 
   return (
-    <div className="min-h-screen bg-[--background]">
-      <div className="bg-[--surface] border-b border-[--border]">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex flex-col lg:flex-row gap-4">
-            <div className="flex-1 relative">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-[--text-muted]" />
-              <Input
-                placeholder="Search by name, specialty, or condition..."
-                className="pl-12 h-12 text-base"
-                value={filters.query}
-                onChange={(e) => setFilters({ ...filters, query: e.target.value })}
-              />
-            </div>
-            <div className="flex gap-3">
-              <Button
-                variant="outline"
-                className="gap-2 lg:hidden"
+    <div className="min-h-screen" style={{ background: '#F8FAFC' }}>
+      {/* Search Header */}
+      <div className="bg-white border-b border-gray-200">
+        <div className="main-container py-8">
+          <div className="mb-6">
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Find a Doctor</h1>
+            <p className="text-gray-600">Search from our network of verified medical professionals</p>
+          </div>
+
+          {/* Search Bar */}
+          <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-4 mb-6">
+            <div className="flex flex-col lg:flex-row gap-4">
+              <div className="flex-1 relative">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Search by name, specialty, or condition..."
+                  className="w-full h-14 pl-12 pr-4 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none text-gray-700"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+              </div>
+              <button
                 onClick={() => setShowFilters(!showFilters)}
+                className="lg:hidden flex items-center justify-center gap-2 h-14 px-6 rounded-xl border border-gray-200 font-medium text-gray-700 hover:bg-gray-50"
               >
-                <Filter className="h-4 w-4" />
+                <SlidersHorizontal className="w-5 h-5" />
                 Filters
-                {hasActiveFilters && (
-                  <Badge variant="default" className="ml-1 h-5 w-5 p-0 justify-center">
-                    !
-                  </Badge>
-                )}
-              </Button>
-              <Button className="gap-2">
-                <Search className="h-4 w-4" />
-                Search
-              </Button>
+              </button>
+            </div>
+
+            {/* Filter Pills */}
+            <div className={`mt-4 flex flex-wrap gap-2 ${showFilters ? 'block' : 'hidden lg:flex'}`}>
+              <select
+                className="h-11 px-4 pr-10 rounded-lg border border-gray-200 bg-white text-sm font-medium text-gray-700 appearance-none cursor-pointer hover:border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none"
+                value={selectedSpecialty}
+                onChange={(e) => setSelectedSpecialty(e.target.value)}
+              >
+                <option value="">All Specialties</option>
+                {specialties.map(s => <option key={s} value={s}>{s}</option>)}
+              </select>
+
+              <select
+                className="h-11 px-4 pr-10 rounded-lg border border-gray-200 bg-white text-sm font-medium text-gray-700 appearance-none cursor-pointer hover:border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none"
+                value={selectedLocation}
+                onChange={(e) => setSelectedLocation(e.target.value)}
+              >
+                <option value="">All Locations</option>
+                <option value="New York">New York, NY</option>
+                <option value="Los Angeles">Los Angeles, CA</option>
+                <option value="Chicago">Chicago, IL</option>
+                <option value="Houston">Houston, TX</option>
+                <option value="Miami">Miami, FL</option>
+                <option value="San Francisco">San Francisco, CA</option>
+              </select>
+
+              <select
+                className="h-11 px-4 pr-10 rounded-lg border border-gray-200 bg-white text-sm font-medium text-gray-700 appearance-none cursor-pointer hover:border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none"
+                value={selectedRating}
+                onChange={(e) => setSelectedRating(e.target.value)}
+              >
+                <option value="">Any Rating</option>
+                <option value="4.5">4.5+ Stars</option>
+                <option value="4">4+ Stars</option>
+                <option value="3.5">3.5+ Stars</option>
+              </select>
+
+              {hasActiveFilters && (
+                <button
+                  onClick={clearAllFilters}
+                  className="h-11 px-4 flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-gray-900"
+                >
+                  <X className="w-4 h-4" />
+                  Clear all
+                </button>
+              )}
             </div>
           </div>
 
-          <div className={`mt-4 flex flex-wrap gap-3 ${showFilters ? "block" : "hidden lg:flex"}`}>
-            <Select
-              options={specialties}
-              value={filters.specialty}
-              onChange={(e) => setFilters({ ...filters, specialty: e.target.value })}
-              placeholder="Specialty"
-              className="w-full sm:w-48"
-            />
-            <Select
-              options={countries}
-              value={filters.country}
-              onChange={(e) => setFilters({ ...filters, country: e.target.value })}
-              placeholder="Country"
-              className="w-full sm:w-48"
-            />
-            <Select
-              options={[
-                { value: "", label: "Any Rating" },
-                { value: "4.5", label: "4.5+ Stars" },
-                { value: "4", label: "4+ Stars" },
-                { value: "3.5", label: "3.5+ Stars" },
-              ]}
-              value={filters.minRating}
-              onChange={(e) => setFilters({ ...filters, minRating: e.target.value })}
-              placeholder="Rating"
-              className="w-full sm:w-40"
-            />
-            <Select
-              options={[
-                { value: "", label: "Any Price" },
-                { value: "100", label: "Under $100" },
-                { value: "150", label: "Under $150" },
-                { value: "200", label: "Under $200" },
-                { value: "300", label: "Under $300" },
-              ]}
-              value={filters.maxPrice}
-              onChange={(e) => setFilters({ ...filters, maxPrice: e.target.value })}
-              placeholder="Max Price"
-              className="w-full sm:w-40"
-            />
-            <label className="flex items-center gap-2 text-sm text-[--text-secondary]">
-              <input
-                type="checkbox"
-                checked={filters.verified}
-                onChange={(e) => setFilters({ ...filters, verified: e.target.checked })}
-                className="rounded border-[--border] text-[--primary]"
-              />
-              Verified only
-            </label>
-            {hasActiveFilters && (
-              <Button variant="ghost" size="sm" onClick={clearFilters} className="text-[--text-muted]">
-                <X className="h-4 w-4 mr-1" />
-                Clear
-              </Button>
-            )}
+          {/* Quick Links */}
+          <div className="flex flex-wrap gap-2">
+            <span className="text-sm text-gray-500 py-2">Popular:</span>
+            {conditions.map((condition) => (
+              <button
+                key={condition}
+                onClick={() => setSearchQuery(condition)}
+                className="px-4 py-2 rounded-full border border-gray-200 text-sm font-medium text-gray-600 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-600 transition-colors"
+              >
+                {condition}
+              </button>
+            ))}
           </div>
         </div>
       </div>
 
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
+      {/* Results */}
+      <div className="main-container py-8">
+        {/* Results Header */}
         <div className="flex items-center justify-between mb-6">
-          <p className="text-[--text-secondary]">
-            {isLoading ? "Searching..." : `${filteredProfessionals.length} professionals found`}
-          </p>
-          <Select
-            options={[
-              { value: "rating", label: "Highest Rated" },
-              { value: "price_low", label: "Price: Low to High" },
-              { value: "price_high", label: "Price: High to Low" },
-              { value: "reviews", label: "Most Reviews" },
-            ]}
-            placeholder="Sort by"
-            className="w-48"
-          />
+          <div>
+            <h2 className="text-xl font-semibold text-gray-900">
+              {isLoading ? "Searching..." : `${filteredDoctors.length} Doctors Available`}
+            </h2>
+            <p className="text-sm text-gray-500 mt-1">
+              {selectedSpecialty && `Showing ${selectedSpecialty}s`}
+              {selectedLocation && ` in ${selectedLocation}`}
+            </p>
+          </div>
+          <select className="h-10 px-4 rounded-lg border border-gray-200 bg-white text-sm font-medium text-gray-700">
+            <option>Sort by: Recommended</option>
+            <option>Highest Rated</option>
+            <option>Lowest Price</option>
+            <option>Highest Price</option>
+            <option>Most Reviews</option>
+          </select>
         </div>
 
+        {/* Loading Skeleton */}
         {isLoading ? (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {[...Array(6)].map((_, i) => (
-              <Card key={i}>
-                <CardContent className="p-6">
-                  <div className="flex items-start gap-4">
-                    <Skeleton className="h-14 w-14 rounded-full" />
-                    <div className="flex-1">
-                      <Skeleton className="h-5 w-32 mb-2" />
-                      <Skeleton className="h-4 w-24 mb-2" />
-                      <Skeleton className="h-4 w-20" />
-                    </div>
+              <div key={i} className="bg-white rounded-2xl p-6 shadow-sm animate-pulse">
+                <div className="flex items-start gap-4 mb-4">
+                  <div className="w-16 h-16 rounded-full bg-gray-200" />
+                  <div className="flex-1">
+                    <div className="h-5 w-32 bg-gray-200 rounded mb-2" />
+                    <div className="h-4 w-24 bg-gray-200 rounded" />
                   </div>
-                  <div className="mt-4 pt-4 border-t border-[--border]">
-                    <Skeleton className="h-4 w-full mb-2" />
-                    <Skeleton className="h-4 w-3/4" />
-                  </div>
-                </CardContent>
-              </Card>
+                </div>
+                <div className="space-y-2">
+                  <div className="h-4 w-full bg-gray-200 rounded" />
+                  <div className="h-4 w-3/4 bg-gray-200 rounded" />
+                </div>
+              </div>
             ))}
           </div>
-        ) : filteredProfessionals.length === 0 ? (
-          <div className="text-center py-16">
-            <Search className="h-16 w-16 mx-auto text-[--text-muted] mb-4" />
-            <h3 className="text-lg font-medium text-[--text-primary] mb-2">
-              No professionals found
-            </h3>
-            <p className="text-[--text-secondary] mb-4">
-              Try adjusting your filters or search terms
-            </p>
-            <Button variant="outline" onClick={clearFilters}>
+        ) : filteredDoctors.length === 0 ? (
+          <div className="text-center py-16 bg-white rounded-2xl">
+            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Search className="w-8 h-8 text-gray-400" />
+            </div>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">No doctors found</h3>
+            <p className="text-gray-500 mb-6">Try adjusting your search or filters</p>
+            <button onClick={clearAllFilters} className="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors">
               Clear all filters
-            </Button>
+            </button>
           </div>
         ) : (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {filteredProfessionals.map((professional) => (
-              <Link key={professional.id} href={`/service/${professional.id}`}>
-                <Card hover className="h-full">
-                  <CardContent className="p-6">
-                    <div className="flex items-start gap-4">
-                      <Avatar
-                        src={professional.imageUrl}
-                        name={professional.name}
-                        size="lg"
-                      />
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2">
-                          <h3 className="font-semibold text-[--text-primary] truncate">
-                            {professional.name}
-                          </h3>
-                          {professional.verified && (
-                            <Shield className="h-4 w-4 text-[--success] shrink-0" />
-                          )}
+            {filteredDoctors.map((doctor) => (
+              <Link key={doctor.id} href={`/service/${doctor.id}`}>
+                <div className="bg-white rounded-2xl p-6 shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100 cursor-pointer h-full">
+                  {/* Doctor Header */}
+                  <div className="flex items-start gap-4 mb-4">
+                    <div className="relative">
+                      <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white text-xl font-bold">
+                        {doctor.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
+                      </div>
+                      {doctor.verified && (
+                        <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
+                          <Shield className="w-4 h-4 text-white" />
                         </div>
-                        <p className="text-sm text-[--primary]">
-                          {professional.specialty}
-                        </p>
-                        <div className="flex items-center gap-1 mt-1">
-                          <Star className="h-3.5 w-3.5 fill-[--accent] text-[--accent]" />
-                          <span className="text-sm font-medium text-[--text-primary]">
-                            {professional.rating}
-                          </span>
-                          <span className="text-xs text-[--text-muted]">
-                            ({professional.reviewCount})
-                          </span>
-                        </div>
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-semibold text-gray-900 truncate">{doctor.name}</h3>
+                      <p className="text-sm text-blue-600 font-medium">{doctor.specialty}</p>
+                      <div className="flex items-center gap-1 mt-1">
+                        <Star className="w-4 h-4 text-amber-400 fill-amber-400" />
+                        <span className="text-sm font-medium text-gray-700">{doctor.rating}</span>
+                        <span className="text-sm text-gray-400">({doctor.reviewCount})</span>
                       </div>
                     </div>
+                  </div>
 
-                    <div className="mt-4 flex items-center gap-4 text-sm text-[--text-secondary]">
-                      <div className="flex items-center gap-1">
-                        <MapPin className="h-4 w-4" />
-                        {professional.location}
-                      </div>
-                    </div>
+                  {/* Bio */}
+                  <p className="text-sm text-gray-600 mb-4 line-clamp-2">{doctor.bio}</p>
 
-                    <div className="mt-2 flex items-center gap-1 text-sm text-[--text-secondary]">
-                      <Clock className="h-4 w-4" />
-                      <span className="text-[--success]">Available {professional.nextAvailable}</span>
+                  {/* Info Grid */}
+                  <div className="grid grid-cols-2 gap-3 mb-4">
+                    <div className="flex items-center gap-2 text-sm text-gray-600">
+                      <MapPin className="w-4 h-4 text-gray-400" />
+                      <span className="truncate">{doctor.location}</span>
                     </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <Clock className="w-4 h-4 text-green-500" />
+                      <span className="text-green-600 font-medium">{doctor.nextAvailable}</span>
+                    </div>
+                  </div>
 
-                    <div className="mt-3 flex flex-wrap gap-1">
-                      {professional.languages.slice(0, 3).map((lang) => (
-                        <Badge key={lang} variant="outline" className="text-xs">
-                          {lang}
-                        </Badge>
-                      ))}
-                    </div>
+                  {/* Languages */}
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    {doctor.languages.map((lang) => (
+                      <span key={lang} className="px-3 py-1 bg-gray-100 text-gray-600 text-xs font-medium rounded-full">
+                        {lang}
+                      </span>
+                    ))}
+                  </div>
 
-                    <div className="mt-4 pt-4 border-t border-[--border] flex items-center justify-between">
-                      <div>
-                        <span className="text-lg font-bold text-[--primary]">
-                          {formatCurrency(professional.price)}
-                        </span>
-                        <span className="text-sm text-[--text-muted]"> / session</span>
-                      </div>
-                      <Button size="sm">Book</Button>
+                  {/* Price & CTA */}
+                  <div className="pt-4 border-t border-gray-100 flex items-center justify-between">
+                    <div>
+                      <span className="text-2xl font-bold text-gray-900">{formatCurrency(doctor.price)}</span>
+                      <span className="text-sm text-gray-500"> / visit</span>
                     </div>
-                  </CardContent>
-                </Card>
+                    <button className="px-5 py-2.5 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 transition-colors">
+                      Book Now
+                    </button>
+                  </div>
+                </div>
               </Link>
             ))}
+          </div>
+        )}
+
+        {/* Bottom CTA */}
+        {!isLoading && filteredDoctors.length > 0 && (
+          <div className="mt-12 text-center">
+            <p className="text-gray-500 mb-4">Can&apos;t find what you&apos;re looking for?</p>
+            <button className="px-6 py-3 border-2 border-blue-600 text-blue-600 font-semibold rounded-lg hover:bg-blue-50 transition-colors">
+              Contact our support team
+            </button>
           </div>
         )}
       </div>
