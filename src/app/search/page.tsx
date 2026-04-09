@@ -11,26 +11,27 @@ import {
   X,
   Clock,
   Shield,
+  Stethoscope,
   ChevronDown,
   SlidersHorizontal,
-  Stethoscope,
-  Calendar,
-  DollarSign
+  CheckCircle
 } from "lucide-react";
-import { Avatar } from "@/components/ui/avatar";
 import { formatCurrency } from "@/lib/utils";
 
-const mockProfessionals = [
-  { id: "1", name: "Dr. Elena Martínez", specialty: "Cardiology", location: "Miami, FL", rating: 4.9, reviewCount: 127, languages: ["Spanish", "English"], price: 15000, verified: true, nextAvailable: "Tomorrow", bio: "Board-certified cardiologist with 15+ years of experience" },
-  { id: "2", name: "Dr. Michael Chen", specialty: "Dermatology", location: "San Francisco, CA", rating: 4.8, reviewCount: 89, languages: ["English", "Mandarin"], price: 20000, verified: true, nextAvailable: "Today", bio: "Specialist in cosmetic and medical dermatology" },
-  { id: "3", name: "Dr. Sarah Johnson", specialty: "Pediatrics", location: "New York, NY", rating: 4.9, reviewCount: 203, languages: ["English"], price: 12000, verified: true, nextAvailable: "Today", bio: "Compassionate care for children of all ages" },
-  { id: "4", name: "Dr. David Park", specialty: "Orthopedics", location: "Los Angeles, CA", rating: 4.8, reviewCount: 156, languages: ["English", "Korean"], price: 18000, verified: true, nextAvailable: "In 2 days", bio: "Expert in sports medicine and joint replacement" },
-  { id: "5", name: "Dr. Maria Garcia", specialty: "Neurology", location: "Houston, TX", rating: 4.7, reviewCount: 78, languages: ["Spanish", "English"], price: 16000, verified: true, nextAvailable: "Tomorrow", bio: "Specializing in headache and movement disorders" },
-  { id: "6", name: "Dr. James Wilson", specialty: "Internal Medicine", location: "Chicago, IL", rating: 4.9, reviewCount: 312, languages: ["English"], price: 10000, verified: true, nextAvailable: "Today", bio: "Preventive care and chronic disease management" },
+const mockDoctors = [
+  { id: "1", name: "Dr. Elena Martínez", specialty: "Cardiology", location: "Miami, FL", rating: 4.9, reviewCount: 127, languages: ["Spanish", "English"], price: 15000, verified: true, nextAvailable: "Tomorrow", bio: "Board-certified cardiologist with 15+ years of experience in preventive cardiology" },
+  { id: "2", name: "Dr. Michael Chen", specialty: "Dermatology", location: "San Francisco, CA", rating: 4.8, reviewCount: 89, languages: ["English", "Mandarin"], price: 20000, verified: true, nextAvailable: "Today", bio: "Specialist in cosmetic and medical dermatology with expertise in skin cancer screening" },
+  { id: "3", name: "Dr. Sarah Johnson", specialty: "Pediatrics", location: "New York, NY", rating: 4.9, reviewCount: 203, languages: ["English"], price: 12000, verified: true, nextAvailable: "Today", bio: "Compassionate care for children from newborns to adolescents" },
+  { id: "4", name: "Dr. David Park", specialty: "Orthopedics", location: "Los Angeles, CA", rating: 4.8, reviewCount: 156, languages: ["English", "Korean"], price: 18000, verified: true, nextAvailable: "In 2 days", bio: "Expert in sports medicine, joint replacement, and minimally invasive surgery" },
+  { id: "5", name: "Dr. Maria Garcia", specialty: "Neurology", location: "Houston, TX", rating: 4.7, reviewCount: 78, languages: ["Spanish", "English"], price: 16000, verified: true, nextAvailable: "Tomorrow", bio: "Specializing in headache disorders, epilepsy, and movement disorders" },
+  { id: "6", name: "Dr. James Wilson", specialty: "Internal Medicine", location: "Chicago, IL", rating: 4.9, reviewCount: 312, languages: ["English"], price: 10000, verified: true, nextAvailable: "Today", bio: "Preventive care specialist focusing on chronic disease management and wellness" },
+  { id: "7", name: "Dr. Amanda Lee", specialty: "Psychiatry", location: "Boston, MA", rating: 4.8, reviewCount: 64, languages: ["English"], price: 18000, verified: true, nextAvailable: "In 3 days", bio: "Experienced in anxiety, depression, and trauma-informed therapy approaches" },
+  { id: "8", name: "Dr. Robert Brown", specialty: "Ophthalmology", location: "Seattle, WA", rating: 4.6, reviewCount: 142, languages: ["English"], price: 14000, verified: true, nextAvailable: "Tomorrow", bio: "Comprehensive eye care including cataract surgery and LASIK consultations" },
+  { id: "9", name: "Dr. Jennifer Taylor", specialty: "Endocrinology", location: "Denver, CO", rating: 4.9, reviewCount: 98, languages: ["English", "French"], price: 17000, verified: true, nextAvailable: "Today", bio: "Diabetes management and thyroid disorder specialist with research background" },
 ];
 
-const specialties = ["Cardiology", "Dermatology", "Pediatrics", "Orthopedics", "Neurology", "Internal Medicine", "Psychiatry", "Ophthalmology"];
-const conditions = ["Chest Pain", "Skin Rash", "Joint Pain", "Headache", "Fatigue", "High Blood Pressure"];
+const specialties = ["Cardiology", "Dermatology", "Pediatrics", "Orthopedics", "Neurology", "Internal Medicine", "Psychiatry", "Ophthalmology", "Endocrinology"];
+const conditions = ["Chest Pain", "Skin Rash", "Joint Pain", "Headache", "Fatigue", "High Blood Pressure", "Anxiety", "Diabetes"];
 
 export default function SearchPage() {
   return (
@@ -50,11 +51,11 @@ function SearchContent() {
   const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), 800);
+    const timer = setTimeout(() => setIsLoading(false), 600);
     return () => clearTimeout(timer);
   }, []);
 
-  const filteredDoctors = mockProfessionals.filter((doctor) => {
+  const filteredDoctors = mockDoctors.filter((doctor) => {
     if (selectedSpecialty && !doctor.specialty.toLowerCase().includes(selectedSpecialty.toLowerCase())) return false;
     if (selectedLocation && !doctor.location.toLowerCase().includes(selectedLocation.toLowerCase())) return false;
     if (selectedRating && doctor.rating < parseFloat(selectedRating)) return false;
@@ -73,96 +74,116 @@ function SearchContent() {
 
   return (
     <div className="min-h-screen" style={{ background: '#F8FAFC' }}>
-      {/* Search Header */}
-      <div className="bg-white border-b border-gray-200">
-        <div className="main-container py-8">
+      {/* Header */}
+      <div style={{ background: 'white', borderBottom: '1px solid #F1F5F9' }}>
+        <div className="main-container py-10">
           <div className="mb-6">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Find a Doctor</h1>
-            <p className="text-gray-600">Search from our network of verified medical professionals</p>
+            <h1 className="text-3xl font-bold mb-2" style={{ color: '#0F172A', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+              Find a Doctor
+            </h1>
+            <p style={{ color: '#64748B', fontSize: '1rem' }}>
+              Book appointments with verified medical professionals across the United States
+            </p>
           </div>
 
           {/* Search Bar */}
-          <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-4 mb-6">
+          <div className="search-card mb-6">
             <div className="flex flex-col lg:flex-row gap-4">
               <div className="flex-1 relative">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5" style={{ color: '#9CA3AF' }} />
                 <input
                   type="text"
                   placeholder="Search by name, specialty, or condition..."
-                  className="w-full h-14 pl-12 pr-4 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none text-gray-700"
+                  className="form-input pl-14"
+                  style={{ height: '56px' }}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </div>
               <button
                 onClick={() => setShowFilters(!showFilters)}
-                className="lg:hidden flex items-center justify-center gap-2 h-14 px-6 rounded-xl border border-gray-200 font-medium text-gray-700 hover:bg-gray-50"
+                className="lg:hidden flex items-center justify-center gap-2 px-6 py-4 rounded-xl border font-medium"
+                style={{ borderColor: '#E5E7EB', color: '#4B5563' }}
               >
                 <SlidersHorizontal className="w-5 h-5" />
                 Filters
+                {hasActiveFilters && (
+                  <span className="w-6 h-6 rounded-full text-white text-xs flex items-center justify-center" style={{ background: '#0066CC' }}>
+                    !
+                  </span>
+                )}
               </button>
             </div>
 
-            {/* Filter Pills */}
-            <div className={`mt-4 flex flex-wrap gap-2 ${showFilters ? 'block' : 'hidden lg:flex'}`}>
-              <select
-                className="h-11 px-4 pr-10 rounded-lg border border-gray-200 bg-white text-sm font-medium text-gray-700 appearance-none cursor-pointer hover:border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none"
-                value={selectedSpecialty}
-                onChange={(e) => setSelectedSpecialty(e.target.value)}
-              >
-                <option value="">All Specialties</option>
-                {specialties.map(s => <option key={s} value={s}>{s}</option>)}
-              </select>
-
-              <select
-                className="h-11 px-4 pr-10 rounded-lg border border-gray-200 bg-white text-sm font-medium text-gray-700 appearance-none cursor-pointer hover:border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none"
-                value={selectedLocation}
-                onChange={(e) => setSelectedLocation(e.target.value)}
-              >
-                <option value="">All Locations</option>
-                <option value="New York">New York, NY</option>
-                <option value="Los Angeles">Los Angeles, CA</option>
-                <option value="Chicago">Chicago, IL</option>
-                <option value="Houston">Houston, TX</option>
-                <option value="Miami">Miami, FL</option>
-                <option value="San Francisco">San Francisco, CA</option>
-              </select>
-
-              <select
-                className="h-11 px-4 pr-10 rounded-lg border border-gray-200 bg-white text-sm font-medium text-gray-700 appearance-none cursor-pointer hover:border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none"
-                value={selectedRating}
-                onChange={(e) => setSelectedRating(e.target.value)}
-              >
-                <option value="">Any Rating</option>
-                <option value="4.5">4.5+ Stars</option>
-                <option value="4">4+ Stars</option>
-                <option value="3.5">3.5+ Stars</option>
-              </select>
-
-              {hasActiveFilters && (
-                <button
-                  onClick={clearAllFilters}
-                  className="h-11 px-4 flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-gray-900"
+            {/* Filters */}
+            <div className={`mt-4 ${showFilters ? 'block' : 'hidden lg:block'}`}>
+              <div className="flex flex-wrap items-center gap-3">
+                <select
+                  className="form-select"
+                  style={{ width: 'auto', minWidth: '180px', height: '48px' }}
+                  value={selectedSpecialty}
+                  onChange={(e) => setSelectedSpecialty(e.target.value)}
                 >
-                  <X className="w-4 h-4" />
-                  Clear all
-                </button>
-              )}
-            </div>
-          </div>
+                  <option value="">All Specialties</option>
+                  {specialties.map(s => <option key={s} value={s}>{s}</option>)}
+                </select>
 
-          {/* Quick Links */}
-          <div className="flex flex-wrap gap-2">
-            <span className="text-sm text-gray-500 py-2">Popular:</span>
-            {conditions.map((condition) => (
-              <button
-                key={condition}
-                onClick={() => setSearchQuery(condition)}
-                className="px-4 py-2 rounded-full border border-gray-200 text-sm font-medium text-gray-600 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-600 transition-colors"
-              >
-                {condition}
-              </button>
-            ))}
+                <select
+                  className="form-select"
+                  style={{ width: 'auto', minWidth: '180px', height: '48px' }}
+                  value={selectedLocation}
+                  onChange={(e) => setSelectedLocation(e.target.value)}
+                >
+                  <option value="">All Locations</option>
+                  <option value="New York">New York, NY</option>
+                  <option value="Los Angeles">Los Angeles, CA</option>
+                  <option value="Chicago">Chicago, IL</option>
+                  <option value="Houston">Houston, TX</option>
+                  <option value="Miami">Miami, FL</option>
+                  <option value="San Francisco">San Francisco, CA</option>
+                  <option value="Boston">Boston, MA</option>
+                  <option value="Seattle">Seattle, WA</option>
+                  <option value="Denver">Denver, CO</option>
+                </select>
+
+                <select
+                  className="form-select"
+                  style={{ width: 'auto', minWidth: '160px', height: '48px' }}
+                  value={selectedRating}
+                  onChange={(e) => setSelectedRating(e.target.value)}
+                >
+                  <option value="">Any Rating</option>
+                  <option value="4.5">4.5+ Stars</option>
+                  <option value="4">4+ Stars</option>
+                  <option value="3.5">3.5+ Stars</option>
+                </select>
+
+                {hasActiveFilters && (
+                  <button
+                    onClick={clearAllFilters}
+                    className="flex items-center gap-2 px-4 py-3 rounded-lg font-medium"
+                    style={{ color: '#64748B' }}
+                  >
+                    <X className="w-4 h-4" />
+                    Clear all
+                  </button>
+                )}
+              </div>
+
+              {/* Quick Links */}
+              <div className="flex flex-wrap items-center gap-2 mt-4 pt-4" style={{ borderTop: '1px solid #F1F5F9' }}>
+                <span className="text-sm font-medium" style={{ color: '#9CA3AF' }}>Popular:</span>
+                {conditions.map((condition) => (
+                  <button
+                    key={condition}
+                    onClick={() => setSearchQuery(condition)}
+                    className="tag"
+                  >
+                    {condition}
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -172,112 +193,115 @@ function SearchContent() {
         {/* Results Header */}
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h2 className="text-xl font-semibold text-gray-900">
+            <h2 className="text-xl font-semibold" style={{ color: '#0F172A' }}>
               {isLoading ? "Searching..." : `${filteredDoctors.length} Doctors Available`}
             </h2>
-            <p className="text-sm text-gray-500 mt-1">
-              {selectedSpecialty && `Showing ${selectedSpecialty}s`}
+            <p className="text-sm mt-1" style={{ color: '#94A3B8' }}>
+              {selectedSpecialty && `${selectedSpecialty}s`}
               {selectedLocation && ` in ${selectedLocation}`}
+              {filteredDoctors.length > 0 && !hasActiveFilters && "sorted by recommended"}
             </p>
           </div>
-          <select className="h-10 px-4 rounded-lg border border-gray-200 bg-white text-sm font-medium text-gray-700">
+          <select className="form-select" style={{ width: 'auto', minWidth: '200px', height: '44px' }}>
             <option>Sort by: Recommended</option>
             <option>Highest Rated</option>
             <option>Lowest Price</option>
-            <option>Highest Price</option>
             <option>Most Reviews</option>
           </select>
         </div>
 
         {/* Loading Skeleton */}
         {isLoading ? (
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid-cards">
             {[...Array(6)].map((_, i) => (
-              <div key={i} className="bg-white rounded-2xl p-6 shadow-sm animate-pulse">
+              <div key={i} className="card" style={{ height: '320px' }}>
                 <div className="flex items-start gap-4 mb-4">
-                  <div className="w-16 h-16 rounded-full bg-gray-200" />
+                  <div className="w-18 h-18 rounded-full animate-pulse" style={{ width: '72px', height: '72px', background: '#E2E8F0' }} />
                   <div className="flex-1">
-                    <div className="h-5 w-32 bg-gray-200 rounded mb-2" />
-                    <div className="h-4 w-24 bg-gray-200 rounded" />
+                    <div className="h-5 w-36 rounded animate-pulse mb-2" style={{ background: '#E2E8F0' }} />
+                    <div className="h-4 w-24 rounded animate-pulse mb-2" style={{ background: '#F1F5F9' }} />
+                    <div className="h-4 w-20 rounded animate-pulse" style={{ background: '#F1F5F9' }} />
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <div className="h-4 w-full bg-gray-200 rounded" />
-                  <div className="h-4 w-3/4 bg-gray-200 rounded" />
+                  <div className="h-4 w-full rounded animate-pulse" style={{ background: '#F1F5F9' }} />
+                  <div className="h-4 w-3/4 rounded animate-pulse" style={{ background: '#F1F5F9' }} />
                 </div>
               </div>
             ))}
           </div>
         ) : filteredDoctors.length === 0 ? (
-          <div className="text-center py-16 bg-white rounded-2xl">
-            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Search className="w-8 h-8 text-gray-400" />
+          <div className="text-center py-20" style={{ background: 'white', borderRadius: '20px' }}>
+            <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: '#F1F5F9' }}>
+              <Search className="w-10 h-10" style={{ color: '#CBD5E1' }} />
             </div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">No doctors found</h3>
-            <p className="text-gray-500 mb-6">Try adjusting your search or filters</p>
-            <button onClick={clearAllFilters} className="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors">
+            <h3 className="text-lg font-semibold mb-2" style={{ color: '#0F172A' }}>No doctors found</h3>
+            <p className="mb-6" style={{ color: '#94A3B8' }}>Try adjusting your search or filters to find what you&apos;re looking for</p>
+            <button onClick={clearAllFilters} className="btn-primary px-6 py-3 rounded-xl font-semibold text-white">
               Clear all filters
             </button>
           </div>
         ) : (
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid-cards">
             {filteredDoctors.map((doctor) => (
               <Link key={doctor.id} href={`/service/${doctor.id}`}>
-                <div className="bg-white rounded-2xl p-6 shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100 cursor-pointer h-full">
+                <div className="search-card h-full flex flex-col">
                   {/* Doctor Header */}
                   <div className="flex items-start gap-4 mb-4">
-                    <div className="relative">
-                      <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white text-xl font-bold">
-                        {doctor.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
-                      </div>
-                      {doctor.verified && (
-                        <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
-                          <Shield className="w-4 h-4 text-white" />
-                        </div>
-                      )}
+                    <div className="doctor-avatar">
+                      {doctor.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold text-gray-900 truncate">{doctor.name}</h3>
-                      <p className="text-sm text-blue-600 font-medium">{doctor.specialty}</p>
-                      <div className="flex items-center gap-1 mt-1">
-                        <Star className="w-4 h-4 text-amber-400 fill-amber-400" />
-                        <span className="text-sm font-medium text-gray-700">{doctor.rating}</span>
-                        <span className="text-sm text-gray-400">({doctor.reviewCount})</span>
+                      <div className="flex items-center gap-2 mb-1">
+                        <h3 className="font-bold truncate" style={{ color: '#0F172A', fontSize: '1.1rem' }}>
+                          {doctor.name}
+                        </h3>
+                        {doctor.verified && (
+                          <div className="w-5 h-5 rounded-full flex items-center justify-center" style={{ background: '#22C55E' }}>
+                            <CheckCircle className="w-3.5 h-3.5 text-white" />
+                          </div>
+                        )}
+                      </div>
+                      <p className="font-medium mb-1" style={{ color: '#0066CC' }}>{doctor.specialty}</p>
+                      <div className="flex items-center gap-1">
+                        <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
+                        <span className="font-semibold" style={{ color: '#1F2937' }}>{doctor.rating}</span>
+                        <span className="text-sm" style={{ color: '#9CA3AF' }}>({doctor.reviewCount} reviews)</span>
                       </div>
                     </div>
                   </div>
 
                   {/* Bio */}
-                  <p className="text-sm text-gray-600 mb-4 line-clamp-2">{doctor.bio}</p>
+                  <p className="text-sm mb-4 flex-1" style={{ color: '#64748B', lineHeight: '1.6' }}>
+                    {doctor.bio}
+                  </p>
 
                   {/* Info Grid */}
                   <div className="grid grid-cols-2 gap-3 mb-4">
-                    <div className="flex items-center gap-2 text-sm text-gray-600">
-                      <MapPin className="w-4 h-4 text-gray-400" />
-                      <span className="truncate">{doctor.location}</span>
+                    <div className="flex items-center gap-2">
+                      <MapPin className="w-4 h-4" style={{ color: '#94A3B8' }} />
+                      <span className="text-sm truncate" style={{ color: '#64748B' }}>{doctor.location}</span>
                     </div>
-                    <div className="flex items-center gap-2 text-sm">
-                      <Clock className="w-4 h-4 text-green-500" />
-                      <span className="text-green-600 font-medium">{doctor.nextAvailable}</span>
+                    <div className="flex items-center gap-2">
+                      <Clock className="w-4 h-4" style={{ color: '#22C55E' }} />
+                      <span className="text-sm font-medium" style={{ color: '#16A34A' }}>{doctor.nextAvailable}</span>
                     </div>
                   </div>
 
                   {/* Languages */}
                   <div className="flex flex-wrap gap-2 mb-4">
                     {doctor.languages.map((lang) => (
-                      <span key={lang} className="px-3 py-1 bg-gray-100 text-gray-600 text-xs font-medium rounded-full">
-                        {lang}
-                      </span>
+                      <span key={lang} className="tag">{lang}</span>
                     ))}
                   </div>
 
                   {/* Price & CTA */}
-                  <div className="pt-4 border-t border-gray-100 flex items-center justify-between">
+                  <div className="pt-4 flex items-center justify-between" style={{ borderTop: '1px solid #F1F5F9' }}>
                     <div>
-                      <span className="text-2xl font-bold text-gray-900">{formatCurrency(doctor.price)}</span>
-                      <span className="text-sm text-gray-500"> / visit</span>
+                      <span className="text-2xl font-bold" style={{ color: '#0F172A' }}>{formatCurrency(doctor.price)}</span>
+                      <span className="text-sm" style={{ color: '#94A3B8' }}> / visit</span>
                     </div>
-                    <button className="px-5 py-2.5 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 transition-colors">
+                    <button className="px-5 py-2.5 rounded-xl font-semibold text-white" style={{ background: 'linear-gradient(135deg, #0066CC 0%, #0052A3 100%)', boxShadow: '0 4px 14px rgba(0, 102, 204, 0.3)' }}>
                       Book Now
                     </button>
                   </div>
@@ -290,8 +314,8 @@ function SearchContent() {
         {/* Bottom CTA */}
         {!isLoading && filteredDoctors.length > 0 && (
           <div className="mt-12 text-center">
-            <p className="text-gray-500 mb-4">Can&apos;t find what you&apos;re looking for?</p>
-            <button className="px-6 py-3 border-2 border-blue-600 text-blue-600 font-semibold rounded-lg hover:bg-blue-50 transition-colors">
+            <p className="mb-4" style={{ color: '#94A3B8' }}>Can&apos;t find what you&apos;re looking for?</p>
+            <button className="px-6 py-3 rounded-xl font-semibold" style={{ border: '2px solid #0066CC', color: '#0066CC' }}>
               Contact our support team
             </button>
           </div>
