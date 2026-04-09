@@ -1,36 +1,122 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Vitalia - Medical Services Marketplace
+
+![Vitalia Logo](https://img.shields.io/badge/Vitalia-Healthcare%20Without%20Borders-teal?style=for-the-badge)
+
+> **Your health, without borders.** A marketplace connecting patients with verified medical professionals worldwide.
+
+## Features
+
+- 🔍 **Service Search** - Find medical professionals by specialty, location, and availability
+- ✅ **Verified Professionals** - Document verification system for medical credentials
+- 💳 **Secure Wallet** - Escrow-based payment system
+- 📅 **Easy Scheduling** - Real-time booking with calendar integration
+- 📊 **Health Tracking** - Monitor vital metrics with custom alerts
+- 📱 **Responsive Design** - Works on desktop, tablet, and mobile
+
+## Tech Stack
+
+- **Framework**: Next.js 14 (App Router)
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **State Management**: Zustand
+- **Charts**: Recharts
+- **Icons**: Lucide React
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js 18+
+- npm or yarn
+
+### Installation
 
 ```bash
+# Clone the repository
+git clone https://github.com/dnx92/vitalia.git
+cd vitalia
+
+# Install dependencies
+npm install
+
+# Start development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Project Structure
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+src/
+├── app/                    # Next.js App Router pages
+│   ├── api/               # API routes
+│   ├── auth/             # Authentication pages
+│   ├── dashboard/        # User dashboard
+│   ├── search/           # Service search
+│   └── service/          # Service detail
+├── components/
+│   ├── ui/              # Reusable UI components
+│   └── layout/           # Layout components
+├── lib/                  # Utilities
+├── store/                # Zustand stores
+└── types/                # TypeScript types
+```
 
-## Learn More
+## How to Use
 
-To learn more about Next.js, take a look at the following resources:
+### For Patients
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. **Sign Up** - Create an account at `/auth/register`
+2. **Search** - Find doctors at `/search`
+3. **Book** - Select a service and book an appointment
+4. **Pay** - Add funds to wallet (demo mode)
+5. **Track** - Monitor health metrics at `/dashboard/health`
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### For Professionals
 
-## Deploy on Vercel
+1. **Register** - Sign up as professional at `/auth/register?role=professional`
+2. **Upload Documents** - Submit medical credentials
+3. **Create Services** - Add your services and pricing
+4. **Manage Calendar** - Set availability
+5. **Receive Payments** - Get paid through the wallet system
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Demo Credentials
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+The app currently uses mock data. To test the full flow:
+
+```bash
+# Login with demo user
+Email: demo@vitalia.com
+Password: demo123
+```
+
+## Pages
+
+| Page | Description |
+|------|-------------|
+| `/` | Landing page |
+| `/auth/login` | User login |
+| `/auth/register` | User registration |
+| `/search` | Find medical services |
+| `/service/[id]` | Service detail & booking |
+| `/dashboard` | User dashboard |
+| `/dashboard/wallet` | Wallet management |
+| `/dashboard/health` | Health metrics tracking |
+
+## Next Steps for Production
+
+- [ ] Add Prisma + PostgreSQL for data persistence
+- [ ] Implement NextAuth with real providers
+- [ ] Integrate Stripe for real payments
+- [ ] Add WebSocket for real-time notifications
+- [ ] Create admin panel
+- [ ] Add unit and integration tests
+
+## License
+
+MIT License - feel free to use this template for your projects.
+
+---
+
+Built with ❤️ by [dnx92](https://github.com/dnx92)
