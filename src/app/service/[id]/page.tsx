@@ -131,11 +131,11 @@ export default function ServiceDetailPage({ params }: { params: Promise<{ id: st
   };
 
   return (
-    <div className="min-h-screen bg-[--background]">
+    <div className="min-h-screen bg-white">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
         <Link 
           href="/search" 
-          className="inline-flex items-center gap-2 text-[--text-secondary] hover:text-[--primary] mb-6"
+          className="inline-flex items-center gap-2 text-gray-500 hover:text-[--primary] mb-6 transition-colors"
         >
           <ArrowLeft className="h-4 w-4" />
           Back to search
@@ -149,17 +149,17 @@ export default function ServiceDetailPage({ params }: { params: Promise<{ id: st
                   <Avatar src={mockProfessional.avatar} name={mockProfessional.name} size="lg" />
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
-                      <h1 className="text-2xl font-bold text-[--text-primary]">
+                      <h1 className="text-2xl font-bold text-gray-900">
                         {mockProfessional.name}
                       </h1>
                       {mockProfessional.verified && (
-                        <Shield className="h-5 w-5 text-[--success]" />
+                        <Shield className="h-5 w-5 text-green-500" />
                       )}
                     </div>
                     <p className="text-[--primary] font-medium">{mockProfessional.specialty}</p>
-                    <div className="flex items-center gap-4 mt-2 text-sm text-[--text-secondary]">
+                    <div className="flex items-center gap-4 mt-2 text-sm text-gray-500">
                       <div className="flex items-center gap-1">
-                        <Star className="h-4 w-4 fill-[--accent] text-[--accent]" />
+                        <Star className="h-4 w-4 fill-orange-400 text-orange-400" />
                         <span className="font-medium">{mockProfessional.rating}</span>
                         <span>({mockProfessional.reviewCount} reviews)</span>
                       </div>
@@ -180,8 +180,8 @@ export default function ServiceDetailPage({ params }: { params: Promise<{ id: st
 
             <Card>
               <CardContent className="p-6">
-                <h2 className="text-lg font-semibold mb-4">About</h2>
-                <p className="text-[--text-secondary]">{mockProfessional.bio}</p>
+                <h2 className="text-lg font-semibold mb-4 text-gray-900">About</h2>
+                <p className="text-gray-600">{mockProfessional.bio}</p>
               </CardContent>
             </Card>
 
@@ -196,14 +196,14 @@ export default function ServiceDetailPage({ params }: { params: Promise<{ id: st
                     <Card 
                       key={service.id} 
                       hover={selectedService.id !== service.id}
-                      className={selectedService.id === service.id ? "border-[--primary]" : ""}
+                      className={selectedService.id === service.id ? "border-[--primary] ring-2 ring-[--primary]/20" : ""}
                     >
                       <CardContent className="p-6">
                         <div className="flex justify-between items-start">
                           <div className="flex-1">
-                            <h3 className="font-semibold text-[--text-primary]">{service.title}</h3>
-                            <p className="text-sm text-[--text-secondary] mt-1">{service.description}</p>
-                            <div className="flex items-center gap-4 mt-3 text-sm text-[--text-muted]">
+                            <h3 className="font-semibold text-gray-900">{service.title}</h3>
+                            <p className="text-sm text-gray-500 mt-1">{service.description}</p>
+                            <div className="flex items-center gap-4 mt-3 text-sm text-gray-400">
                               <div className="flex items-center gap-1">
                                 <Clock className="h-4 w-4" />
                                 {service.duration} min
@@ -238,12 +238,12 @@ export default function ServiceDetailPage({ params }: { params: Promise<{ id: st
               <TabsContent value="reviews" className="mt-4">
                 <div className="space-y-4">
                   {mockProfessional.reviews.map((review) => (
-                    <div key={review.id} className="p-4 rounded-[--radius-md] bg-[--background]">
+                    <div key={review.id} className="p-4 rounded-xl bg-gray-50">
                       <div className="flex items-center gap-3 mb-2">
                         <Avatar name={review.userName} size="sm" />
                         <div>
-                          <p className="font-medium text-[--text-primary]">{review.userName}</p>
-                          <p className="text-xs text-[--text-muted]">{formatDate(review.date)}</p>
+                          <p className="font-medium text-gray-900">{review.userName}</p>
+                          <p className="text-xs text-gray-400">{formatDate(review.date)}</p>
                         </div>
                         <div className="ml-auto flex items-center gap-1">
                           {[...Array(5)].map((_, i) => (
@@ -251,14 +251,14 @@ export default function ServiceDetailPage({ params }: { params: Promise<{ id: st
                               key={i} 
                               className={`h-4 w-4 ${
                                 i < review.rating 
-                                  ? "fill-[--accent] text-[--accent]" 
-                                  : "text-[--border]"
+                                  ? "fill-orange-400 text-orange-400" 
+                                  : "text-gray-200"
                               }`} 
                             />
                           ))}
                         </div>
                       </div>
-                      <p className="text-sm text-[--text-secondary]">{review.comment}</p>
+                      <p className="text-sm text-gray-600">{review.comment}</p>
                     </div>
                   ))}
                 </div>
@@ -267,13 +267,13 @@ export default function ServiceDetailPage({ params }: { params: Promise<{ id: st
           </div>
 
           <div className="space-y-6">
-            <Card className="sticky top-24">
+            <Card className="sticky top-24 shadow-lg border-gray-200">
               <CardHeader>
-                <CardTitle>Quick Book</CardTitle>
+                <CardTitle className="text-gray-900">Quick Book</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <p className="text-sm font-medium text-[--text-primary] mb-2">
+                  <p className="text-sm font-medium text-gray-900 mb-2">
                     Select Service
                   </p>
                   <Select
@@ -289,16 +289,16 @@ export default function ServiceDetailPage({ params }: { params: Promise<{ id: st
                   />
                 </div>
 
-                <div className="p-4 rounded-[--radius-md] bg-[--background]">
-                  <p className="text-sm font-medium text-[--text-primary] mb-2">
+                <div className="p-4 rounded-xl bg-gray-50">
+                  <p className="text-sm font-medium text-gray-900 mb-2">
                     {selectedService.title}
                   </p>
                   <div className="flex justify-between text-sm">
-                    <span className="text-[--text-secondary]">Duration</span>
+                    <span className="text-gray-500">Duration</span>
                     <span>{selectedService.duration} min</span>
                   </div>
                   <div className="flex justify-between text-sm mt-1">
-                    <span className="text-[--text-secondary]">Price</span>
+                    <span className="text-gray-500">Price</span>
                     <span className="font-semibold text-[--primary]">
                       {formatCurrency(selectedService.price)}
                     </span>
@@ -314,8 +314,8 @@ export default function ServiceDetailPage({ params }: { params: Promise<{ id: st
                   Book Appointment
                 </Button>
 
-                <div className="flex items-center gap-2 text-sm text-[--text-muted]">
-                  <Shield className="h-4 w-4 text-[--success]" />
+                <div className="flex items-center gap-2 text-sm text-gray-400">
+                  <Shield className="h-4 w-4 text-green-500" />
                   Secure payment with escrow protection
                 </div>
               </CardContent>
@@ -331,13 +331,13 @@ export default function ServiceDetailPage({ params }: { params: Promise<{ id: st
         size="md"
       >
         <div className="space-y-4">
-          <div className="p-4 rounded-[--radius-md] bg-[--background]">
-            <p className="font-medium text-[--text-primary]">{selectedService.title}</p>
-            <p className="text-sm text-[--text-secondary]">{selectedService.duration} min • {formatCurrency(selectedService.price)}</p>
+          <div className="p-4 rounded-xl bg-gray-50">
+            <p className="font-medium text-gray-900">{selectedService.title}</p>
+            <p className="text-sm text-gray-500">{selectedService.duration} min • {formatCurrency(selectedService.price)}</p>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-[--text-primary] mb-2">
+            <label className="block text-sm font-medium text-gray-900 mb-2">
               Select Day
             </label>
             <div className="flex flex-wrap gap-2">
@@ -348,10 +348,10 @@ export default function ServiceDetailPage({ params }: { params: Promise<{ id: st
                     setSelectedDate(day);
                     setSelectedTime("");
                   }}
-                  className={`px-4 py-2 rounded-[--radius-md] text-sm font-medium capitalize transition-colors ${
+                  className={`px-4 py-2 rounded-lg text-sm font-medium capitalize transition-colors ${
                     selectedDate === day
-                      ? "bg-[--primary] text-white"
-                      : "bg-[--background] text-[--text-secondary] hover:bg-[--primary]/10"
+                      ? "bg-[--primary] text-white shadow-md"
+                      : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                   }`}
                 >
                   {day}
@@ -362,7 +362,7 @@ export default function ServiceDetailPage({ params }: { params: Promise<{ id: st
 
           {selectedDate && (
             <div>
-              <label className="block text-sm font-medium text-[--text-primary] mb-2">
+              <label className="block text-sm font-medium text-gray-900 mb-2">
                 Select Time
               </label>
               <div className="flex flex-wrap gap-2">
@@ -370,10 +370,10 @@ export default function ServiceDetailPage({ params }: { params: Promise<{ id: st
                   <button
                     key={time}
                     onClick={() => setSelectedTime(time)}
-                    className={`px-4 py-2 rounded-[--radius-md] text-sm font-medium transition-colors ${
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                       selectedTime === time
-                        ? "bg-[--primary] text-white"
-                        : "bg-[--background] text-[--text-secondary] hover:bg-[--primary]/10"
+                        ? "bg-[--primary] text-white shadow-md"
+                        : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                     }`}
                   >
                     {formatTime(time)}
@@ -384,9 +384,9 @@ export default function ServiceDetailPage({ params }: { params: Promise<{ id: st
           )}
 
           {selectedDate && selectedTime && (
-            <div className="p-4 rounded-[--radius-md] border border-[--primary] bg-[--primary]/5">
-              <p className="text-sm text-[--text-secondary]">Appointment Summary</p>
-              <p className="font-medium text-[--text-primary] capitalize">
+            <div className="p-4 rounded-xl border-2 border-[--primary] bg-blue-50">
+              <p className="text-sm text-gray-500">Appointment Summary</p>
+              <p className="font-medium text-gray-900 capitalize">
                 {selectedDate} at {formatTime(selectedTime)}
               </p>
             </div>

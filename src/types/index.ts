@@ -16,6 +16,7 @@ export interface User {
   country?: string;
   avatar?: string;
   role: UserRole;
+  isAdmin?: boolean;
   createdAt: Date;
   updatedAt: Date;
 }

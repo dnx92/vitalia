@@ -3,12 +3,7 @@
 import React, { useState, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Heart, Mail, Lock, User, AlertCircle, UserCircle, Eye, EyeOff, CheckCircle } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Select } from "@/components/ui/select";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
-import { useAuthStore } from "@/store";
+import { Heart, Mail, Lock, User, AlertCircle, UserCircle, Eye, EyeOff, CheckCircle, Phone, MapPin, Stethoscope, Shield } from "lucide-react";
 
 const US_STATES = [
   { value: "", label: "Select your state" },
@@ -61,11 +56,10 @@ const SPECIALTIES = [
 function RegisterForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { setUser } = useAuthStore();
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
   const [step, setStep] = useState(1);
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
   const [role, setRole] = useState<"patient" | "professional">(
     searchParams.get("role") === "professional" ? "professional" : "patient"
   );
@@ -77,6 +71,7 @@ function RegisterForm() {
     phone: "",
     state: "",
     specialty: "",
+    agreeTerms: false,
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -86,6 +81,12 @@ function RegisterForm() {
 
     if (formData.password !== formData.confirmPassword) {
       setError("Passwords do not match");
+      setIsLoading(false);
+      return;
+    }
+
+    if (!formData.agreeTerms) {
+      setError("Please agree to the Terms of Service");
       setIsLoading(false);
       return;
     }
@@ -111,7 +112,6 @@ function RegisterForm() {
         throw new Error(data.error || "Registration failed");
       }
 
-      setUser(data.user);
       router.push(role === "professional" ? "/professional/documents" : "/dashboard");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
@@ -121,216 +121,314 @@ function RegisterForm() {
   };
 
   return (
-    <Card className="border-0 shadow-xl shadow-slate-200/50">
-      <CardContent className="pt-6">
-        {error && (
-          <div className="flex items-center gap-2 p-4 mb-6 rounded-xl bg-rose-50 text-rose-700 text-sm">
-            <AlertCircle className="h-5 w-5 shrink-0" />
-            {error}
+    <div className="min-h-screen flex" style={{ background: 'linear-gradient(135deg, #F8FAFC 0%, #EBF5FF 100%)' }}>
+      {/* Left Side - Branding */}
+      <div className="hidden lg:flex lg:w-1/2 xl:w-5/12 relative overflow-hidden">
+        <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg, #0066CC 0%, #0052A3 100%)' }}>
+          {/* Decorative circles */}
+          <div className="absolute top-20 left-20 w-64 h-64 rounded-full" style={{ background: 'rgba(255,255,255,0.1)' }} />
+          <div className="absolute bottom-32 right-10 w-48 h-48 rounded-full" style={{ background: 'rgba(255,255,255,0.05)' }} />
+          <div className="absolute top-1/2 left-1/3 w-96 h-96 rounded-full" style={{ background: 'rgba(255,255,255,0.08)' }} />
+        </div>
+        
+        <div className="relative z-10 flex flex-col justify-center px-12 xl:px-16 text-white">
+          <div className="flex items-center gap-3 mb-8">
+            <div className="w-14 h-14 rounded-2xl flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.2)' }}>
+              <Heart className="w-7 h-7" />
+            </div>
+            <span className="text-3xl font-bold">Vitalia</span>
           </div>
-        )}
-
-        {step === 1 && (
-          <div className="space-y-6">
-            <div className="text-center">
-              <h3 className="text-lg font-semibold text-slate-900 mb-2">How will you use Vitalia?</h3>
-              <p className="text-sm text-slate-600">Choose how you want to get started</p>
-            </div>
-            
-            <div className="grid grid-cols-2 gap-4">
-              <button
-                type="button"
-                onClick={() => setRole("patient")}
-                className={`p-6 rounded-xl border-2 text-left transition-all ${
-                  role === "patient"
-                    ? "border-cyan-500 bg-cyan-50"
-                    : "border-slate-200 hover:border-slate-300"
-                }`}
-              >
-                <UserCircle className={`h-10 w-10 mb-3 ${role === "patient" ? "text-cyan-600" : "text-slate-400"}`} />
-                <p className="font-semibold text-slate-900">Find Care</p>
-                <p className="text-sm text-slate-500 mt-1">Book appointments with doctors</p>
-                {role === "patient" && <CheckCircle className="h-5 w-5 text-cyan-600 mt-2" />}
-              </button>
-              <button
-                type="button"
-                onClick={() => setRole("professional")}
-                className={`p-6 rounded-xl border-2 text-left transition-all ${
-                  role === "professional"
-                    ? "border-cyan-500 bg-cyan-50"
-                    : "border-slate-200 hover:border-slate-300"
-                }`}
-              >
-                <Heart className={`h-10 w-10 mb-3 ${role === "professional" ? "text-cyan-600" : "text-slate-400"}`} />
-                <p className="font-semibold text-slate-900">Offer Services</p>
-                <p className="text-sm text-slate-500 mt-1">I&apos;m a medical professional</p>
-                {role === "professional" && <CheckCircle className="h-5 w-5 text-cyan-600 mt-2" />}
-              </button>
-            </div>
-
-            <Button onClick={() => setStep(2)} className="w-full h-12 text-base bg-gradient-to-r from-cyan-500 to-blue-600">
-              Continue as {role === "patient" ? "Patient" : "Healthcare Provider"}
-            </Button>
+          
+          <h1 className="text-4xl xl:text-5xl font-bold mb-6 leading-tight">
+            Your Health,<br />Our Priority
+          </h1>
+          
+          <p className="text-xl mb-10 opacity-90">
+            Join thousands of Americans accessing quality healthcare through our verified network of medical professionals.
+          </p>
+          
+          <div className="space-y-4">
+            {[
+              "Board-certified physicians",
+              "Secure video consultations",
+              "Easy online booking",
+              "HIPAA compliant platform"
+            ].map((item, i) => (
+              <div key={i} className="flex items-center gap-3">
+                <div className="w-6 h-6 rounded-full flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.2)' }}>
+                  <CheckCircle className="w-4 h-4" />
+                </div>
+                <span className="text-lg">{item}</span>
+              </div>
+            ))}
           </div>
-        )}
+        </div>
+      </div>
 
-        {step === 2 && (
-          <form onSubmit={handleSubmit} className="space-y-5">
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">
-                Full Name
-              </label>
-              <div className="relative">
-                <User className="absolute left-3.5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
-                <Input
-                  type="text"
-                  placeholder="John Smith"
-                  className="pl-11 h-12"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  required
-                />
-              </div>
+      {/* Right Side - Form */}
+      <div className="w-full lg:w-1/2 xl:w-7/12 flex items-center justify-center p-6 sm:p-8">
+        <div className="w-full max-w-lg">
+          {/* Mobile Logo */}
+          <div className="lg:hidden flex items-center justify-center gap-3 mb-8">
+            <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #0066CC 0%, #0052A3 100%)' }}>
+              <Heart className="w-6 h-6 text-white" />
+            </div>
+            <span className="text-2xl font-bold" style={{ color: '#0066CC' }}>Vitalia</span>
+          </div>
+
+          {/* Form Card */}
+          <div className="bg-white rounded-3xl p-8 sm:p-10 shadow-xl" style={{ boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.15)' }}>
+            <div className="text-center mb-8">
+              <h2 className="text-2xl font-bold mb-2" style={{ color: '#0F172A' }}>Create Your Account</h2>
+              <p style={{ color: '#64748B' }}>Join Vitalia for better healthcare access</p>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">
-                Email Address
-              </label>
-              <div className="relative">
-                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
-                <Input
-                  type="email"
-                  placeholder="you@example.com"
-                  className="pl-11 h-12"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  required
-                />
+            {error && (
+              <div className="flex items-center gap-2 p-4 mb-6 rounded-xl" style={{ background: '#FEF2F2', color: '#DC2626' }}>
+                <AlertCircle className="w-5 h-5 shrink-0" />
+                <span className="text-sm font-medium">{error}</span>
               </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">
-                  Password
-                </label>
-                <div className="relative">
-                  <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
-                  <Input
-                    type={showPassword ? "text" : "password"}
-                    placeholder="••••••••"
-                    className="pl-11 h-12"
-                    value={formData.password}
-                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                    required
-                    minLength={8}
-                  />
-                </div>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">
-                  Confirm
-                </label>
-                <div className="relative">
-                  <Input
-                    type={showPassword ? "text" : "password"}
-                    placeholder="••••••••"
-                    className="pl-3 h-12"
-                    value={formData.confirmPassword}
-                    onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                    required
-                    minLength={8}
-                  />
-                </div>
-              </div>
-            </div>
-
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="text-sm text-slate-500 hover:text-slate-700"
-            >
-              {showPassword ? "Hide passwords" : "Show passwords"}
-            </button>
-
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">
-                Phone Number
-              </label>
-              <Input
-                type="tel"
-                placeholder="(555) 123-4567"
-                className="h-12"
-                value={formData.phone}
-                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-              />
-            </div>
-
-            <Select
-              label="State"
-              options={US_STATES}
-              value={formData.state}
-              onChange={(e) => setFormData({ ...formData, state: e.target.value })}
-            />
-
-            {role === "professional" && (
-              <Select
-                label="Medical Specialty"
-                options={SPECIALTIES}
-                value={formData.specialty}
-                onChange={(e) => setFormData({ ...formData, specialty: e.target.value })}
-              />
             )}
 
-            <div className="flex gap-3 pt-2">
-              <Button type="button" variant="outline" onClick={() => setStep(1)} className="h-12">
-                Back
-              </Button>
-              <Button type="submit" className="flex-1 h-12 bg-gradient-to-r from-cyan-500 to-blue-600" isLoading={isLoading}>
-                Create Account
-              </Button>
+            {step === 1 && (
+              <div className="space-y-6">
+                <div className="text-center mb-6">
+                  <p className="font-medium mb-4" style={{ color: '#374151' }}>I want to:</p>
+                  <div className="grid grid-cols-2 gap-4">
+                    <button
+                      type="button"
+                      onClick={() => setRole("patient")}
+                      className={`p-6 rounded-2xl border-2 transition-all text-left ${role === "patient" ? "border-[#0066CC] bg-blue-50" : "border-gray-200 hover:border-gray-300"}`}
+                    >
+                      <UserCircle className={`w-10 h-10 mb-3 ${role === "patient" ? "text-[#0066CC]" : "text-gray-400"}`} />
+                      <p className="font-semibold" style={{ color: role === "patient" ? '#0066CC' : '#374151' }}>Find Care</p>
+                      <p className="text-sm mt-1" style={{ color: '#9CA3AF' }}>Book appointments</p>
+                      {role === "patient" && <CheckCircle className="w-5 h-5 text-[#0066CC] mt-2" />}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setRole("professional")}
+                      className={`p-6 rounded-2xl border-2 transition-all text-left ${role === "professional" ? "border-[#0066CC] bg-blue-50" : "border-gray-200 hover:border-gray-300"}`}
+                    >
+                      <Stethoscope className={`w-10 h-10 mb-3 ${role === "professional" ? "text-[#0066CC]" : "text-gray-400"}`} />
+                      <p className="font-semibold" style={{ color: role === "professional" ? '#0066CC' : '#374151' }}>Offer Services</p>
+                      <p className="text-sm mt-1" style={{ color: '#9CA3AF' }}>I'm a doctor</p>
+                      {role === "professional" && <CheckCircle className="w-5 h-5 text-[#0066CC] mt-2" />}
+                    </button>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setStep(2)}
+                  className="w-full py-4 rounded-xl font-semibold text-white transition-all"
+                  style={{ background: 'linear-gradient(135deg, #0066CC 0%, #0052A3 100%)', boxShadow: '0 4px 14px rgba(0, 102, 204, 0.4)' }}
+                >
+                  Continue as {role === "patient" ? "Patient" : "Healthcare Provider"}
+                </button>
+              </div>
+            )}
+
+            {step === 2 && (
+              <form onSubmit={handleSubmit} className="space-y-5">
+                <div>
+                  <label className="block text-sm font-semibold mb-2" style={{ color: '#374151' }}>Full Name</label>
+                  <div className="relative">
+                    <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5" style={{ color: '#9CA3AF' }} />
+                    <input
+                      type="text"
+                      placeholder="John Smith"
+                      className="form-input pl-12"
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold mb-2" style={{ color: '#374151' }}>Email Address</label>
+                  <div className="relative">
+                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5" style={{ color: '#9CA3AF' }} />
+                    <input
+                      type="email"
+                      placeholder="john@example.com"
+                      className="form-input pl-12"
+                      value={formData.email}
+                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-semibold mb-2" style={{ color: '#374151' }}>Password</label>
+                    <div className="relative">
+                      <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5" style={{ color: '#9CA3AF' }} />
+                      <input
+                        type={showPassword ? "text" : "password"}
+                        placeholder="••••••••"
+                        className="form-input pl-12 pr-12"
+                        value={formData.password}
+                        onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                        required
+                        minLength={8}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-4 top-1/2 -translate-y-1/2"
+                        style={{ color: '#9CA3AF' }}
+                      >
+                        {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                      </button>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold mb-2" style={{ color: '#374151' }}>Confirm</label>
+                    <div className="relative">
+                      <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5" style={{ color: '#9CA3AF' }} />
+                      <input
+                        type={showPassword ? "text" : "password"}
+                        placeholder="••••••••"
+                        className="form-input pl-12"
+                        value={formData.confirmPassword}
+                        onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                        required
+                        minLength={8}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold mb-2" style={{ color: '#374151' }}>Phone Number</label>
+                  <div className="relative">
+                    <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5" style={{ color: '#9CA3AF' }} />
+                    <input
+                      type="tel"
+                      placeholder="(555) 123-4567"
+                      className="form-input pl-12"
+                      value={formData.phone}
+                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold mb-2" style={{ color: '#374151' }}>State</label>
+                  <div className="relative">
+                    <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5" style={{ color: '#9CA3AF', pointerEvents: 'none' }} />
+                    <select
+                      className="form-input pl-12 appearance-none"
+                      style={{ backgroundImage: 'none' }}
+                      value={formData.state}
+                      onChange={(e) => setFormData({ ...formData, state: e.target.value })}
+                    >
+                      {US_STATES.map((s) => (
+                        <option key={s.value} value={s.value}>{s.label}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                {role === "professional" && (
+                  <div>
+                    <label className="block text-sm font-semibold mb-2" style={{ color: '#374151' }}>Medical Specialty</label>
+                    <div className="relative">
+                      <Stethoscope className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5" style={{ color: '#9CA3AF', pointerEvents: 'none' }} />
+                      <select
+                        className="form-input pl-12 appearance-none"
+                        style={{ backgroundImage: 'none' }}
+                        value={formData.specialty}
+                        onChange={(e) => setFormData({ ...formData, specialty: e.target.value })}
+                      >
+                        {SPECIALTIES.map((s) => (
+                          <option key={s.value} value={s.value}>{s.label}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                )}
+
+                <div className="flex items-start gap-3">
+                  <input
+                    type="checkbox"
+                    id="terms"
+                    checked={formData.agreeTerms}
+                    onChange={(e) => setFormData({ ...formData, agreeTerms: e.target.checked })}
+                    className="mt-1 w-5 h-5 rounded"
+                    style={{ accentColor: '#0066CC' }}
+                    required
+                  />
+                  <label htmlFor="terms" className="text-sm" style={{ color: '#64748B' }}>
+                    I agree to the{" "}
+                    <Link href="/terms" className="font-medium" style={{ color: '#0066CC' }}>Terms of Service</Link>
+                    {" "}and{" "}
+                    <Link href="/privacy" className="font-medium" style={{ color: '#0066CC' }}>Privacy Policy</Link>
+                  </label>
+                </div>
+
+                <div className="flex gap-3 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setStep(1)}
+                    className="px-6 py-4 rounded-xl font-medium border-2"
+                    style={{ borderColor: '#E5E7EB', color: '#4B5563' }}
+                  >
+                    Back
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={isLoading}
+                    className="flex-1 py-4 rounded-xl font-semibold text-white transition-all disabled:opacity-50"
+                    style={{ background: 'linear-gradient(135deg, #0066CC 0%, #0052A3 100%)', boxShadow: '0 4px 14px rgba(0, 102, 204, 0.4)' }}
+                  >
+                    {isLoading ? "Creating Account..." : "Create Account"}
+                  </button>
+                </div>
+              </form>
+            )}
+
+            <div className="mt-8 pt-6 text-center" style={{ borderTop: '1px solid #F1F5F9' }}>
+              <p style={{ color: '#64748B' }}>
+                Already have an account?{" "}
+                <Link href="/auth/login" className="font-semibold" style={{ color: '#0066CC' }}>
+                  Sign in
+                </Link>
+              </p>
             </div>
-          </form>
-        )}
-      </CardContent>
-      <CardFooter className="justify-center pb-6">
-        <p className="text-slate-600">
-          Already have an account?{" "}
-          <Link href="/auth/login" className="font-semibold text-cyan-600 hover:text-cyan-700">
-            Sign in
-          </Link>
-        </p>
-      </CardFooter>
-    </Card>
+          </div>
+
+          {/* Trust Badges */}
+          <div className="flex items-center justify-center gap-6 mt-8">
+            <div className="flex items-center gap-2">
+              <Shield className="w-4 h-4" style={{ color: '#22C55E' }} />
+              <span className="text-sm" style={{ color: '#94A3B8' }}>HIPAA Secure</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Lock className="w-4 h-4" style={{ color: '#22C55E' }} />
+              <span className="text-sm" style={{ color: '#94A3B8' }}>256-bit SSL</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
 
 export default function RegisterPage() {
   return (
-    <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center py-12 px-4 sm:px-6 bg-gradient-to-br from-cyan-50 via-white to-blue-50">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center gap-3">
-            <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-200">
-              <Heart className="h-7 w-7 text-white" />
-            </div>
-          </Link>
-          <h1 className="mt-6 text-3xl font-bold text-slate-900">Create Your Account</h1>
-          <p className="mt-2 text-slate-600">Join thousands of Americans on Vitalia</p>
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-pulse text-center">
+          <div className="w-16 h-16 rounded-2xl mx-auto mb-4" style={{ background: '#E2E8F0' }} />
+          <div className="h-6 w-32 rounded" style={{ background: '#E2E8F0' }} />
         </div>
-
-        <Suspense fallback={<div className="animate-pulse text-center">Loading...</div>}>
-          <RegisterForm />
-        </Suspense>
-
-        <p className="mt-6 text-center text-xs text-slate-500">
-          By creating an account, you agree to our{" "}
-          <Link href="/terms" className="text-cyan-600 hover:underline">Terms of Service</Link>
-          {" "}and{" "}
-          <Link href="/privacy" className="text-cyan-600 hover:underline">Privacy Policy</Link>
-        </p>
       </div>
-    </div>
+    }>
+      <RegisterForm />
+    </Suspense>
   );
 }

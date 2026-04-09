@@ -4,6 +4,7 @@ import type { User, Notification } from '@/types';
 interface AuthState {
   user: User | null;
   isLoading: boolean;
+  isAuthenticated: boolean;
   setUser: (user: User | null) => void;
   setLoading: (loading: boolean) => void;
   logout: () => void;
@@ -12,9 +13,10 @@ interface AuthState {
 export const useAuthStore = create<AuthState>((set) => ({
   user: null,
   isLoading: true,
-  setUser: (user) => set({ user }),
+  isAuthenticated: false,
+  setUser: (user) => set({ user, isAuthenticated: !!user }),
   setLoading: (isLoading) => set({ isLoading }),
-  logout: () => set({ user: null }),
+  logout: () => set({ user: null, isAuthenticated: false }),
 }));
 
 interface NotificationState {
