@@ -10,12 +10,13 @@ import {
   Filter,
   X,
   Clock,
-  Shield,
-  Stethoscope,
-  ChevronDown,
+  CheckCircle,
   SlidersHorizontal,
-  CheckCircle
+  ArrowRight
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { formatCurrency } from "@/lib/utils";
 
 const mockDoctors = [
@@ -73,42 +74,40 @@ function SearchContent() {
   const hasActiveFilters = selectedSpecialty || selectedLocation || selectedRating || searchQuery;
 
   return (
-    <div className="min-h-screen" style={{ background: '#F8FAFC' }}>
+    <div className="min-h-screen bg-slate-50">
       {/* Header */}
-      <div style={{ background: 'white', borderBottom: '1px solid #F1F5F9' }}>
+      <div className="bg-white border-b border-slate-200/60">
         <div className="main-container py-10">
           <div className="mb-6">
-            <h1 className="text-3xl font-bold mb-2" style={{ color: '#0F172A', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+            <h1 className="text-3xl font-bold text-slate-900 tracking-tight mb-2">
               Find a Doctor
             </h1>
-            <p style={{ color: '#64748B', fontSize: '1rem' }}>
+            <p className="text-slate-500 font-medium">
               Book appointments with verified medical professionals across the United States
             </p>
           </div>
 
           {/* Search Bar */}
-          <div className="search-card mb-6">
-            <div className="flex flex-col lg:flex-row gap-4">
+          <Card className="p-1 mb-6">
+            <div className="flex flex-col lg:flex-row gap-4 p-4">
               <div className="flex-1 relative">
-                <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5" style={{ color: '#9CA3AF' }} />
+                <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                 <input
                   type="text"
                   placeholder="Search by name, specialty, or condition..."
-                  className="form-input pl-14"
-                  style={{ height: '56px' }}
+                  className="w-full h-14 pl-14 pr-5 text-base bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </div>
               <button
                 onClick={() => setShowFilters(!showFilters)}
-                className="lg:hidden flex items-center justify-center gap-2 px-6 py-4 rounded-xl border font-medium"
-                style={{ borderColor: '#E5E7EB', color: '#4B5563' }}
+                className="lg:hidden flex items-center justify-center gap-2 px-6 py-4 rounded-xl border border-slate-200 font-medium text-slate-600"
               >
                 <SlidersHorizontal className="w-5 h-5" />
                 Filters
                 {hasActiveFilters && (
-                  <span className="w-6 h-6 rounded-full text-white text-xs flex items-center justify-center" style={{ background: '#0066CC' }}>
+                  <span className="w-6 h-6 rounded-full bg-blue-600 text-white text-xs flex items-center justify-center">
                     !
                   </span>
                 )}
@@ -116,11 +115,10 @@ function SearchContent() {
             </div>
 
             {/* Filters */}
-            <div className={`mt-4 ${showFilters ? 'block' : 'hidden lg:block'}`}>
+            <div className={`px-4 pb-4 ${showFilters ? 'block' : 'hidden lg:block'}`}>
               <div className="flex flex-wrap items-center gap-3">
                 <select
-                  className="form-select"
-                  style={{ width: 'auto', minWidth: '180px', height: '48px' }}
+                  className="h-12 px-4 text-sm font-medium bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 cursor-pointer"
                   value={selectedSpecialty}
                   onChange={(e) => setSelectedSpecialty(e.target.value)}
                 >
@@ -129,8 +127,7 @@ function SearchContent() {
                 </select>
 
                 <select
-                  className="form-select"
-                  style={{ width: 'auto', minWidth: '180px', height: '48px' }}
+                  className="h-12 px-4 text-sm font-medium bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 cursor-pointer"
                   value={selectedLocation}
                   onChange={(e) => setSelectedLocation(e.target.value)}
                 >
@@ -147,8 +144,7 @@ function SearchContent() {
                 </select>
 
                 <select
-                  className="form-select"
-                  style={{ width: 'auto', minWidth: '160px', height: '48px' }}
+                  className="h-12 px-4 text-sm font-medium bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 cursor-pointer"
                   value={selectedRating}
                   onChange={(e) => setSelectedRating(e.target.value)}
                 >
@@ -161,8 +157,7 @@ function SearchContent() {
                 {hasActiveFilters && (
                   <button
                     onClick={clearAllFilters}
-                    className="flex items-center gap-2 px-4 py-3 rounded-lg font-medium"
-                    style={{ color: '#64748B' }}
+                    className="flex items-center gap-2 px-4 py-3 text-sm font-medium text-slate-500 hover:text-slate-700"
                   >
                     <X className="w-4 h-4" />
                     Clear all
@@ -171,20 +166,20 @@ function SearchContent() {
               </div>
 
               {/* Quick Links */}
-              <div className="flex flex-wrap items-center gap-2 mt-4 pt-4" style={{ borderTop: '1px solid #F1F5F9' }}>
-                <span className="text-sm font-medium" style={{ color: '#9CA3AF' }}>Popular:</span>
+              <div className="flex flex-wrap items-center gap-2 mt-4 pt-4 border-t border-slate-100">
+                <span className="text-sm font-medium text-slate-400">Popular:</span>
                 {conditions.map((condition) => (
                   <button
                     key={condition}
                     onClick={() => setSearchQuery(condition)}
-                    className="tag"
+                    className="px-3 py-1.5 bg-slate-100 hover:bg-blue-50 text-slate-600 hover:text-blue-600 rounded-full text-xs font-semibold transition-colors"
                   >
                     {condition}
                   </button>
                 ))}
               </div>
             </div>
-          </div>
+          </Card>
         </div>
       </div>
 
@@ -193,16 +188,16 @@ function SearchContent() {
         {/* Results Header */}
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h2 className="text-xl font-semibold" style={{ color: '#0F172A' }}>
+            <h2 className="text-xl font-bold text-slate-900 tracking-tight">
               {isLoading ? "Searching..." : `${filteredDoctors.length} Doctors Available`}
             </h2>
-            <p className="text-sm mt-1" style={{ color: '#94A3B8' }}>
+            <p className="text-sm text-slate-500 mt-1">
               {selectedSpecialty && `${selectedSpecialty}s`}
               {selectedLocation && ` in ${selectedLocation}`}
               {filteredDoctors.length > 0 && !hasActiveFilters && "sorted by recommended"}
             </p>
           </div>
-          <select className="form-select" style={{ width: 'auto', minWidth: '200px', height: '44px' }}>
+          <select className="h-11 px-4 text-sm font-medium bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 cursor-pointer">
             <option>Sort by: Recommended</option>
             <option>Highest Rated</option>
             <option>Lowest Price</option>
@@ -212,9 +207,9 @@ function SearchContent() {
 
         {/* Loading Skeleton */}
         {isLoading ? (
-          <div className="grid-cards">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[...Array(6)].map((_, i) => (
-              <div key={i} className="card" style={{ height: '320px' }}>
+              <Card key={i} className="p-6">
                 <div className="flex items-start gap-4 mb-4">
                   <div className="w-18 h-18 rounded-full animate-pulse" style={{ width: '72px', height: '72px', background: '#E2E8F0' }} />
                   <div className="flex-1">
@@ -227,85 +222,93 @@ function SearchContent() {
                   <div className="h-4 w-full rounded animate-pulse" style={{ background: '#F1F5F9' }} />
                   <div className="h-4 w-3/4 rounded animate-pulse" style={{ background: '#F1F5F9' }} />
                 </div>
-              </div>
+              </Card>
             ))}
           </div>
         ) : filteredDoctors.length === 0 ? (
-          <div className="text-center py-20" style={{ background: 'white', borderRadius: '20px' }}>
-            <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: '#F1F5F9' }}>
-              <Search className="w-10 h-10" style={{ color: '#CBD5E1' }} />
-            </div>
-            <h3 className="text-lg font-semibold mb-2" style={{ color: '#0F172A' }}>No doctors found</h3>
-            <p className="mb-6" style={{ color: '#94A3B8' }}>Try adjusting your search or filters to find what you&apos;re looking for</p>
-            <button onClick={clearAllFilters} className="btn-primary px-6 py-3 rounded-xl font-semibold text-white">
-              Clear all filters
-            </button>
-          </div>
+          <Card className="text-center py-16">
+            <CardContent>
+              <div className="w-20 h-20 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-4">
+                <Search className="w-10 h-10 text-slate-400" />
+              </div>
+              <h3 className="text-lg font-bold text-slate-900 mb-2">No doctors found</h3>
+              <p className="text-slate-500 mb-6">Try adjusting your search or filters to find what you&apos;re looking for</p>
+              <Button onClick={clearAllFilters}>Clear all filters</Button>
+            </CardContent>
+          </Card>
         ) : (
-          <div className="grid-cards">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredDoctors.map((doctor) => (
               <Link key={doctor.id} href={`/service/${doctor.id}`}>
-                <div className="search-card h-full flex flex-col">
+                <Card hover className="h-full flex flex-col p-6 hover:border-blue-200">
                   {/* Doctor Header */}
                   <div className="flex items-start gap-4 mb-4">
-                    <div className="doctor-avatar">
+                    <div className="w-18 h-18 rounded-full flex-shrink-0 flex items-center justify-center text-white font-bold text-lg"
+                      style={{ 
+                        width: '72px', 
+                        height: '72px', 
+                        background: 'linear-gradient(135deg, #0057ff 0%, #00b4a6 100%)',
+                        boxShadow: '0 4px 14px rgba(0, 87, 255, 0.3)'
+                      }}
+                    >
                       {doctor.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
-                        <h3 className="font-bold truncate" style={{ color: '#0F172A', fontSize: '1.1rem' }}>
+                        <h3 className="font-bold text-slate-900 truncate tracking-tight">
                           {doctor.name}
                         </h3>
                         {doctor.verified && (
-                          <div className="w-5 h-5 rounded-full flex items-center justify-center" style={{ background: '#22C55E' }}>
+                          <div className="w-5 h-5 rounded-full bg-emerald-500 flex items-center justify-center flex-shrink-0">
                             <CheckCircle className="w-3.5 h-3.5 text-white" />
                           </div>
                         )}
                       </div>
-                      <p className="font-medium mb-1" style={{ color: '#0066CC' }}>{doctor.specialty}</p>
+                      <p className="font-semibold text-blue-600 mb-1">{doctor.specialty}</p>
                       <div className="flex items-center gap-1">
                         <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
-                        <span className="font-semibold" style={{ color: '#1F2937' }}>{doctor.rating}</span>
-                        <span className="text-sm" style={{ color: '#9CA3AF' }}>({doctor.reviewCount} reviews)</span>
+                        <span className="font-semibold text-slate-900">{doctor.rating}</span>
+                        <span className="text-sm text-slate-400">({doctor.reviewCount} reviews)</span>
                       </div>
                     </div>
                   </div>
 
                   {/* Bio */}
-                  <p className="text-sm mb-4 flex-1" style={{ color: '#64748B', lineHeight: '1.6' }}>
+                  <p className="text-sm text-slate-500 font-medium leading-relaxed mb-4 flex-1">
                     {doctor.bio}
                   </p>
 
                   {/* Info Grid */}
                   <div className="grid grid-cols-2 gap-3 mb-4">
                     <div className="flex items-center gap-2">
-                      <MapPin className="w-4 h-4" style={{ color: '#94A3B8' }} />
-                      <span className="text-sm truncate" style={{ color: '#64748B' }}>{doctor.location}</span>
+                      <MapPin className="w-4 h-4 text-slate-400" />
+                      <span className="text-sm text-slate-600 truncate">{doctor.location}</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Clock className="w-4 h-4" style={{ color: '#22C55E' }} />
-                      <span className="text-sm font-medium" style={{ color: '#16A34A' }}>{doctor.nextAvailable}</span>
+                      <Clock className="w-4 h-4 text-emerald-500" />
+                      <span className="text-sm font-semibold text-emerald-600">{doctor.nextAvailable}</span>
                     </div>
                   </div>
 
                   {/* Languages */}
                   <div className="flex flex-wrap gap-2 mb-4">
                     {doctor.languages.map((lang) => (
-                      <span key={lang} className="tag">{lang}</span>
+                      <Badge key={lang} variant="secondary" className="text-xs">{lang}</Badge>
                     ))}
                   </div>
 
                   {/* Price & CTA */}
-                  <div className="pt-4 flex items-center justify-between" style={{ borderTop: '1px solid #F1F5F9' }}>
+                  <div className="pt-4 mt-auto border-t border-slate-100 flex items-center justify-between">
                     <div>
-                      <span className="text-2xl font-bold" style={{ color: '#0F172A' }}>{formatCurrency(doctor.price)}</span>
-                      <span className="text-sm" style={{ color: '#94A3B8' }}> / visit</span>
+                      <span className="text-2xl font-bold text-slate-900">{formatCurrency(doctor.price)}</span>
+                      <span className="text-sm text-slate-400"> / visit</span>
                     </div>
-                    <button className="px-5 py-2.5 rounded-xl font-semibold text-white" style={{ background: 'linear-gradient(135deg, #0066CC 0%, #0052A3 100%)', boxShadow: '0 4px 14px rgba(0, 102, 204, 0.3)' }}>
-                      Book Now
-                    </button>
+                    <Button size="sm" className="text-sm">
+                      Book
+                      <ArrowRight className="w-4 h-4 ml-1" />
+                    </Button>
                   </div>
-                </div>
+                </Card>
               </Link>
             ))}
           </div>
@@ -314,10 +317,8 @@ function SearchContent() {
         {/* Bottom CTA */}
         {!isLoading && filteredDoctors.length > 0 && (
           <div className="mt-12 text-center">
-            <p className="mb-4" style={{ color: '#94A3B8' }}>Can&apos;t find what you&apos;re looking for?</p>
-            <button className="px-6 py-3 rounded-xl font-semibold" style={{ border: '2px solid #0066CC', color: '#0066CC' }}>
-              Contact our support team
-            </button>
+            <p className="text-slate-400 mb-4">Can&apos;t find what you&apos;re looking for?</p>
+            <Button variant="outline">Contact our support team</Button>
           </div>
         )}
       </div>

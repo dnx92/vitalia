@@ -9,9 +9,9 @@ import {
   MapPin,
   Clock,
   Shield,
-  Globe,
   CheckCircle,
   Calendar,
+  ArrowRight,
   MessageSquare
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -20,7 +20,6 @@ import { Avatar } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Modal } from "@/components/ui/modal";
-import { Select } from "@/components/ui/select";
 import { formatCurrency, formatDate, formatTime } from "@/lib/utils";
 import { useToast } from "@/components/ui/toast";
 
@@ -131,11 +130,11 @@ export default function ServiceDetailPage({ params }: { params: Promise<{ id: st
   };
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
+    <div className="min-h-screen bg-slate-50">
+      <div className="main-container py-8">
         <Link 
           href="/search" 
-          className="inline-flex items-center gap-2 text-gray-500 hover:text-[--primary] mb-6 transition-colors"
+          className="inline-flex items-center gap-2 text-slate-500 hover:text-blue-600 mb-6 transition-colors"
         >
           <ArrowLeft className="h-4 w-4" />
           Back to search
@@ -143,165 +142,154 @@ export default function ServiceDetailPage({ params }: { params: Promise<{ id: st
 
         <div className="grid gap-8 lg:grid-cols-3">
           <div className="lg:col-span-2 space-y-6">
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-start gap-6">
-                  <Avatar src={mockProfessional.avatar} name={mockProfessional.name} size="lg" />
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2">
-                      <h1 className="text-2xl font-bold text-gray-900">
-                        {mockProfessional.name}
-                      </h1>
-                      {mockProfessional.verified && (
-                        <Shield className="h-5 w-5 text-green-500" />
-                      )}
-                    </div>
-                    <p className="text-[--primary] font-medium">{mockProfessional.specialty}</p>
-                    <div className="flex items-center gap-4 mt-2 text-sm text-gray-500">
-                      <div className="flex items-center gap-1">
-                        <Star className="h-4 w-4 fill-orange-400 text-orange-400" />
-                        <span className="font-medium">{mockProfessional.rating}</span>
-                        <span>({mockProfessional.reviewCount} reviews)</span>
+            {/* Doctor Info Card */}
+            <Card className="p-6">
+              <div className="flex items-start gap-6">
+                <Avatar src={mockProfessional.avatar} name={mockProfessional.name} size="lg" />
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <h1 className="text-2xl font-bold text-slate-900 tracking-tight">
+                      {mockProfessional.name}
+                    </h1>
+                    {mockProfessional.verified && (
+                      <div className="w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center">
+                        <CheckCircle className="w-4 h-4 text-white" />
                       </div>
-                      <div className="flex items-center gap-1">
-                        <MapPin className="h-4 w-4" />
-                        {mockProfessional.location}
-                      </div>
+                    )}
+                  </div>
+                  <p className="font-semibold text-blue-600 mb-2">{mockProfessional.specialty}</p>
+                  <div className="flex items-center gap-4 text-sm text-slate-500">
+                    <div className="flex items-center gap-1">
+                      <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
+                      <span className="font-semibold text-slate-900">{mockProfessional.rating}</span>
+                      <span>({mockProfessional.reviewCount} reviews)</span>
                     </div>
-                    <div className="flex items-center gap-2 mt-3">
-                      {mockProfessional.languages.map((lang) => (
-                        <Badge key={lang} variant="outline">{lang}</Badge>
-                      ))}
+                    <div className="flex items-center gap-1">
+                      <MapPin className="w-4 h-4" />
+                      {mockProfessional.location}
                     </div>
                   </div>
+                  <div className="flex flex-wrap gap-2 mt-3">
+                    {mockProfessional.languages.map((lang) => (
+                      <Badge key={lang} variant="secondary">{lang}</Badge>
+                    ))}
+                  </div>
                 </div>
-              </CardContent>
+              </div>
             </Card>
 
-            <Card>
-              <CardContent className="p-6">
-                <h2 className="text-lg font-semibold mb-4 text-gray-900">About</h2>
-                <p className="text-gray-600">{mockProfessional.bio}</p>
-              </CardContent>
+            {/* About Card */}
+            <Card className="p-6">
+              <h2 className="text-lg font-bold text-slate-900 mb-3 tracking-tight">About</h2>
+              <p className="text-slate-500 font-medium leading-relaxed">{mockProfessional.bio}</p>
             </Card>
 
+            {/* Services & Reviews Tabs */}
             <Tabs defaultValue="services">
-              <TabsList>
-                <TabsTrigger value="services">Services</TabsTrigger>
+              <TabsList className="mb-4">
+                <TabsTrigger value="services">Services ({mockProfessional.services.length})</TabsTrigger>
                 <TabsTrigger value="reviews">Reviews ({mockProfessional.reviews.length})</TabsTrigger>
               </TabsList>
-              <TabsContent value="services" className="mt-4">
-                <div className="space-y-4">
-                  {mockProfessional.services.map((service) => (
-                    <Card 
-                      key={service.id} 
-                      hover={selectedService.id !== service.id}
-                      className={selectedService.id === service.id ? "border-[--primary] ring-2 ring-[--primary]/20" : ""}
-                    >
-                      <CardContent className="p-6">
-                        <div className="flex justify-between items-start">
-                          <div className="flex-1">
-                            <h3 className="font-semibold text-gray-900">{service.title}</h3>
-                            <p className="text-sm text-gray-500 mt-1">{service.description}</p>
-                            <div className="flex items-center gap-4 mt-3 text-sm text-gray-400">
-                              <div className="flex items-center gap-1">
-                                <Clock className="h-4 w-4" />
-                                {service.duration} min
-                              </div>
-                              <div className="flex items-center gap-1">
-                                <MapPin className="h-4 w-4" />
-                                {service.location}
-                              </div>
-                            </div>
+              <TabsContent value="services" className="space-y-4">
+                {mockProfessional.services.map((service) => (
+                  <Card 
+                    key={service.id} 
+                    hover
+                    className={`p-6 transition-all ${selectedService.id === service.id ? "border-blue-500 ring-2 ring-blue-500/20" : ""}`}
+                  >
+                    <div className="flex justify-between items-start">
+                      <div className="flex-1">
+                        <h3 className="font-bold text-slate-900 text-lg mb-1">{service.title}</h3>
+                        <p className="text-sm text-slate-500 font-medium mb-3">{service.description}</p>
+                        <div className="flex items-center gap-4 text-sm text-slate-400">
+                          <div className="flex items-center gap-1">
+                            <Clock className="w-4 h-4" />
+                            {service.duration} min
                           </div>
-                          <div className="text-right">
-                            <p className="text-xl font-bold text-[--primary]">
-                              {formatCurrency(service.price)}
-                            </p>
-                            <Button 
-                              size="sm" 
-                              className="mt-2"
-                              onClick={() => {
-                                setSelectedService(service);
-                                setShowBookingModal(true);
-                              }}
-                            >
-                              Book
-                            </Button>
+                          <div className="flex items-center gap-1">
+                            <MapPin className="w-4 h-4" />
+                            {service.location}
                           </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              </TabsContent>
-              <TabsContent value="reviews" className="mt-4">
-                <div className="space-y-4">
-                  {mockProfessional.reviews.map((review) => (
-                    <div key={review.id} className="p-4 rounded-xl bg-gray-50">
-                      <div className="flex items-center gap-3 mb-2">
-                        <Avatar name={review.userName} size="sm" />
-                        <div>
-                          <p className="font-medium text-gray-900">{review.userName}</p>
-                          <p className="text-xs text-gray-400">{formatDate(review.date)}</p>
-                        </div>
-                        <div className="ml-auto flex items-center gap-1">
-                          {[...Array(5)].map((_, i) => (
-                            <Star 
-                              key={i} 
-                              className={`h-4 w-4 ${
-                                i < review.rating 
-                                  ? "fill-orange-400 text-orange-400" 
-                                  : "text-gray-200"
-                              }`} 
-                            />
-                          ))}
                         </div>
                       </div>
-                      <p className="text-sm text-gray-600">{review.comment}</p>
+                      <div className="text-right ml-4">
+                        <p className="text-2xl font-bold text-slate-900">{formatCurrency(service.price)}</p>
+                        <Button 
+                          size="sm" 
+                          className="mt-2"
+                          onClick={() => {
+                            setSelectedService(service);
+                            setShowBookingModal(true);
+                          }}
+                        >
+                          Book
+                        </Button>
+                      </div>
                     </div>
-                  ))}
-                </div>
+                  </Card>
+                ))}
+              </TabsContent>
+              <TabsContent value="reviews" className="space-y-4">
+                {mockProfessional.reviews.map((review) => (
+                  <Card key={review.id} className="p-4 bg-slate-50/50">
+                    <div className="flex items-start gap-3">
+                      <Avatar name={review.userName} size="sm" />
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between mb-1">
+                          <div>
+                            <p className="font-semibold text-slate-900">{review.userName}</p>
+                            <p className="text-xs text-slate-400">{formatDate(review.date)}</p>
+                          </div>
+                          <div className="flex items-center gap-0.5">
+                            {[...Array(5)].map((_, i) => (
+                              <Star 
+                                key={i} 
+                                className={`w-4 h-4 ${i < review.rating ? "fill-amber-400 text-amber-400" : "text-slate-200"}`} 
+                              />
+                            ))}
+                          </div>
+                        </div>
+                        <p className="text-sm text-slate-600 font-medium">{review.comment}</p>
+                      </div>
+                    </div>
+                  </Card>
+                ))}
               </TabsContent>
             </Tabs>
           </div>
 
+          {/* Sidebar - Quick Book */}
           <div className="space-y-6">
-            <Card className="sticky top-24 shadow-lg border-gray-200">
-              <CardHeader>
-                <CardTitle className="text-gray-900">Quick Book</CardTitle>
+            <Card className="p-6 sticky top-24 shadow-xl shadow-slate-200/50">
+              <CardHeader className="p-0 mb-4">
+                <CardTitle className="text-slate-900 tracking-tight">Quick Book</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="p-0 space-y-4">
                 <div>
-                  <p className="text-sm font-medium text-gray-900 mb-2">
-                    Select Service
-                  </p>
-                  <Select
-                    options={mockProfessional.services.map(s => ({
-                      value: s.id,
-                      label: `${s.title} - ${formatCurrency(s.price)}`,
-                    }))}
+                  <p className="text-sm font-semibold text-slate-700 mb-2">Select Service</p>
+                  <select
+                    className="w-full h-12 px-4 text-sm font-medium bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 cursor-pointer"
                     value={selectedService.id}
                     onChange={(e) => {
                       const service = mockProfessional.services.find(s => s.id === e.target.value);
                       if (service) setSelectedService(service);
                     }}
-                  />
+                  >
+                    {mockProfessional.services.map(s => (
+                      <option key={s.id} value={s.id}>{s.title}</option>
+                    ))}
+                  </select>
                 </div>
 
-                <div className="p-4 rounded-xl bg-gray-50">
-                  <p className="text-sm font-medium text-gray-900 mb-2">
-                    {selectedService.title}
-                  </p>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-500">Duration</span>
-                    <span>{selectedService.duration} min</span>
+                <div className="p-4 rounded-xl bg-slate-50">
+                  <p className="text-sm font-semibold text-slate-700 mb-2">{selectedService.title}</p>
+                  <div className="flex justify-between text-sm mb-1">
+                    <span className="text-slate-500">Duration</span>
+                    <span className="text-slate-700">{selectedService.duration} min</span>
                   </div>
-                  <div className="flex justify-between text-sm mt-1">
-                    <span className="text-gray-500">Price</span>
-                    <span className="font-semibold text-[--primary]">
-                      {formatCurrency(selectedService.price)}
-                    </span>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-slate-500">Price</span>
+                    <span className="font-bold text-blue-600">{formatCurrency(selectedService.price)}</span>
                   </div>
                 </div>
 
@@ -310,12 +298,12 @@ export default function ServiceDetailPage({ params }: { params: Promise<{ id: st
                   size="lg"
                   onClick={() => setShowBookingModal(true)}
                 >
-                  <Calendar className="h-4 w-4 mr-2" />
+                  <Calendar className="w-4 h-4 mr-2" />
                   Book Appointment
                 </Button>
 
-                <div className="flex items-center gap-2 text-sm text-gray-400">
-                  <Shield className="h-4 w-4 text-green-500" />
+                <div className="flex items-center gap-2 text-sm text-slate-400">
+                  <Shield className="w-4 h-4 text-emerald-500" />
                   Secure payment with escrow protection
                 </div>
               </CardContent>
@@ -324,6 +312,7 @@ export default function ServiceDetailPage({ params }: { params: Promise<{ id: st
         </div>
       </div>
 
+      {/* Booking Modal */}
       <Modal
         isOpen={showBookingModal}
         onClose={() => setShowBookingModal(false)}
@@ -331,15 +320,13 @@ export default function ServiceDetailPage({ params }: { params: Promise<{ id: st
         size="md"
       >
         <div className="space-y-4">
-          <div className="p-4 rounded-xl bg-gray-50">
-            <p className="font-medium text-gray-900">{selectedService.title}</p>
-            <p className="text-sm text-gray-500">{selectedService.duration} min • {formatCurrency(selectedService.price)}</p>
+          <div className="p-4 rounded-xl bg-slate-50">
+            <p className="font-semibold text-slate-900">{selectedService.title}</p>
+            <p className="text-sm text-slate-500">{selectedService.duration} min • {formatCurrency(selectedService.price)}</p>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-900 mb-2">
-              Select Day
-            </label>
+            <label className="block text-sm font-semibold text-slate-700 mb-2">Select Day</label>
             <div className="flex flex-wrap gap-2">
               {availableDates.map((day) => (
                 <button
@@ -348,10 +335,10 @@ export default function ServiceDetailPage({ params }: { params: Promise<{ id: st
                     setSelectedDate(day);
                     setSelectedTime("");
                   }}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium capitalize transition-colors ${
+                  className={`px-4 py-2 rounded-lg text-sm font-semibold capitalize transition-all ${
                     selectedDate === day
-                      ? "bg-[--primary] text-white shadow-md"
-                      : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                      ? "bg-blue-600 text-white shadow-lg shadow-blue-600/30"
+                      : "bg-slate-100 text-slate-600 hover:bg-slate-200"
                   }`}
                 >
                   {day}
@@ -362,18 +349,16 @@ export default function ServiceDetailPage({ params }: { params: Promise<{ id: st
 
           {selectedDate && (
             <div>
-              <label className="block text-sm font-medium text-gray-900 mb-2">
-                Select Time
-              </label>
+              <label className="block text-sm font-semibold text-slate-700 mb-2">Select Time</label>
               <div className="flex flex-wrap gap-2">
                 {selectedDayAvailability.map((time) => (
                   <button
                     key={time}
                     onClick={() => setSelectedTime(time)}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
                       selectedTime === time
-                        ? "bg-[--primary] text-white shadow-md"
-                        : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                        ? "bg-blue-600 text-white shadow-lg shadow-blue-600/30"
+                        : "bg-slate-100 text-slate-600 hover:bg-slate-200"
                     }`}
                   >
                     {formatTime(time)}
@@ -384,9 +369,9 @@ export default function ServiceDetailPage({ params }: { params: Promise<{ id: st
           )}
 
           {selectedDate && selectedTime && (
-            <div className="p-4 rounded-xl border-2 border-[--primary] bg-blue-50">
-              <p className="text-sm text-gray-500">Appointment Summary</p>
-              <p className="font-medium text-gray-900 capitalize">
+            <div className="p-4 rounded-xl border-2 border-blue-500 bg-blue-50">
+              <p className="text-sm text-slate-500">Appointment Summary</p>
+              <p className="font-semibold text-slate-900 capitalize">
                 {selectedDate} at {formatTime(selectedTime)}
               </p>
             </div>
