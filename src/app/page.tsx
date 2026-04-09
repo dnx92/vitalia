@@ -11,12 +11,9 @@ import {
   CheckCircle,
   ArrowRight,
   MapPin,
-  Users,
   Award,
   Phone,
   ChevronRight,
-  Play,
-  Plus,
   Activity,
   Stethoscope
 } from "lucide-react";
@@ -132,10 +129,9 @@ export default function HomePage() {
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute -top-40 -right-40 w-80 h-80 bg-cyan-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-float" />
           <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-float" style={{ animationDelay: '1s' }} />
-          <div className="absolute top-1/2 left-1/2 w-60 h-60 bg-violet-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-float" style={{ animationDelay: '2s' }} />
         </div>
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="relative container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-4xl mx-auto">
             <Badge variant="default" className="mb-6 px-4 py-1.5 text-sm bg-cyan-100 text-cyan-700 hover:bg-cyan-100">
               <span className="flex items-center gap-2">
@@ -205,7 +201,7 @@ export default function HomePage() {
 
       {/* Specialties Section */}
       <section className="py-16 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-4">
               Find Care by Specialty
@@ -215,7 +211,7 @@ export default function HomePage() {
             </p>
           </div>
           <div className="flex flex-wrap justify-center gap-3">
-            {specialties.map((specialty, i) => (
+            {specialties.map((specialty) => (
               <Link
                 key={specialty}
                 href={`/search?specialty=${encodeURIComponent(specialty)}`}
@@ -232,7 +228,7 @@ export default function HomePage() {
 
       {/* How It Works */}
       <section className="py-20 bg-gradient-to-b from-slate-50 to-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <Badge variant="default" className="mb-4 bg-cyan-100 text-cyan-700">
               Simple Process
@@ -245,7 +241,7 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
             {steps.map((step, i) => (
               <div key={step.number} className="relative">
                 <div className="p-8 rounded-2xl bg-white shadow-lg shadow-slate-100 hover:shadow-xl transition-shadow">
@@ -266,7 +262,7 @@ export default function HomePage() {
 
       {/* Features Section */}
       <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <Badge variant="default" className="mb-4 bg-violet-100 text-violet-700">
               Why Choose Us
@@ -279,7 +275,7 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
             {features.map((feature) => (
               <Card key={feature.title} className="group hover:shadow-lg transition-all duration-300 border-0 shadow-md">
                 <CardContent className="p-6">
@@ -297,7 +293,7 @@ export default function HomePage() {
 
       {/* Testimonials */}
       <section className="py-20 bg-gradient-to-b from-cyan-50 to-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <Badge variant="default" className="mb-4 bg-emerald-100 text-emerald-700">
               Patient Stories
@@ -307,7 +303,7 @@ export default function HomePage() {
             </h2>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
             {testimonials.map((testimonial, i) => (
               <Card key={i} className="bg-white border-0 shadow-lg">
                 <CardContent className="p-6">
@@ -345,7 +341,7 @@ export default function HomePage() {
           <div className="absolute bottom-0 right-1/4 w-64 h-64 bg-blue-400/20 rounded-full blur-3xl" />
         </div>
         
-        <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div className="relative container mx-auto px-4 sm:px-6 lg:px-8 text-center max-w-4xl">
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6">
             Ready to Get Started?
           </h2>
@@ -371,8 +367,8 @@ export default function HomePage() {
 
       {/* Trust Footer */}
       <section className="py-12 bg-slate-50 border-t border-slate-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center max-w-4xl mx-auto">
             <div className="flex flex-col items-center">
               <Shield className="h-8 w-8 text-emerald-500 mb-2" />
               <p className="font-semibold text-slate-900">HIPAA Compliant</p>

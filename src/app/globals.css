@@ -54,6 +54,8 @@
   --font-sans: 'Inter', sans-serif;
   --font-heading: 'Plus Jakarta Sans', sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
+  --spacing-max-width: 80rem;
+  --container-2xl: 1400px;
 }
 
 * {
