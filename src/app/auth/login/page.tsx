@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { Heart, Mail, Lock, AlertCircle, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { useAuthStore } from "@/store";
 
 export default function LoginPage() {
@@ -52,23 +52,23 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center py-12 px-4 sm:px-6 bg-gradient-to-br from-cyan-50 via-white to-blue-50">
+    <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center py-12 px-4 bg-gradient-to-br from-blue-50 via-white to-slate-50">
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-3">
-            <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-200">
+            <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg shadow-blue-200">
               <Heart className="h-7 w-7 text-white" />
             </div>
           </Link>
-          <h1 className="mt-6 text-3xl font-bold text-slate-900">Welcome Back</h1>
-          <p className="mt-2 text-slate-600">Sign in to access your health dashboard</p>
+          <h1 className="mt-6 text-3xl font-bold text-slate-900 tracking-tight">Welcome Back</h1>
+          <p className="mt-2 text-slate-500 font-medium">Sign in to access your health dashboard</p>
         </div>
 
-        <Card className="border-0 shadow-xl shadow-slate-200/50">
-          <CardContent className="pt-6">
+        <Card className="border-0 shadow-xl shadow-slate-200/50 bg-white/80 backdrop-blur-md rounded-2xl">
+          <CardContent className="pt-8 px-8 pb-6">
             {error && (
-              <div className="flex items-center gap-2 p-4 mb-6 rounded-xl bg-rose-50 text-rose-700 text-sm">
+              <div className="flex items-center gap-2 p-4 mb-6 rounded-xl bg-red-50 text-red-700 text-sm font-medium">
                 <AlertCircle className="h-5 w-5 shrink-0" />
                 {error}
               </div>
@@ -76,15 +76,15 @@ export default function LoginPage() {
 
             <form onSubmit={handleSubmit} className="space-y-5">
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">
+                <label className="block text-sm font-semibold text-slate-700 mb-2">
                   Email Address
                 </label>
                 <div className="relative">
-                  <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
+                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
                   <Input
                     type="email"
                     placeholder="you@example.com"
-                    className="pl-11 h-12"
+                    className="pl-12 h-12"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     required
@@ -93,20 +93,20 @@ export default function LoginPage() {
               </div>
 
               <div>
-                <div className="flex items-center justify-between mb-1.5">
-                  <label className="block text-sm font-medium text-slate-700">
+                <div className="flex items-center justify-between mb-2">
+                  <label className="block text-sm font-semibold text-slate-700">
                     Password
                   </label>
-                  <Link href="/auth/forgot-password" className="text-sm text-cyan-600 hover:text-cyan-700">
+                  <Link href="/auth/forgot-password" className="text-sm text-blue-600 hover:text-blue-700 font-medium">
                     Forgot password?
                   </Link>
                 </div>
                 <div className="relative">
-                  <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
+                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
                   <Input
                     type={showPassword ? "text" : "password"}
                     placeholder="••••••••"
-                    className="pl-11 pr-11 h-12"
+                    className="pl-12 pr-12 h-12"
                     value={formData.password}
                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                     required
@@ -114,7 +114,7 @@ export default function LoginPage() {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
                   >
                     {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                   </button>
@@ -125,14 +125,14 @@ export default function LoginPage() {
                 <input
                   id="remember"
                   type="checkbox"
-                  className="h-4 w-4 rounded border-slate-300 text-cyan-600 focus:ring-cyan-500"
+                  className="h-5 w-5 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
                 />
-                <label htmlFor="remember" className="ml-2 text-sm text-slate-600">
+                <label htmlFor="remember" className="ml-2.5 text-sm text-slate-600 font-medium cursor-pointer">
                   Remember me for 30 days
                 </label>
               </div>
 
-              <Button type="submit" className="w-full h-12 text-base bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 shadow-lg shadow-cyan-200" isLoading={isLoading}>
+              <Button type="submit" className="w-full h-12 text-base" isLoading={isLoading}>
                 Sign In
               </Button>
             </form>
@@ -142,7 +142,7 @@ export default function LoginPage() {
                 <div className="w-full border-t border-slate-200" />
               </div>
               <div className="relative flex justify-center text-xs">
-                <span className="px-4 bg-white text-slate-500">Or continue with</span>
+                <span className="px-4 bg-white text-slate-500 font-medium">Or continue with</span>
               </div>
             </div>
 
@@ -161,21 +161,21 @@ export default function LoginPage() {
               Continue with Google
             </Button>
           </CardContent>
-          <CardFooter className="justify-center pb-6">
-            <p className="text-slate-600">
+          <CardFooter className="justify-center pb-8">
+            <p className="text-slate-600 font-medium">
               Don&apos;t have an account?{" "}
-              <Link href="/auth/register" className="font-semibold text-cyan-600 hover:text-cyan-700">
+              <Link href="/auth/register" className="font-semibold text-blue-600 hover:text-blue-700">
                 Create one free
               </Link>
             </p>
           </CardFooter>
         </Card>
 
-        <p className="mt-6 text-center text-xs text-slate-500">
+        <p className="mt-6 text-center text-sm text-slate-400 font-medium">
           By signing in, you agree to our{" "}
-          <Link href="/terms" className="text-cyan-600 hover:underline">Terms of Service</Link>
+          <Link href="/terms" className="text-blue-600 hover:underline">Terms of Service</Link>
           {" "}and{" "}
-          <Link href="/privacy" className="text-cyan-600 hover:underline">Privacy Policy</Link>
+          <Link href="/privacy" className="text-blue-600 hover:underline">Privacy Policy</Link>
         </p>
       </div>
     </div>

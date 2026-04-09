@@ -3,7 +3,8 @@
 import React, { useState, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Heart, Mail, Lock, User, AlertCircle, UserCircle, Eye, EyeOff, CheckCircle, Phone, MapPin, Stethoscope, Shield } from "lucide-react";
+import { Heart, Mail, Lock, AlertCircle, User, Eye, EyeOff, CheckCircle, Phone, MapPin, Stethoscope, Shield } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const US_STATES = [
   { value: "", label: "Select your state" },
@@ -121,29 +122,28 @@ function RegisterForm() {
   };
 
   return (
-    <div className="min-h-screen flex" style={{ background: 'linear-gradient(135deg, #F8FAFC 0%, #EBF5FF 100%)' }}>
+    <div className="min-h-screen flex bg-gradient-to-br from-blue-50 via-white to-slate-50">
       {/* Left Side - Branding */}
       <div className="hidden lg:flex lg:w-1/2 xl:w-5/12 relative overflow-hidden">
-        <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg, #0066CC 0%, #0052A3 100%)' }}>
-          {/* Decorative circles */}
-          <div className="absolute top-20 left-20 w-64 h-64 rounded-full" style={{ background: 'rgba(255,255,255,0.1)' }} />
-          <div className="absolute bottom-32 right-10 w-48 h-48 rounded-full" style={{ background: 'rgba(255,255,255,0.05)' }} />
-          <div className="absolute top-1/2 left-1/3 w-96 h-96 rounded-full" style={{ background: 'rgba(255,255,255,0.08)' }} />
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800">
+          <div className="absolute top-20 left-20 w-64 h-64 rounded-full bg-white/10" />
+          <div className="absolute bottom-32 right-10 w-48 h-48 rounded-full bg-white/5" />
+          <div className="absolute top-1/2 left-1/3 w-96 h-96 rounded-full bg-white/8" />
         </div>
         
         <div className="relative z-10 flex flex-col justify-center px-12 xl:px-16 text-white">
           <div className="flex items-center gap-3 mb-8">
-            <div className="w-14 h-14 rounded-2xl flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.2)' }}>
+            <div className="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur flex items-center justify-center">
               <Heart className="w-7 h-7" />
             </div>
-            <span className="text-3xl font-bold">Vitalia</span>
+            <span className="text-3xl font-bold tracking-tight">Vitalia</span>
           </div>
           
-          <h1 className="text-4xl xl:text-5xl font-bold mb-6 leading-tight">
+          <h1 className="text-4xl xl:text-5xl font-bold mb-6 leading-tight tracking-tight">
             Your Health,<br />Our Priority
           </h1>
           
-          <p className="text-xl mb-10 opacity-90">
+          <p className="text-xl mb-10 opacity-90 leading-relaxed">
             Join thousands of Americans accessing quality healthcare through our verified network of medical professionals.
           </p>
           
@@ -155,10 +155,10 @@ function RegisterForm() {
               "HIPAA compliant platform"
             ].map((item, i) => (
               <div key={i} className="flex items-center gap-3">
-                <div className="w-6 h-6 rounded-full flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.2)' }}>
-                  <CheckCircle className="w-4 h-4" />
+                <div className="w-6 h-6 rounded-full bg-emerald-500/30 flex items-center justify-center">
+                  <CheckCircle className="w-4 h-4 text-emerald-300" />
                 </div>
-                <span className="text-lg">{item}</span>
+                <span className="text-lg font-medium">{item}</span>
               </div>
             ))}
           </div>
@@ -170,75 +170,98 @@ function RegisterForm() {
         <div className="w-full max-w-lg">
           {/* Mobile Logo */}
           <div className="lg:hidden flex items-center justify-center gap-3 mb-8">
-            <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #0066CC 0%, #0052A3 100%)' }}>
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg">
               <Heart className="w-6 h-6 text-white" />
             </div>
-            <span className="text-2xl font-bold" style={{ color: '#0066CC' }}>Vitalia</span>
+            <span className="text-2xl font-bold text-blue-600 tracking-tight">Vitalia</span>
           </div>
 
           {/* Form Card */}
-          <div className="bg-white rounded-3xl p-8 sm:p-10 shadow-xl" style={{ boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.15)' }}>
+          <div className="bg-white/80 backdrop-blur-md rounded-2xl p-8 sm:p-10 shadow-xl shadow-slate-200/50 border border-white/50">
             <div className="text-center mb-8">
-              <h2 className="text-2xl font-bold mb-2" style={{ color: '#0F172A' }}>Create Your Account</h2>
-              <p style={{ color: '#64748B' }}>Join Vitalia for better healthcare access</p>
+              <h2 className="text-2xl font-bold text-slate-900 tracking-tight mb-2">Create Your Account</h2>
+              <p className="text-slate-500 font-medium">Join Vitalia for better healthcare access</p>
             </div>
 
             {error && (
-              <div className="flex items-center gap-2 p-4 mb-6 rounded-xl" style={{ background: '#FEF2F2', color: '#DC2626' }}>
+              <div className="flex items-center gap-2 p-4 mb-6 rounded-xl bg-red-50 text-red-700 text-sm font-medium">
                 <AlertCircle className="w-5 h-5 shrink-0" />
-                <span className="text-sm font-medium">{error}</span>
+                <span>{error}</span>
               </div>
             )}
 
             {step === 1 && (
               <div className="space-y-6">
                 <div className="text-center mb-6">
-                  <p className="font-medium mb-4" style={{ color: '#374151' }}>I want to:</p>
+                  <p className="font-semibold mb-4 text-slate-700">I want to:</p>
                   <div className="grid grid-cols-2 gap-4">
                     <button
                       type="button"
                       onClick={() => setRole("patient")}
-                      className={`p-6 rounded-2xl border-2 transition-all text-left ${role === "patient" ? "border-[#0066CC] bg-blue-50" : "border-gray-200 hover:border-gray-300"}`}
+                      className={`p-5 rounded-xl border-2 transition-all text-left ${
+                        role === "patient" 
+                          ? "border-blue-500 bg-blue-50 ring-2 ring-blue-500/20" 
+                          : "border-slate-200 hover:border-slate-300 bg-slate-50"
+                      }`}
                     >
-                      <UserCircle className={`w-10 h-10 mb-3 ${role === "patient" ? "text-[#0066CC]" : "text-gray-400"}`} />
-                      <p className="font-semibold" style={{ color: role === "patient" ? '#0066CC' : '#374151' }}>Find Care</p>
-                      <p className="text-sm mt-1" style={{ color: '#9CA3AF' }}>Book appointments</p>
-                      {role === "patient" && <CheckCircle className="w-5 h-5 text-[#0066CC] mt-2" />}
+                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center mb-3 ${
+                        role === "patient" ? "bg-blue-100" : "bg-slate-200"
+                      }`}>
+                        <User className={`w-5 h-5 ${role === "patient" ? "text-blue-600" : "text-slate-500"}`} />
+                      </div>
+                      <p className={`font-semibold ${role === "patient" ? "text-blue-600" : "text-slate-700"}`}>Find Care</p>
+                      <p className="text-sm text-slate-500 mt-1">Book appointments</p>
+                      {role === "patient" && (
+                        <div className="mt-2 flex justify-center">
+                          <CheckCircle className="w-5 h-5 text-blue-600" />
+                        </div>
+                      )}
                     </button>
                     <button
                       type="button"
                       onClick={() => setRole("professional")}
-                      className={`p-6 rounded-2xl border-2 transition-all text-left ${role === "professional" ? "border-[#0066CC] bg-blue-50" : "border-gray-200 hover:border-gray-300"}`}
+                      className={`p-5 rounded-xl border-2 transition-all text-left ${
+                        role === "professional" 
+                          ? "border-blue-500 bg-blue-50 ring-2 ring-blue-500/20" 
+                          : "border-slate-200 hover:border-slate-300 bg-slate-50"
+                      }`}
                     >
-                      <Stethoscope className={`w-10 h-10 mb-3 ${role === "professional" ? "text-[#0066CC]" : "text-gray-400"}`} />
-                      <p className="font-semibold" style={{ color: role === "professional" ? '#0066CC' : '#374151' }}>Offer Services</p>
-                      <p className="text-sm mt-1" style={{ color: '#9CA3AF' }}>I'm a doctor</p>
-                      {role === "professional" && <CheckCircle className="w-5 h-5 text-[#0066CC] mt-2" />}
+                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center mb-3 ${
+                        role === "professional" ? "bg-blue-100" : "bg-slate-200"
+                      }`}>
+                        <Stethoscope className={`w-5 h-5 ${role === "professional" ? "text-blue-600" : "text-slate-500"}`} />
+                      </div>
+                      <p className={`font-semibold ${role === "professional" ? "text-blue-600" : "text-slate-700"}`}>Offer Services</p>
+                      <p className="text-sm text-slate-500 mt-1">I'm a doctor</p>
+                      {role === "professional" && (
+                        <div className="mt-2 flex justify-center">
+                          <CheckCircle className="w-5 h-5 text-blue-600" />
+                        </div>
+                      )}
                     </button>
                   </div>
                 </div>
 
-                <button
+                <Button
                   type="button"
                   onClick={() => setStep(2)}
-                  className="w-full py-4 rounded-xl font-semibold text-white transition-all"
-                  style={{ background: 'linear-gradient(135deg, #0066CC 0%, #0052A3 100%)', boxShadow: '0 4px 14px rgba(0, 102, 204, 0.4)' }}
+                  className="w-full h-12 text-base"
                 >
                   Continue as {role === "patient" ? "Patient" : "Healthcare Provider"}
-                </button>
+                </Button>
               </div>
             )}
 
             {step === 2 && (
               <form onSubmit={handleSubmit} className="space-y-5">
                 <div>
-                  <label className="block text-sm font-semibold mb-2" style={{ color: '#374151' }}>Full Name</label>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">Full Name</label>
                   <div className="relative">
-                    <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5" style={{ color: '#9CA3AF' }} />
+                    <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                     <input
                       type="text"
                       placeholder="John Smith"
-                      className="form-input pl-12"
+                      className="w-full h-12 pl-12 pr-4 rounded-xl border border-slate-200 bg-slate-50 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                       required
@@ -247,13 +270,13 @@ function RegisterForm() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold mb-2" style={{ color: '#374151' }}>Email Address</label>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">Email Address</label>
                   <div className="relative">
-                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5" style={{ color: '#9CA3AF' }} />
+                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                     <input
                       type="email"
                       placeholder="john@example.com"
-                      className="form-input pl-12"
+                      className="w-full h-12 pl-12 pr-4 rounded-xl border border-slate-200 bg-slate-50 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                       required
@@ -263,13 +286,13 @@ function RegisterForm() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-semibold mb-2" style={{ color: '#374151' }}>Password</label>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">Password</label>
                     <div className="relative">
-                      <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5" style={{ color: '#9CA3AF' }} />
+                      <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                       <input
                         type={showPassword ? "text" : "password"}
                         placeholder="••••••••"
-                        className="form-input pl-12 pr-12"
+                        className="w-full h-12 pl-12 pr-12 rounded-xl border border-slate-200 bg-slate-50 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                         value={formData.password}
                         onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                         required
@@ -278,21 +301,20 @@ function RegisterForm() {
                       <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-4 top-1/2 -translate-y-1/2"
-                        style={{ color: '#9CA3AF' }}
+                        className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
                       >
                         {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                       </button>
                     </div>
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold mb-2" style={{ color: '#374151' }}>Confirm</label>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">Confirm</label>
                     <div className="relative">
-                      <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5" style={{ color: '#9CA3AF' }} />
+                      <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                       <input
                         type={showPassword ? "text" : "password"}
                         placeholder="••••••••"
-                        className="form-input pl-12"
+                        className="w-full h-12 pl-12 rounded-xl border border-slate-200 bg-slate-50 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                         value={formData.confirmPassword}
                         onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
                         required
@@ -303,13 +325,13 @@ function RegisterForm() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold mb-2" style={{ color: '#374151' }}>Phone Number</label>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">Phone Number</label>
                   <div className="relative">
-                    <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5" style={{ color: '#9CA3AF' }} />
+                    <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                     <input
                       type="tel"
                       placeholder="(555) 123-4567"
-                      className="form-input pl-12"
+                      className="w-full h-12 pl-12 pr-4 rounded-xl border border-slate-200 bg-slate-50 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                       value={formData.phone}
                       onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                     />
@@ -317,12 +339,11 @@ function RegisterForm() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold mb-2" style={{ color: '#374151' }}>State</label>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">State</label>
                   <div className="relative">
-                    <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5" style={{ color: '#9CA3AF', pointerEvents: 'none' }} />
+                    <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 pointer-events-none" />
                     <select
-                      className="form-input pl-12 appearance-none"
-                      style={{ backgroundImage: 'none' }}
+                      className="w-full h-12 pl-12 pr-4 rounded-xl border border-slate-200 bg-slate-50 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 cursor-pointer"
                       value={formData.state}
                       onChange={(e) => setFormData({ ...formData, state: e.target.value })}
                     >
@@ -335,12 +356,11 @@ function RegisterForm() {
 
                 {role === "professional" && (
                   <div>
-                    <label className="block text-sm font-semibold mb-2" style={{ color: '#374151' }}>Medical Specialty</label>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">Medical Specialty</label>
                     <div className="relative">
-                      <Stethoscope className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5" style={{ color: '#9CA3AF', pointerEvents: 'none' }} />
+                      <Stethoscope className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 pointer-events-none" />
                       <select
-                        className="form-input pl-12 appearance-none"
-                        style={{ backgroundImage: 'none' }}
+                        className="w-full h-12 pl-12 pr-4 rounded-xl border border-slate-200 bg-slate-50 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 cursor-pointer"
                         value={formData.specialty}
                         onChange={(e) => setFormData({ ...formData, specialty: e.target.value })}
                       >
@@ -358,43 +378,41 @@ function RegisterForm() {
                     id="terms"
                     checked={formData.agreeTerms}
                     onChange={(e) => setFormData({ ...formData, agreeTerms: e.target.checked })}
-                    className="mt-1 w-5 h-5 rounded"
-                    style={{ accentColor: '#0066CC' }}
+                    className="mt-1 w-5 h-5 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
                     required
                   />
-                  <label htmlFor="terms" className="text-sm" style={{ color: '#64748B' }}>
+                  <label htmlFor="terms" className="text-sm text-slate-600 font-medium cursor-pointer">
                     I agree to the{" "}
-                    <Link href="/terms" className="font-medium" style={{ color: '#0066CC' }}>Terms of Service</Link>
+                    <Link href="/terms" className="font-semibold text-blue-600 hover:underline">Terms of Service</Link>
                     {" "}and{" "}
-                    <Link href="/privacy" className="font-medium" style={{ color: '#0066CC' }}>Privacy Policy</Link>
+                    <Link href="/privacy" className="font-semibold text-blue-600 hover:underline">Privacy Policy</Link>
                   </label>
                 </div>
 
                 <div className="flex gap-3 pt-2">
-                  <button
+                  <Button
                     type="button"
+                    variant="outline"
                     onClick={() => setStep(1)}
-                    className="px-6 py-4 rounded-xl font-medium border-2"
-                    style={{ borderColor: '#E5E7EB', color: '#4B5563' }}
+                    className="px-6"
                   >
                     Back
-                  </button>
-                  <button
+                  </Button>
+                  <Button
                     type="submit"
-                    disabled={isLoading}
-                    className="flex-1 py-4 rounded-xl font-semibold text-white transition-all disabled:opacity-50"
-                    style={{ background: 'linear-gradient(135deg, #0066CC 0%, #0052A3 100%)', boxShadow: '0 4px 14px rgba(0, 102, 204, 0.4)' }}
+                    isLoading={isLoading}
+                    className="flex-1"
                   >
                     {isLoading ? "Creating Account..." : "Create Account"}
-                  </button>
+                  </Button>
                 </div>
               </form>
             )}
 
-            <div className="mt-8 pt-6 text-center" style={{ borderTop: '1px solid #F1F5F9' }}>
-              <p style={{ color: '#64748B' }}>
+            <div className="mt-8 pt-6 text-center border-t border-slate-100">
+              <p className="text-slate-500 font-medium">
                 Already have an account?{" "}
-                <Link href="/auth/login" className="font-semibold" style={{ color: '#0066CC' }}>
+                <Link href="/auth/login" className="font-semibold text-blue-600 hover:text-blue-700">
                   Sign in
                 </Link>
               </p>
@@ -404,12 +422,12 @@ function RegisterForm() {
           {/* Trust Badges */}
           <div className="flex items-center justify-center gap-6 mt-8">
             <div className="flex items-center gap-2">
-              <Shield className="w-4 h-4" style={{ color: '#22C55E' }} />
-              <span className="text-sm" style={{ color: '#94A3B8' }}>HIPAA Secure</span>
+              <Shield className="w-4 h-4 text-emerald-500" />
+              <span className="text-sm text-slate-400 font-medium">HIPAA Secure</span>
             </div>
             <div className="flex items-center gap-2">
-              <Lock className="w-4 h-4" style={{ color: '#22C55E' }} />
-              <span className="text-sm" style={{ color: '#94A3B8' }}>256-bit SSL</span>
+              <Lock className="w-4 h-4 text-emerald-500" />
+              <span className="text-sm text-slate-400 font-medium">256-bit SSL</span>
             </div>
           </div>
         </div>
@@ -423,8 +441,8 @@ export default function RegisterPage() {
     <Suspense fallback={
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-pulse text-center">
-          <div className="w-16 h-16 rounded-2xl mx-auto mb-4" style={{ background: '#E2E8F0' }} />
-          <div className="h-6 w-32 rounded" style={{ background: '#E2E8F0' }} />
+          <div className="w-16 h-16 rounded-2xl mx-auto mb-4 bg-slate-200" />
+          <div className="h-6 w-32 rounded bg-slate-200" />
         </div>
       </div>
     }>

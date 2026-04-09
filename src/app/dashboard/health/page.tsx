@@ -10,7 +10,7 @@ import {
   AlertTriangle,
   Calendar,
   Bell,
-  Settings
+  Droplets
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -27,6 +27,7 @@ const mockMetrics = [
     unit: "mmHg",
     icon: Activity,
     color: "#EF4444",
+    bgColor: "bg-red-50",
     currentValue: "120/80",
     minValue: 90,
     maxValue: 140,
@@ -46,7 +47,8 @@ const mockMetrics = [
     name: "Heart Rate",
     unit: "bpm",
     icon: Heart,
-    color: "#EF4444",
+    color: "#EC4899",
+    bgColor: "bg-pink-50",
     currentValue: "72",
     minValue: 60,
     maxValue: 100,
@@ -67,6 +69,7 @@ const mockMetrics = [
     unit: "kg",
     icon: Activity,
     color: "#6366F1",
+    bgColor: "bg-indigo-50",
     currentValue: "70",
     minValue: 60,
     maxValue: 80,
@@ -85,8 +88,9 @@ const mockMetrics = [
     id: "4",
     name: "Blood Sugar",
     unit: "mg/dL",
-    icon: AlertTriangle,
+    icon: Droplets,
     color: "#F59E0B",
+    bgColor: "bg-amber-50",
     currentValue: "105",
     minValue: 70,
     maxValue: 140,
@@ -113,11 +117,19 @@ const mockAlerts = [
   },
 ];
 
+const metricOptions = [
+  { value: "blood_pressure", label: "Blood Pressure" },
+  { value: "heart_rate", label: "Heart Rate" },
+  { value: "weight", label: "Weight" },
+  { value: "blood_sugar", label: "Blood Sugar" },
+];
+
 export default function HealthPage() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showLogModal, setShowLogModal] = useState(false);
-  const [selectedMetric, setSelectedMetric] = useState<string>("");
+  const [selectedMetric, setSelectedMetric] = useState("");
   const [logValue, setLogValue] = useState("");
+  const [logNotes, setLogNotes] = useState("");
   const [newMetric, setNewMetric] = useState({
     name: "",
     unit: "",
@@ -126,9 +138,11 @@ export default function HealthPage() {
   });
 
   const handleLogValue = () => {
-    console.log("Logging:", { metric: selectedMetric, value: logValue });
+    console.log("Logging:", { metric: selectedMetric, value: logValue, notes: logNotes });
     setShowLogModal(false);
     setLogValue("");
+    setLogNotes("");
+    setSelectedMetric("");
   };
 
   const handleAddMetric = () => {
@@ -141,8 +155,8 @@ export default function HealthPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-[--text-primary]">Health Tracking</h1>
-          <p className="text-[--text-secondary]">Monitor your health metrics over time</p>
+          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Health Tracking</h1>
+          <p className="text-slate-500 font-medium mt-1">Monitor your health metrics over time</p>
         </div>
         <Button onClick={() => setShowAddModal(true)} className="gap-2">
           <Plus className="h-4 w-4" />
@@ -150,42 +164,45 @@ export default function HealthPage() {
         </Button>
       </div>
 
+      {/* Alerts */}
       {mockAlerts.length > 0 && (
-        <Card className="border-[--warning] bg-[--warning]/5">
+        <Card className="border-amber-200 bg-amber-50/50">
           <CardContent className="p-4">
             <div className="flex items-start gap-3">
-              <div className="h-8 w-8 rounded-full bg-[--warning]/20 flex items-center justify-center shrink-0">
-                <Bell className="h-4 w-4 text-[--warning]" />
+              <div className="h-10 w-10 rounded-xl bg-amber-100 flex items-center justify-center shrink-0">
+                <Bell className="h-5 w-5 text-amber-600" />
               </div>
               <div className="flex-1">
-                <p className="font-medium text-[--text-primary]">Health Alert</p>
-                <p className="text-sm text-[--text-secondary]">{mockAlerts[0].message}</p>
+                <p className="font-semibold text-slate-900">Health Alert</p>
+                <p className="text-sm text-slate-600 font-medium">{mockAlerts[0].message}</p>
               </div>
-              <Button variant="outline" size="sm">Dismiss</Button>
+              <Button variant="outline" size="sm" className="shrink-0">Dismiss</Button>
             </div>
           </CardContent>
         </Card>
       )}
 
+      {/* Metrics Grid */}
       <div className="grid gap-6 md:grid-cols-2">
         {mockMetrics.map((metric) => (
-          <Card key={metric.id}>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
+          <Card key={metric.id} className="overflow-hidden hover:-translate-y-1 transition-all duration-300">
+            <CardHeader className="flex flex-row items-center justify-between pb-2 bg-slate-50/50 border-b border-slate-100">
               <div className="flex items-center gap-3">
                 <div 
-                  className="h-10 w-10 rounded-[--radius-md] flex items-center justify-center"
-                  style={{ backgroundColor: `${metric.color}20` }}
+                  className="h-12 w-12 rounded-xl flex items-center justify-center"
+                  style={{ backgroundColor: `${metric.color}15` }}
                 >
-                  <metric.icon className="h-5 w-5" style={{ color: metric.color }} />
+                  <metric.icon className="h-6 w-6" style={{ color: metric.color }} />
                 </div>
                 <div>
-                  <CardTitle className="text-base">{metric.name}</CardTitle>
-                  <p className="text-sm text-[--text-muted]">Normal: {metric.minValue}-{metric.maxValue}</p>
+                  <CardTitle className="text-base text-slate-900">{metric.name}</CardTitle>
+                  <p className="text-sm text-slate-500 font-medium">Normal: {metric.minValue}-{metric.maxValue}</p>
                 </div>
               </div>
               <Button 
                 variant="ghost" 
                 size="sm" 
+                className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
                 onClick={() => {
                   setSelectedMetric(metric.id);
                   setShowLogModal(true);
@@ -194,39 +211,39 @@ export default function HealthPage() {
                 Log
               </Button>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-6">
               <div className="flex items-end justify-between mb-4">
                 <div>
-                  <p className="text-3xl font-bold text-[--text-primary]">
+                  <p className="text-3xl font-bold text-slate-900 tracking-tight">
                     {metric.currentValue}
                   </p>
-                  <p className="text-sm text-[--text-muted]">{metric.unit}</p>
+                  <p className="text-sm text-slate-500 font-medium">{metric.unit}</p>
                 </div>
-                <div className={`flex items-center gap-1 text-sm ${
+                <div className={`flex items-center gap-1 text-sm font-semibold ${
                   metric.trend === "up" 
-                    ? "text-[--success]" 
+                    ? "text-emerald-600" 
                     : metric.trend === "down" 
-                    ? "text-[--danger]" 
-                    : "text-[--text-muted]"
+                    ? "text-rose-600" 
+                    : "text-slate-500"
                 }`}>
                   {metric.trend === "up" && <TrendingUp className="h-4 w-4" />}
                   {metric.trend === "down" && <TrendingDown className="h-4 w-4" />}
                   {metric.trend === "stable" ? "Stable" : metric.trend === "up" ? "Up" : "Down"}
                 </div>
               </div>
-              <div className="h-32 min-h-[128px]">
+              <div className="h-36 min-h-[144px]">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={metric.readings}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
-                    <XAxis dataKey="date" tick={{ fontSize: 12 }} stroke="#9CA3AF" />
-                    <YAxis tick={{ fontSize: 12 }} stroke="#9CA3AF" />
+                    <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" />
+                    <XAxis dataKey="date" tick={{ fontSize: 11 }} stroke="#94A3B8" />
+                    <YAxis tick={{ fontSize: 11 }} stroke="#94A3B8" />
                     <Tooltip />
                     <Line 
                       type="monotone" 
                       dataKey="value" 
                       stroke={metric.color} 
-                      strokeWidth={2}
-                      dot={{ fill: metric.color, strokeWidth: 2 }}
+                      strokeWidth={2.5}
+                      dot={{ fill: metric.color, strokeWidth: 2, r: 4 }}
                     />
                   </LineChart>
                 </ResponsiveContainer>
@@ -236,50 +253,53 @@ export default function HealthPage() {
         ))}
       </div>
 
+      {/* Reminders */}
       <Card>
-        <CardHeader>
-          <CardTitle>Reminders & Schedules</CardTitle>
+        <CardHeader className="bg-slate-50/50 border-b border-slate-100">
+          <CardTitle className="text-slate-900 tracking-tight">Reminders & Schedules</CardTitle>
           <CardDescription>Set up alerts and medication reminders</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-6">
           <div className="grid gap-4 md:grid-cols-2">
-            <div className="p-4 rounded-[--radius-md] border border-[--border]">
-              <div className="flex items-center gap-3 mb-3">
-                <Calendar className="h-5 w-5 text-[--primary]" />
-                <p className="font-medium text-[--text-primary]">Weekly Check-in</p>
+            {[
+              { icon: Calendar, color: "text-blue-600", bg: "bg-blue-50", title: "Weekly Check-in", desc: "Get reminded to log your vitals every Monday morning", status: "Active" },
+              { icon: AlertTriangle, color: "text-amber-600", bg: "bg-amber-50", title: "Abnormal Value Alert", desc: "Get notified if any metric goes outside normal range", status: "Active" },
+            ].map((item, i) => (
+              <div key={i} className="p-5 rounded-xl border border-slate-200 bg-slate-50/50 hover:bg-slate-100/50 transition-colors">
+                <div className="flex items-start gap-3 mb-3">
+                  <div className={`h-10 w-10 rounded-lg ${item.bg} flex items-center justify-center`}>
+                    <item.icon className={`h-5 w-5 ${item.color}`} />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-slate-900">{item.title}</p>
+                    <p className="text-sm text-slate-500 font-medium leading-relaxed mt-1">{item.desc}</p>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between">
+                  <Badge variant="success">{item.status}</Badge>
+                  <Button variant="ghost" size="sm" className="text-slate-600">Configure</Button>
+                </div>
               </div>
-              <p className="text-sm text-[--text-secondary] mb-3">
-                Get reminded to log your vitals every Monday morning
-              </p>
-              <div className="flex items-center justify-between">
-                <Badge variant="success">Active</Badge>
-                <Button variant="ghost" size="sm">Configure</Button>
-              </div>
-            </div>
-            <div className="p-4 rounded-[--radius-md] border border-[--border]">
-              <div className="flex items-center gap-3 mb-3">
-                <Bell className="h-5 w-5 text-[--warning]" />
-                <p className="font-medium text-[--text-primary]">Abnormal Value Alert</p>
-              </div>
-              <p className="text-sm text-[--text-secondary] mb-3">
-                Get notified if any metric goes outside normal range
-              </p>
-              <div className="flex items-center justify-between">
-                <Badge variant="success">Active</Badge>
-                <Button variant="ghost" size="sm">Configure</Button>
-              </div>
-            </div>
+            ))}
           </div>
         </CardContent>
       </Card>
 
+      {/* Log Modal */}
       <Modal
         isOpen={showLogModal}
         onClose={() => setShowLogModal(false)}
         title="Log Reading"
         size="sm"
       >
-        <div className="space-y-4">
+        <div className="space-y-5">
+          <Select
+            label="Metric"
+            options={metricOptions}
+            placeholder="Select a metric"
+            value={selectedMetric}
+            onChange={(e) => setSelectedMetric(e.target.value)}
+          />
           <Input
             label="Value"
             type="number"
@@ -290,25 +310,28 @@ export default function HealthPage() {
           <Input
             label="Notes (optional)"
             placeholder="Any additional notes..."
+            value={logNotes}
+            onChange={(e) => setLogNotes(e.target.value)}
           />
-          <div className="flex gap-3">
+          <div className="flex gap-3 pt-2">
             <Button variant="outline" onClick={() => setShowLogModal(false)} className="flex-1">
               Cancel
             </Button>
-            <Button onClick={handleLogValue} className="flex-1">
+            <Button onClick={handleLogValue} className="flex-1" disabled={!selectedMetric || !logValue}>
               Save
             </Button>
           </div>
         </div>
       </Modal>
 
+      {/* Add Metric Modal */}
       <Modal
         isOpen={showAddModal}
         onClose={() => setShowAddModal(false)}
         title="Add Custom Metric"
         size="sm"
       >
-        <div className="space-y-4">
+        <div className="space-y-5">
           <Input
             label="Metric Name"
             placeholder="e.g., Cholesterol"
@@ -337,11 +360,11 @@ export default function HealthPage() {
               onChange={(e) => setNewMetric({ ...newMetric, maxValue: e.target.value })}
             />
           </div>
-          <div className="flex gap-3">
+          <div className="flex gap-3 pt-2">
             <Button variant="outline" onClick={() => setShowAddModal(false)} className="flex-1">
               Cancel
             </Button>
-            <Button onClick={handleAddMetric} className="flex-1">
+            <Button onClick={handleAddMetric} className="flex-1" disabled={!newMetric.name || !newMetric.unit}>
               Add Metric
             </Button>
           </div>
