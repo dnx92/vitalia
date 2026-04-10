@@ -1,6 +1,5 @@
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
@@ -47,6 +46,7 @@ model User {
   email         String    @unique
   name          String?
   image         String?
+  phone         String?
   role          UserRole  @default(PATIENT)
   isAdmin       Boolean   @default(false)
   emailVerified DateTime?

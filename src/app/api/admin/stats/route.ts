@@ -47,7 +47,7 @@ export async function GET() {
       },
       recentUsers,
       recentTransactions,
-      professionalsBySpecialty: professionalsBySpecialty.map((s) => ({
+      professionalsBySpecialty: professionalsBySpecialty.map((s: { specialty: string; _count: number }) => ({
         specialty: s.specialty,
         count: s._count,
       })),

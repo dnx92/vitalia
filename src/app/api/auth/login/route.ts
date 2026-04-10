@@ -1,16 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-
-const mockUsers = [
-  {
-    id: "1",
-    email: "demo@vitalia.com",
-    password: "demo123",
-    name: "Demo User",
-    role: "PATIENT" as const,
-    avatar: null,
-  },
-];
+import bcrypt from "bcryptjs";
+import { prisma } from "@/lib/prisma";
 
 export async function POST(request: NextRequest) {
   try {
@@ -24,7 +15,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const user = mockUsers.find((u) => u.email === email && u.password === password);
+    const user = await prisma.user.findUnique({
+      where: { email },
+      include: { professional: true },
+    });
 
     if (!user) {
       return NextResponse.json(
@@ -33,10 +27,26 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { password: _, ...userWithoutPassword } = user;
+    const isValidPassword = await bcrypt.compare(password, user.name || "");
+
+    if (!isValidPassword) {
+      return NextResponse.json(
+        { error: "Invalid email or password" },
+        { status: 401 }
+      );
+    }
+
+    const sessionUser = {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      image: user.image,
+      role: user.role,
+      isAdmin: user.isAdmin,
+    };
 
     return NextResponse.json({
-      user: userWithoutPassword,
+      user: sessionUser,
       message: "Login successful",
     });
   } catch (error) {
