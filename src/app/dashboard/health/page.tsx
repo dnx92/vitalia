@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, lazy, Suspense } from "react";
 import { 
   Heart,
   Plus,
@@ -18,7 +18,9 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { Modal } from "@/components/ui/modal";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { Skeleton } from "@/components/ui/skeleton";
+
+const ChartComponents = lazy(() => import("@/components/ui/chart"));
 
 const mockMetrics = [
   {
@@ -232,21 +234,9 @@ export default function HealthPage() {
                 </div>
               </div>
               <div className="h-36 min-h-[144px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={metric.readings}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" />
-                    <XAxis dataKey="date" tick={{ fontSize: 11 }} stroke="#94A3B8" />
-                    <YAxis tick={{ fontSize: 11 }} stroke="#94A3B8" />
-                    <Tooltip />
-                    <Line 
-                      type="monotone" 
-                      dataKey="value" 
-                      stroke={metric.color} 
-                      strokeWidth={2.5}
-                      dot={{ fill: metric.color, strokeWidth: 2, r: 4 }}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
+                <Suspense fallback={<Skeleton className="h-full w-full" />}>
+                  <ChartComponents data={metric.readings} color={metric.color} />
+                </Suspense>
               </div>
             </CardContent>
           </Card>
