@@ -1,35 +1,35 @@
-"use client";
+'use client';
 
-import React, { useState, useEffect, Suspense } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { 
-  Calendar, 
-  Wallet, 
+import React, { useState, useEffect, Suspense } from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import {
+  Calendar,
+  Wallet,
   Heart,
-  TrendingUp,
-  ArrowRight,
-  Clock,
-  Activity,
-  CreditCard,
   Search,
   Loader2,
   Video,
   MapPin,
-  Star,
-  CheckCircle,
   Plus,
-  ChevronRight,
+  ArrowRight,
+  Clock,
+  Activity,
+  CreditCard,
   User,
   Bell,
-  RefreshCw
-} from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Avatar } from "@/components/ui/avatar";
-import { formatCurrency, formatDate, formatTime } from "@/lib/utils";
-import { useAuthStore } from "@/store";
+  Stethoscope,
+  Shield,
+  ChevronRight,
+  CheckCircle,
+  AlertCircle,
+} from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Avatar } from '@/components/ui/avatar';
+import { formatCurrency, formatDate, formatTime } from '@/lib/utils';
+import { useAuthStore } from '@/store';
 
 interface DashboardData {
   upcomingAppointments: Appointment[];
@@ -39,8 +39,8 @@ interface DashboardData {
     upcomingCount: number;
     completedCount: number;
     walletBalance: number;
-    healthScore: number;
   };
+  nextAppointment?: Appointment;
 }
 
 interface Appointment {
@@ -52,7 +52,6 @@ interface Appointment {
   status: string;
   price: number;
   isVirtual: boolean;
-  rating?: number;
 }
 
 interface Transaction {
@@ -77,11 +76,10 @@ function DashboardContent() {
   const { user, isAuthenticated, isLoading: authLoading } = useAuthStore();
   const [data, setData] = useState<DashboardData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
-      router.push("/auth/login");
+      router.push('/auth/login');
       return;
     }
   }, [authLoading, isAuthenticated, router]);
@@ -91,14 +89,12 @@ function DashboardContent() {
     fetchDashboardData();
   }, [user?.id]);
 
-  const fetchDashboardData = async (showRefresh = false) => {
-    if (showRefresh) setRefreshing(true);
-    else setIsLoading(true);
-    
+  const fetchDashboardData = async () => {
+    setIsLoading(true);
     try {
       const [appointmentsRes, walletRes, healthRes] = await Promise.all([
-        fetch(`/api/appointments?userId=${user?.id}&status=PENDING,CONFIRMED&limit=5`),
-        fetch(`/api/wallet?userId=${user?.id}&limit=10`),
+        fetch(`/api/appointments?userId=${user?.id}&limit=20`),
+        fetch(`/api/wallet?userId=${user?.id}&limit=5`),
         fetch(`/api/health?userId=${user?.id}&limit=5`),
       ]);
 
@@ -106,38 +102,48 @@ function DashboardContent() {
       const walletData = await walletRes.json();
       const healthData = await healthRes.json();
 
-      const appointments = appointmentsData.data || appointmentsData.appointments || [];
-      const transactions = walletData.data?.transactions || walletData.transactions || [];
-      const metrics = healthData.data || healthData.metrics || [];
-
-      const completedCount = appointmentsData.meta?.total || 0;
+      const appointments = appointmentsData.data || [];
+      const upcomingAppointments = appointments.filter(
+        (a: Appointment) => a.status === 'PENDING' || a.status === 'CONFIRMED'
+      );
+      const completedCount = appointments.filter(
+        (a: Appointment) => a.status === 'COMPLETED'
+      ).length;
+      const nextAppointment = upcomingAppointments[0];
 
       setData({
-        upcomingAppointments: appointments.slice(0, 3),
-        recentTransactions: transactions.slice(0, 5),
-        healthMetrics: metrics.slice(0, 3),
+        upcomingAppointments: upcomingAppointments.slice(0, 3),
+        recentTransactions: (walletData.data?.transactions || walletData.transactions || []).slice(
+          0,
+          5
+        ),
+        healthMetrics: healthData.data || healthData.metrics || [],
         stats: {
-          upcomingCount: appointments.length,
+          upcomingCount: upcomingAppointments.length,
           completedCount,
           walletBalance: walletData.data?.wallet?.available || walletData.wallet?.available || 0,
-          healthScore: metrics.length > 0 ? 85 : 0,
         },
+        nextAppointment,
       });
     } catch (error) {
-      console.error("Error fetching dashboard data:", error);
+      console.error('Error fetching dashboard data:', error);
     } finally {
       setIsLoading(false);
-      setRefreshing(false);
     }
   };
 
-  const handleRefresh = () => fetchDashboardData(true);
-
   const getGreeting = () => {
     const hour = new Date().getHours();
-    if (hour < 12) return "Good morning";
-    if (hour < 18) return "Good afternoon";
-    return "Good evening";
+    if (hour < 12) return '¡Buenos días!';
+    if (hour < 18) return '¡Buenas tardes!';
+    return '¡Buenas noches!';
+  };
+
+  const getWelcomeMessage = () => {
+    if (!data?.nextAppointment) {
+      return '¿Listo para cuidar tu salud? Encuentra al mejor especialista.';
+    }
+    return 'Tienes una cita próximamente. ¡No olvides asistir!';
   };
 
   if (authLoading || isLoading) {
@@ -145,302 +151,331 @@ function DashboardContent() {
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
           <Loader2 className="w-10 h-10 animate-spin text-blue-600 mx-auto mb-4" />
-          <p className="text-slate-500 font-medium">Loading your dashboard...</p>
+          <p className="text-slate-500 font-medium">Cargando tu panel...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       {/* Welcome Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold text-slate-900 tracking-tight">
-            {getGreeting()}, {user?.name?.split(" ")[0] || "there"}
+            {getGreeting()}, {user?.name?.split(' ')[0] || 'Usuario'}
           </h1>
-          <p className="text-slate-500 font-medium mt-1">
-            Here&apos;s what&apos;s happening with your health today
-          </p>
+          <p className="text-slate-500 font-medium mt-1">{getWelcomeMessage()}</p>
         </div>
-        <div className="flex items-center gap-3">
-          <Button variant="outline" size="sm" onClick={handleRefresh} disabled={refreshing}>
-            <RefreshCw className={`w-4 h-4 mr-2 ${refreshing ? "animate-spin" : ""}`} />
-            Refresh
+        <Link href="/search">
+          <Button className="bg-gradient-to-r from-blue-600 to-teal-500 hover:from-blue-700 hover:to-teal-600 shadow-lg shadow-blue-600/25">
+            <Search className="w-4 h-4 mr-2" />
+            Buscar Especialista
           </Button>
-          <Link href="/search">
-            <Button className="bg-gradient-to-r from-blue-600 to-teal-500 hover:from-blue-700 hover:to-teal-600">
-              <Plus className="w-4 h-4 mr-2" />
-              Book Appointment
-            </Button>
-          </Link>
-        </div>
+        </Link>
       </div>
 
-      {/* Stats Grid */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+      {/* Next Appointment - Hero Card */}
+      {data?.nextAppointment && (
+        <Card className="bg-gradient-to-r from-blue-600 to-teal-500 text-white border-0 shadow-xl shadow-blue-600/25">
           <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-slate-500">Upcoming</p>
-                <p className="text-3xl font-bold text-slate-900 tracking-tight mt-1">{data?.stats.upcomingCount || 0}</p>
-                <p className="text-xs text-slate-400 mt-1">appointments</p>
-              </div>
-              <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-blue-100 to-blue-50 flex items-center justify-center group-hover:scale-110 transition-transform">
-                <Calendar className="h-7 w-7 text-blue-600" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-slate-500">Completed</p>
-                <p className="text-3xl font-bold text-slate-900 tracking-tight mt-1">{data?.stats.completedCount || 0}</p>
-                <p className="text-xs text-slate-400 mt-1">total visits</p>
-              </div>
-              <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-emerald-100 to-emerald-50 flex items-center justify-center group-hover:scale-110 transition-transform">
-                <TrendingUp className="h-7 w-7 text-emerald-600" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-slate-500">Wallet Balance</p>
-                <p className="text-3xl font-bold text-blue-600 tracking-tight mt-1">{formatCurrency(data?.stats.walletBalance || 0)}</p>
-                <p className="text-xs text-slate-400 mt-1">available funds</p>
-              </div>
-              <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-teal-100 to-teal-50 flex items-center justify-center group-hover:scale-110 transition-transform">
-                <Wallet className="h-7 w-7 text-teal-600" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-slate-500">Health Score</p>
-                <p className="text-3xl font-bold text-emerald-600 tracking-tight mt-1">{data?.stats.healthScore || 0}%</p>
-                <p className="text-xs text-slate-400 mt-1">based on metrics</p>
-              </div>
-              <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-rose-100 to-rose-50 flex items-center justify-center group-hover:scale-110 transition-transform">
-                <Heart className="h-7 w-7 text-rose-600" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Main Content Grid */}
-      <div className="grid gap-6 lg:grid-cols-3">
-        {/* Appointments Section - 2 columns */}
-        <div className="lg:col-span-2">
-          <Card className="h-full">
-            <CardHeader className="flex flex-row items-center justify-between bg-slate-50/50 border-b border-slate-100 pb-4">
-              <CardTitle className="text-lg text-slate-900 flex items-center gap-2">
-                <Calendar className="h-5 w-5 text-blue-600" />
-                Upcoming Appointments
-              </CardTitle>
-              <Link href="/dashboard/appointments">
-                <Button variant="ghost" size="sm" className="text-blue-600 hover:text-blue-700 hover:bg-blue-50">
-                  View all <ArrowRight className="h-4 w-4 ml-1" />
-                </Button>
-              </Link>
-            </CardHeader>
-            <CardContent className="p-6">
-              {!data?.upcomingAppointments || data.upcomingAppointments.length === 0 ? (
-                <div className="text-center py-12">
-                  <div className="w-20 h-20 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-4">
-                    <Calendar className="h-10 w-10 text-slate-400" />
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div className="flex items-center gap-4">
+                <div className="hidden md:block">
+                  <Avatar
+                    src={data.nextAppointment.professional.avatar}
+                    name={data.nextAppointment.professional.name}
+                    size="xl"
+                  />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <p className="text-blue-100 text-sm font-medium">Tu próxima cita</p>
+                    <Badge className="bg-white/20 text-white text-xs">Confirmada</Badge>
                   </div>
-                  <h3 className="text-lg font-bold text-slate-900 mb-2">No upcoming appointments</h3>
-                  <p className="text-slate-500 font-medium mb-6">Book your first appointment with a healthcare professional</p>
-                  <Link href="/search">
-                    <Button className="bg-gradient-to-r from-blue-600 to-teal-500 hover:from-blue-700 hover:to-teal-600">
-                      <Search className="w-4 h-4 mr-2" />
-                      Find a Doctor
-                    </Button>
-                  </Link>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {data.upcomingAppointments.map((appointment) => (
-                    <div
-                      key={appointment.id}
-                      className="flex flex-col sm:flex-row sm:items-center gap-4 p-4 rounded-xl bg-slate-50/80 hover:bg-slate-100 transition-colors border border-slate-100"
-                    >
-                      <Avatar 
-                        src={appointment.professional.avatar} 
-                        name={appointment.professional.name} 
-                        size="lg" 
-                      />
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
-                          <h4 className="font-semibold text-slate-900 truncate">{appointment.professional.name}</h4>
-                          <Badge 
-                            variant={appointment.status === "CONFIRMED" ? "success" : "warning"}
-                            className="text-xs"
-                          >
-                            {appointment.status === "CONFIRMED" ? "Confirmed" : "Pending"}
-                          </Badge>
-                        </div>
-                        <p className="text-blue-600 text-sm font-medium">{appointment.professional.specialty}</p>
-                        <p className="text-slate-500 text-sm mt-1">{appointment.service}</p>
-                      </div>
-                      <div className="flex items-center gap-6 text-sm">
-                        <div className="text-center">
-                          <div className="flex items-center gap-1 text-slate-500 mb-1">
-                            <Calendar className="h-4 w-4" />
-                          </div>
-                          <p className="font-semibold text-slate-900">{formatDate(new Date(appointment.date))}</p>
-                          <p className="text-slate-400 text-xs">{formatTime(appointment.startTime)}</p>
-                        </div>
-                        <div className="text-center">
-                          {appointment.isVirtual ? (
-                            <Video className="h-4 w-4 mx-auto mb-1 text-purple-500" />
-                          ) : (
-                            <MapPin className="h-4 w-4 mx-auto mb-1 text-emerald-500" />
-                          )}
-                          <p className={`text-xs font-medium ${appointment.isVirtual ? "text-purple-600" : "text-emerald-600"}`}>
-                            {appointment.isVirtual ? "Virtual" : "In-Person"}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        {appointment.status === "CONFIRMED" && appointment.isVirtual && (
-                          <Button size="sm" className="bg-purple-600 hover:bg-purple-700">
-                            <Video className="w-4 h-4 mr-1" />
-                            Join
-                          </Button>
-                        )}
-                        <Link href={`/service/${appointment.professional.id}`}>
-                          <Button variant="outline" size="sm">
-                            Details
-                          </Button>
-                        </Link>
-                      </div>
+                  <h3 className="text-xl font-bold mb-1">
+                    {data.nextAppointment.professional.name}
+                  </h3>
+                  <p className="text-blue-100 text-sm mb-2">
+                    {data.nextAppointment.professional.specialty} • {data.nextAppointment.service}
+                  </p>
+                  <div className="flex flex-wrap items-center gap-4 text-sm">
+                    <div className="flex items-center gap-1">
+                      <Calendar className="w-4 h-4" />
+                      {formatDate(new Date(data.nextAppointment.date))}
                     </div>
-                  ))}
+                    <div className="flex items-center gap-1">
+                      <Clock className="w-4 h-4" />
+                      {formatTime(data.nextAppointment.startTime)}
+                    </div>
+                    <div className="flex items-center gap-1">
+                      {data.nextAppointment.isVirtual ? (
+                        <>
+                          <Video className="w-4 h-4" />
+                          Virtual
+                        </>
+                      ) : (
+                        <>
+                          <MapPin className="w-4 h-4" />
+                          Presencial
+                        </>
+                      )}
+                    </div>
+                  </div>
                 </div>
-              )}
-            </CardContent>
-          </Card>
-        </div>
+              </div>
+              <div className="flex gap-3">
+                {data.nextAppointment.isVirtual && (
+                  <Button className="bg-white text-blue-600 hover:bg-blue-50 shadow-lg">
+                    <Video className="w-4 h-4 mr-2" />
+                    Unirse a Videollamada
+                  </Button>
+                )}
+                <Button variant="outline" className="border-white/30 text-white hover:bg-white/10">
+                  Ver Detalles
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
-        {/* Right Column */}
+      {/* Stats Cards */}
+      <div className="grid gap-4 md:grid-cols-3">
+        <Card className="hover:shadow-lg transition-all cursor-pointer">
+          <Link href="/dashboard/appointments">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-slate-500">Citas Pendientes</p>
+                  <p className="text-3xl font-bold text-slate-900 mt-1">
+                    {data?.stats.upcomingCount || 0}
+                  </p>
+                </div>
+                <div className="h-14 w-14 rounded-2xl bg-blue-100 flex items-center justify-center">
+                  <Calendar className="h-7 w-7 text-blue-600" />
+                </div>
+              </div>
+              <p className="text-xs text-slate-400 mt-3 flex items-center gap-1">
+                Ver todas las citas <ChevronRight className="w-3 h-3" />
+              </p>
+            </CardContent>
+          </Link>
+        </Card>
+
+        <Card className="hover:shadow-lg transition-all cursor-pointer">
+          <Link href="/dashboard/wallet">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-slate-500">Tu Billetera</p>
+                  <p className="text-3xl font-bold text-teal-600 mt-1">
+                    {formatCurrency(data?.stats.walletBalance || 0)}
+                  </p>
+                </div>
+                <div className="h-14 w-14 rounded-2xl bg-teal-100 flex items-center justify-center">
+                  <Wallet className="h-7 w-7 text-teal-600" />
+                </div>
+              </div>
+              <p className="text-xs text-slate-400 mt-3 flex items-center gap-1">
+                Gestionar fondos <ChevronRight className="w-3 h-3" />
+              </p>
+            </CardContent>
+          </Link>
+        </Card>
+
+        <Card className="hover:shadow-lg transition-all cursor-pointer">
+          <Link href="/dashboard/health">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-slate-500">Visitas Completadas</p>
+                  <p className="text-3xl font-bold text-slate-900 mt-1">
+                    {data?.stats.completedCount || 0}
+                  </p>
+                </div>
+                <div className="h-14 w-14 rounded-2xl bg-emerald-100 flex items-center justify-center">
+                  <CheckCircle className="h-7 w-7 text-emerald-600" />
+                </div>
+              </div>
+              <p className="text-xs text-slate-400 mt-3 flex items-center gap-1">
+                Ver historial <ChevronRight className="w-3 h-3" />
+              </p>
+            </CardContent>
+          </Link>
+        </Card>
+      </div>
+
+      {/* Main Content */}
+      <div className="grid gap-6 lg:grid-cols-2">
+        {/* Appointments List */}
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-lg flex items-center gap-2">
+              <Calendar className="h-5 w-5 text-blue-600" />
+              Próximas Citas
+            </CardTitle>
+            <Link href="/dashboard/appointments">
+              <Button variant="ghost" size="sm" className="text-blue-600">
+                Ver todas <ArrowRight className="w-4 h-4 ml-1" />
+              </Button>
+            </Link>
+          </CardHeader>
+          <CardContent>
+            {!data?.upcomingAppointments || data.upcomingAppointments.length === 0 ? (
+              <div className="text-center py-8">
+                <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-4">
+                  <Calendar className="h-8 w-8 text-slate-400" />
+                </div>
+                <p className="text-slate-500 font-medium mb-4">No tienes citas programadas</p>
+                <Link href="/search">
+                  <Button variant="outline" size="sm">
+                    <Search className="w-4 h-4 mr-2" />
+                    Buscar Especialista
+                  </Button>
+                </Link>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {data.upcomingAppointments.map((appointment) => (
+                  <div
+                    key={appointment.id}
+                    className="flex items-center gap-4 p-3 rounded-xl bg-slate-50 hover:bg-slate-100 transition-colors"
+                  >
+                    <Avatar
+                      src={appointment.professional.avatar}
+                      name={appointment.professional.name}
+                      size="md"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold text-slate-900 truncate">
+                        {appointment.professional.name}
+                      </p>
+                      <p className="text-sm text-slate-500 truncate">{appointment.service}</p>
+                    </div>
+                    <div className="text-right hidden sm:block">
+                      <p className="text-sm font-medium text-slate-900">
+                        {formatDate(new Date(appointment.date))}
+                      </p>
+                      <p className="text-xs text-slate-400">{formatTime(appointment.startTime)}</p>
+                    </div>
+                    <Badge
+                      variant={appointment.isVirtual ? 'default' : 'secondary'}
+                      className="gap-1"
+                    >
+                      {appointment.isVirtual ? (
+                        <Video className="w-3 h-3" />
+                      ) : (
+                        <MapPin className="w-3 h-3" />
+                      )}
+                    </Badge>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Health & Wallet */}
         <div className="space-y-6">
           {/* Health Metrics */}
           <Card>
-            <CardHeader className="bg-slate-50/50 border-b border-slate-100 pb-4">
-              <CardTitle className="text-lg text-slate-900 flex items-center gap-2">
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-lg flex items-center gap-2">
                 <Activity className="h-5 w-5 text-rose-600" />
-                Health Metrics
+                Tu Salud
               </CardTitle>
+              <Link href="/dashboard/health">
+                <Button variant="ghost" size="sm" className="text-blue-600">
+                  Ver más <ArrowRight className="w-4 h-4 ml-1" />
+                </Button>
+              </Link>
             </CardHeader>
-            <CardContent className="p-6">
+            <CardContent>
               {!data?.healthMetrics || data.healthMetrics.length === 0 ? (
-                <div className="text-center py-8">
-                  <Activity className="h-12 w-12 mx-auto text-slate-300 mb-3" />
-                  <p className="text-slate-500 font-medium">No metrics recorded</p>
+                <div className="text-center py-6">
+                  <Heart className="h-10 w-10 mx-auto text-slate-300 mb-3" />
+                  <p className="text-slate-500 font-medium mb-3">Sin registros de salud</p>
                   <Link href="/dashboard/health">
-                    <Button variant="outline" className="mt-3 w-full">
-                      Track Health
+                    <Button variant="outline" size="sm">
+                      <Plus className="w-4 h-4 mr-2" />
+                      Agregar Métrica
                     </Button>
                   </Link>
                 </div>
               ) : (
-                <div className="space-y-4">
-                  {data.healthMetrics.map((metric) => (
-                    <div
-                      key={metric.id}
-                      className="flex items-center justify-between p-3 rounded-lg bg-slate-50 hover:bg-slate-100 transition-colors"
-                    >
-                      <div>
-                        <p className="font-semibold text-slate-900 capitalize">
-                          {metric.type.replace('_', ' ')}
-                        </p>
-                        <p className="text-xs text-slate-400">
-                          {formatDate(new Date(metric.recordedAt))}
-                        </p>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-lg font-bold text-slate-900">{metric.value}</p>
-                        <p className="text-xs text-slate-400">{metric.unit}</p>
-                      </div>
+                <div className="grid grid-cols-2 gap-3">
+                  {data.healthMetrics.slice(0, 4).map((metric) => (
+                    <div key={metric.id} className="p-3 rounded-xl bg-slate-50 text-center">
+                      <p className="text-2xl font-bold text-slate-900">{metric.value}</p>
+                      <p className="text-xs text-slate-400">{metric.unit}</p>
+                      <p className="text-xs text-slate-500 mt-1 capitalize">
+                        {metric.type.replace('_', ' ')}
+                      </p>
                     </div>
                   ))}
-                  <Link href="/dashboard/health" className="block">
-                    <Button variant="ghost" className="w-full text-blue-600 hover:text-blue-700 hover:bg-blue-50">
-                      View all metrics <ArrowRight className="w-4 h-4 ml-2" />
-                    </Button>
-                  </Link>
                 </div>
               )}
             </CardContent>
           </Card>
 
-          {/* Recent Transactions */}
+          {/* Recent Activity */}
           <Card>
-            <CardHeader className="bg-slate-50/50 border-b border-slate-100 pb-4">
-              <CardTitle className="text-lg text-slate-900 flex items-center gap-2">
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-lg flex items-center gap-2">
                 <CreditCard className="h-5 w-5 text-teal-600" />
-                Recent Activity
+                Actividad Reciente
               </CardTitle>
+              <Link href="/dashboard/wallet">
+                <Button variant="ghost" size="sm" className="text-blue-600">
+                  Ver wallet <ArrowRight className="w-4 h-4 ml-1" />
+                </Button>
+              </Link>
             </CardHeader>
-            <CardContent className="p-6">
+            <CardContent>
               {!data?.recentTransactions || data.recentTransactions.length === 0 ? (
-                <div className="text-center py-8">
-                  <CreditCard className="h-12 w-12 mx-auto text-slate-300 mb-3" />
-                  <p className="text-slate-500 font-medium">No transactions yet</p>
+                <div className="text-center py-6">
+                  <CreditCard className="h-10 w-10 mx-auto text-slate-300 mb-3" />
+                  <p className="text-slate-500 font-medium mb-3">Sin actividad reciente</p>
                   <Link href="/dashboard/wallet">
-                    <Button variant="outline" className="mt-3 w-full">
-                      Add Funds
+                    <Button variant="outline" size="sm">
+                      Agregar Fondos
                     </Button>
                   </Link>
                 </div>
               ) : (
-                <div className="space-y-3">
+                <div className="space-y-2">
                   {data.recentTransactions.slice(0, 4).map((tx) => (
                     <div
                       key={tx.id}
-                      className="flex items-center justify-between p-3 rounded-lg bg-slate-50 hover:bg-slate-100 transition-colors"
+                      className="flex items-center justify-between py-2 border-b border-slate-100 last:border-0"
                     >
                       <div className="flex items-center gap-3">
-                        <div className={`h-8 w-8 rounded-lg flex items-center justify-center ${
-                          tx.amount > 0 ? "bg-emerald-100" : "bg-slate-200"
-                        }`}>
+                        <div
+                          className={`h-8 w-8 rounded-lg flex items-center justify-center ${
+                            tx.amount > 0 ? 'bg-emerald-100' : 'bg-slate-100'
+                          }`}
+                        >
                           {tx.amount > 0 ? (
                             <ArrowRight className="h-4 w-4 text-emerald-600 rotate-180" />
                           ) : (
-                            <ArrowRight className="h-4 w-4 text-slate-500" />
+                            <CreditCard className="h-4 w-4 text-slate-500" />
                           )}
                         </div>
-                        <div>
-                          <p className="text-sm font-medium text-slate-900">
-                            {tx.description || tx.type.replace('_', ' ')}
-                          </p>
-                          <p className="text-xs text-slate-400">{formatDate(new Date(tx.createdAt))}</p>
-                        </div>
+                        <p className="text-sm font-medium text-slate-700">
+                          {tx.description || tx.type.replace('_', ' ')}
+                        </p>
                       </div>
-                      <p className={`text-sm font-bold ${tx.amount > 0 ? "text-emerald-600" : "text-slate-900"}`}>
-                        {tx.amount > 0 ? "+" : ""}{formatCurrency(Math.abs(tx.amount))}
+                      <p
+                        className={`text-sm font-bold ${
+                          tx.amount > 0 ? 'text-emerald-600' : 'text-slate-900'
+                        }`}
+                      >
+                        {tx.amount > 0 ? '+' : ''}
+                        {formatCurrency(Math.abs(tx.amount))}
                       </p>
                     </div>
                   ))}
-                  <Link href="/dashboard/wallet" className="block">
-                    <Button variant="ghost" className="w-full text-blue-600 hover:text-blue-700 hover:bg-blue-50">
-                      View wallet <ArrowRight className="w-4 h-4 ml-2" />
-                    </Button>
-                  </Link>
                 </div>
               )}
             </CardContent>
@@ -449,56 +484,53 @@ function DashboardContent() {
       </div>
 
       {/* Quick Actions */}
-      <Card>
-        <CardHeader className="bg-slate-50/50 border-b border-slate-100 pb-4">
-          <CardTitle className="text-lg text-slate-900">Quick Actions</CardTitle>
-        </CardHeader>
+      <Card className="bg-gradient-to-r from-slate-800 to-slate-900 text-white border-0">
         <CardContent className="p-6">
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <Link href="/search">
-              <div className="flex items-center gap-4 p-4 rounded-xl border border-slate-200 hover:border-blue-300 hover:bg-blue-50/50 transition-all cursor-pointer group">
-                <div className="h-12 w-12 rounded-xl bg-blue-100 flex items-center justify-center group-hover:bg-blue-200 transition-colors">
-                  <Search className="h-6 w-6 text-blue-600" />
+          <div className="grid gap-4 md:grid-cols-4">
+            <Link href="/search" className="group">
+              <div className="flex items-center gap-4 p-4 rounded-xl bg-white/10 hover:bg-white/20 transition-colors">
+                <div className="h-12 w-12 rounded-xl bg-blue-500 flex items-center justify-center">
+                  <Stethoscope className="h-6 w-6 text-white" />
                 </div>
                 <div>
-                  <p className="font-semibold text-slate-900">Book Appointment</p>
-                  <p className="text-sm text-slate-500 font-medium">Find a doctor</p>
+                  <p className="font-semibold">Buscar Médico</p>
+                  <p className="text-xs text-slate-300">Encuentra especialistas</p>
                 </div>
               </div>
             </Link>
 
-            <Link href="/dashboard/wallet">
-              <div className="flex items-center gap-4 p-4 rounded-xl border border-slate-200 hover:border-teal-300 hover:bg-teal-50/50 transition-all cursor-pointer group">
-                <div className="h-12 w-12 rounded-xl bg-teal-100 flex items-center justify-center group-hover:bg-teal-200 transition-colors">
-                  <CreditCard className="h-6 w-6 text-teal-600" />
+            <Link href="/dashboard/appointments" className="group">
+              <div className="flex items-center gap-4 p-4 rounded-xl bg-white/10 hover:bg-white/20 transition-colors">
+                <div className="h-12 w-12 rounded-xl bg-teal-500 flex items-center justify-center">
+                  <Calendar className="h-6 w-6 text-white" />
                 </div>
                 <div>
-                  <p className="font-semibold text-slate-900">Add Funds</p>
-                  <p className="text-sm text-slate-500 font-medium">To wallet</p>
+                  <p className="font-semibold">Mis Citas</p>
+                  <p className="text-xs text-slate-300">Ver y gestionar</p>
                 </div>
               </div>
             </Link>
 
-            <Link href="/dashboard/health">
-              <div className="flex items-center gap-4 p-4 rounded-xl border border-slate-200 hover:border-rose-300 hover:bg-rose-50/50 transition-all cursor-pointer group">
-                <div className="h-12 w-12 rounded-xl bg-rose-100 flex items-center justify-center group-hover:bg-rose-200 transition-colors">
-                  <Heart className="h-6 w-6 text-rose-600" />
+            <Link href="/dashboard/health" className="group">
+              <div className="flex items-center gap-4 p-4 rounded-xl bg-white/10 hover:bg-white/20 transition-colors">
+                <div className="h-12 w-12 rounded-xl bg-rose-500 flex items-center justify-center">
+                  <Heart className="h-6 w-6 text-white" />
                 </div>
                 <div>
-                  <p className="font-semibold text-slate-900">Track Health</p>
-                  <p className="text-sm text-slate-500 font-medium">Log metrics</p>
+                  <p className="font-semibold">Mi Salud</p>
+                  <p className="text-xs text-slate-300">Seguir métricas</p>
                 </div>
               </div>
             </Link>
 
-            <Link href="/account/profile">
-              <div className="flex items-center gap-4 p-4 rounded-xl border border-slate-200 hover:border-purple-300 hover:bg-purple-50/50 transition-all cursor-pointer group">
-                <div className="h-12 w-12 rounded-xl bg-purple-100 flex items-center justify-center group-hover:bg-purple-200 transition-colors">
-                  <User className="h-6 w-6 text-purple-600" />
+            <Link href="/account/profile" className="group">
+              <div className="flex items-center gap-4 p-4 rounded-xl bg-white/10 hover:bg-white/20 transition-colors">
+                <div className="h-12 w-12 rounded-xl bg-purple-500 flex items-center justify-center">
+                  <User className="h-6 w-6 text-white" />
                 </div>
                 <div>
-                  <p className="font-semibold text-slate-900">My Profile</p>
-                  <p className="text-sm text-slate-500 font-medium">Edit account</p>
+                  <p className="font-semibold">Mi Perfil</p>
+                  <p className="text-xs text-slate-300">Editar información</p>
                 </div>
               </div>
             </Link>
@@ -511,14 +543,16 @@ function DashboardContent() {
 
 export default function DashboardPage() {
   return (
-    <Suspense fallback={
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-center">
-          <Loader2 className="w-10 h-10 animate-spin text-blue-600 mx-auto mb-4" />
-          <p className="text-slate-500 font-medium">Loading dashboard...</p>
+    <Suspense
+      fallback={
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="text-center">
+            <Loader2 className="w-10 h-10 animate-spin text-blue-600 mx-auto mb-4" />
+            <p className="text-slate-500 font-medium">Cargando...</p>
+          </div>
         </div>
-      </div>
-    }>
+      }
+    >
       <DashboardContent />
     </Suspense>
   );
