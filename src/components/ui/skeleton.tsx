@@ -17,10 +17,10 @@ function Skeleton({
   return (
     <div
       className={cn(
-        "animate-pulse bg-[--border]",
+        "animate-pulse bg-slate-200",
         variant === "circular" && "rounded-full",
-        variant === "text" && "rounded-[--radius-sm] h-4",
-        variant === "rectangular" && "rounded-[--radius-md]",
+        variant === "text" && "rounded h-4",
+        variant === "rectangular" && "rounded-lg",
         className
       )}
       style={{ width, height }}

@@ -18,8 +18,8 @@ interface ModalProps {
 const sizeClasses = {
   sm: "max-w-sm",
   md: "max-w-md",
-  lg: "max-w-lg",
-  xl: "max-w-xl",
+  lg: "max-w-2xl",
+  xl: "max-w-4xl",
 };
 
 export function Modal({
@@ -55,40 +55,43 @@ export function Modal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div 
         className="absolute inset-0 bg-black/50 backdrop-blur-sm animate-fade-in"
         onClick={onClose}
+        aria-hidden="true"
       />
       <div
         className={cn(
-          "relative z-10 w-full mx-4 bg-[--surface] rounded-[--radius-lg] shadow-[--shadow-xl] animate-slide-in",
+          "relative z-10 w-full bg-white rounded-2xl shadow-2xl animate-scale-in",
           sizeClasses[size]
         )}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={title ? "modal-title" : undefined}
       >
         {(title || showClose) && (
           <div className="flex items-start justify-between p-6 pb-0">
             <div>
               {title && (
-                <h2 className="text-lg font-semibold text-[--text-primary]">
+                <h2 id="modal-title" className="text-xl font-bold text-slate-900">
                   {title}
                 </h2>
               )}
               {description && (
-                <p className="mt-1 text-sm text-[--text-secondary]">
+                <p className="mt-1 text-sm text-slate-500">
                   {description}
                 </p>
               )}
             </div>
             {showClose && (
-              <Button
-                variant="ghost"
-                size="icon"
+              <button
                 onClick={onClose}
-                className="h-8 w-8 -mr-2 -mt-2"
+                className="p-2 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
+                aria-label="Close modal"
               >
-                <X className="h-4 w-4" />
-              </Button>
+                <X className="h-5 w-5" />
+              </button>
             )}
           </div>
         )}
