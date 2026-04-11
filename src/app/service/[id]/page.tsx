@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, use } from "react";
+import React, { useState, useEffect, use } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { 
@@ -12,126 +12,106 @@ import {
   CheckCircle,
   Calendar,
   ArrowRight,
-  MessageSquare
+  MessageSquare,
+  Loader2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Modal } from "@/components/ui/modal";
 import { formatCurrency, formatDate, formatTime } from "@/lib/utils";
 import { useToast } from "@/components/ui/toast";
+import { useAuthStore } from "@/store";
+import { BookingModal } from "@/components/booking";
 
-const mockProfessional = {
-  id: "1",
-  name: "Dr. Elena Martínez",
-  specialty: "Cardiology",
-  bio: "Dr. Elena Martínez is a board-certified cardiologist with over 15 years of experience in treating cardiovascular diseases. She specializes in preventive cardiology and heart failure management. Dr. Martínez received her medical degree from the Universidad Complutense de Madrid and completed her residency at Hospital Clínico San Carlos. She is known for her patient-centered approach and dedication to providing personalized care.",
-  location: "Madrid, Spain",
-  rating: 4.9,
-  reviewCount: 127,
-  languages: ["Spanish", "English", "Portuguese"],
-  verified: true,
-  verificationStatus: "VERIFIED",
-  avatar: undefined,
-  services: [
-    {
-      id: "s1",
-      title: "Cardiology Consultation",
-      description: "Comprehensive cardiovascular assessment including physical examination, ECG review, and personalized treatment plan.",
-      price: 15000,
-      duration: 45,
-      location: "Madrid Clinic, Spain",
-      imageUrl: "",
-    },
-    {
-      id: "s2",
-      title: "Follow-up Visit",
-      description: "Post-consultation follow-up to monitor progress and adjust treatment as needed.",
-      price: 8000,
-      duration: 20,
-      location: "Madrid Clinic, Spain",
-      imageUrl: "",
-    },
-  ],
-  availability: {
-    monday: ["09:00", "10:00", "11:00", "14:00", "15:00", "16:00"],
-    tuesday: ["09:00", "10:00", "11:00", "14:00", "15:00"],
-    wednesday: ["10:00", "11:00", "14:00", "15:00", "16:00"],
-    thursday: ["09:00", "10:00", "11:00", "14:00"],
-    friday: ["09:00", "10:00", "11:00", "14:00", "15:00"],
-  },
-  reviews: [
-    {
-      id: "r1",
-      userName: "María García",
-      rating: 5,
-      comment: "Dr. Martínez is an excellent cardiologist. She took the time to explain everything clearly and made me feel very comfortable.",
-      date: "2024-01-15",
-    },
-    {
-      id: "r2",
-      userName: "John Smith",
-      rating: 5,
-      comment: "Very professional and knowledgeable. The consultation was thorough and I felt confident in her care.",
-      date: "2024-01-10",
-    },
-    {
-      id: "r3",
-      userName: "Ana Rodríguez",
-      rating: 4,
-      comment: "Great experience overall. The clinic was clean and modern. Would definitely recommend.",
-      date: "2024-01-05",
-    },
-  ],
-};
+interface ProfessionalData {
+  id: string;
+  name: string;
+  specialty: string;
+  title: string;
+  bio: string;
+  location: string;
+  rating: number;
+  reviewCount: number;
+  languages: string[];
+  verified: boolean;
+  verificationStatus: string;
+  image: string | null;
+  services: {
+    id: string;
+    title: string;
+    description: string;
+    price: number;
+    duration: number;
+    location: string;
+  }[];
+  reviews: {
+    id: string;
+    userName: string;
+    rating: number;
+    comment: string;
+    date: string;
+  }[];
+}
 
 export default function ServiceDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const router = useRouter();
   const { addToast } = useToast();
+  const { user } = useAuthStore();
   const [showBookingModal, setShowBookingModal] = useState(false);
-  const [selectedService, setSelectedService] = useState(mockProfessional.services[0]);
-  const [selectedDate, setSelectedDate] = useState("");
-  const [selectedTime, setSelectedTime] = useState("");
-  const [isBooking, setIsBooking] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [professional, setProfessional] = useState<ProfessionalData | null>(null);
+  const [selectedService, setSelectedService] = useState<ProfessionalData['services'][0] | null>(null);
 
-  const selectedDayAvailability = selectedDate 
-    ? mockProfessional.availability[selectedDate as keyof typeof mockProfessional.availability] || []
-    : [];
+  useEffect(() => {
+    const fetchProfessional = async () => {
+      try {
+        const response = await fetch(`/api/doctors/${id}`);
+        if (response.ok) {
+          const data = await response.json();
+          setProfessional(data.doctor);
+          if (data.doctor?.services?.length > 0) {
+            setSelectedService(data.doctor.services[0]);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching professional:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-  const availableDates = Object.keys(mockProfessional.availability).filter(
-    day => mockProfessional.availability[day as keyof typeof mockProfessional.availability].length > 0
-  );
-
-  const handleBooking = async () => {
-    if (!selectedService || !selectedDate || !selectedTime) return;
-    
-    setIsBooking(true);
-    try {
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      addToast({
-        variant: "success",
-        title: "Booking Successful!",
-        message: `Your appointment with ${mockProfessional.name} has been reserved.`,
-      });
-      setShowBookingModal(false);
-      router.push("/dashboard/appointments");
-    } catch (error) {
-      addToast({
-        variant: "error",
-        title: "Booking Failed",
-        message: "Something went wrong. Please try again.",
-      });
-    } finally {
-      setIsBooking(false);
+    if (id) {
+      fetchProfessional();
     }
-  };
+  }, [id]);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+      </div>
+    );
+  }
+
+  if (!professional) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-xl font-bold text-slate-900 mb-2">Professional not found</h2>
+          <Link href="/search">
+            <Button>Back to Search</Button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-slate-50">
-      <div className="main-container py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Link 
           href="/search" 
           className="inline-flex items-center gap-2 text-slate-500 hover:text-blue-600 mb-6 transition-colors"
@@ -145,32 +125,32 @@ export default function ServiceDetailPage({ params }: { params: Promise<{ id: st
             {/* Doctor Info Card */}
             <Card className="p-6">
               <div className="flex items-start gap-6">
-                <Avatar src={mockProfessional.avatar} name={mockProfessional.name} size="lg" />
+                <Avatar src={professional.image || undefined} name={professional.name} size="lg" />
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
                     <h1 className="text-2xl font-bold text-slate-900 tracking-tight">
-                      {mockProfessional.name}
+                      {professional.name}
                     </h1>
-                    {mockProfessional.verified && (
+                    {professional.verified && (
                       <div className="w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center">
                         <CheckCircle className="w-4 h-4 text-white" />
                       </div>
                     )}
                   </div>
-                  <p className="font-semibold text-blue-600 mb-2">{mockProfessional.specialty}</p>
+                  <p className="font-semibold text-blue-600 mb-2">{professional.specialty}</p>
                   <div className="flex items-center gap-4 text-sm text-slate-500">
                     <div className="flex items-center gap-1">
                       <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
-                      <span className="font-semibold text-slate-900">{mockProfessional.rating}</span>
-                      <span>({mockProfessional.reviewCount} reviews)</span>
+                      <span className="font-semibold text-slate-900">{professional.rating.toFixed(1)}</span>
+                      <span>({professional.reviewCount || 0} reviews)</span>
                     </div>
                     <div className="flex items-center gap-1">
                       <MapPin className="w-4 h-4" />
-                      {mockProfessional.location}
+                      {professional.location}
                     </div>
                   </div>
                   <div className="flex flex-wrap gap-2 mt-3">
-                    {mockProfessional.languages.map((lang) => (
+                    {professional.languages?.map((lang) => (
                       <Badge key={lang} variant="secondary">{lang}</Badge>
                     ))}
                   </div>
@@ -181,21 +161,21 @@ export default function ServiceDetailPage({ params }: { params: Promise<{ id: st
             {/* About Card */}
             <Card className="p-6">
               <h2 className="text-lg font-bold text-slate-900 mb-3 tracking-tight">About</h2>
-              <p className="text-slate-500 font-medium leading-relaxed">{mockProfessional.bio}</p>
+              <p className="text-slate-500 font-medium leading-relaxed">{professional.bio}</p>
             </Card>
 
             {/* Services & Reviews Tabs */}
             <Tabs defaultValue="services">
               <TabsList className="mb-4">
-                <TabsTrigger value="services">Services ({mockProfessional.services.length})</TabsTrigger>
-                <TabsTrigger value="reviews">Reviews ({mockProfessional.reviews.length})</TabsTrigger>
+                <TabsTrigger value="services">Services ({professional.services?.length || 0})</TabsTrigger>
+                <TabsTrigger value="reviews">Reviews ({professional.reviews?.length || 0})</TabsTrigger>
               </TabsList>
               <TabsContent value="services" className="space-y-4">
-                {mockProfessional.services.map((service) => (
+                {professional.services?.map((service) => (
                   <Card 
                     key={service.id} 
                     hover
-                    className={`p-6 transition-all ${selectedService.id === service.id ? "border-blue-500 ring-2 ring-blue-500/20" : ""}`}
+                    className={`p-6 transition-all ${selectedService?.id === service.id ? "border-blue-500 ring-2 ring-blue-500/20" : ""}`}
                   >
                     <div className="flex justify-between items-start">
                       <div className="flex-1">
@@ -218,6 +198,10 @@ export default function ServiceDetailPage({ params }: { params: Promise<{ id: st
                           size="sm" 
                           className="mt-2"
                           onClick={() => {
+                            if (!user) {
+                              router.push("/auth/login");
+                              return;
+                            }
                             setSelectedService(service);
                             setShowBookingModal(true);
                           }}
@@ -230,7 +214,7 @@ export default function ServiceDetailPage({ params }: { params: Promise<{ id: st
                 ))}
               </TabsContent>
               <TabsContent value="reviews" className="space-y-4">
-                {mockProfessional.reviews.map((review) => (
+                {professional.reviews?.map((review) => (
                   <Card key={review.id} className="p-4 bg-slate-50/50">
                     <div className="flex items-start gap-3">
                       <Avatar name={review.userName} size="sm" />
@@ -269,37 +253,46 @@ export default function ServiceDetailPage({ params }: { params: Promise<{ id: st
                   <p className="text-sm font-semibold text-slate-700 mb-2">Select Service</p>
                   <select
                     className="w-full h-12 px-4 text-sm font-medium bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 cursor-pointer"
-                    value={selectedService.id}
+                    value={selectedService?.id || ""}
                     onChange={(e) => {
-                      const service = mockProfessional.services.find(s => s.id === e.target.value);
+                      const service = professional.services?.find(s => s.id === e.target.value);
                       if (service) setSelectedService(service);
                     }}
                   >
-                    {mockProfessional.services.map(s => (
+                    {professional.services?.map(s => (
                       <option key={s.id} value={s.id}>{s.title}</option>
                     ))}
                   </select>
                 </div>
 
-                <div className="p-4 rounded-xl bg-slate-50">
-                  <p className="text-sm font-semibold text-slate-700 mb-2">{selectedService.title}</p>
-                  <div className="flex justify-between text-sm mb-1">
-                    <span className="text-slate-500">Duration</span>
-                    <span className="text-slate-700">{selectedService.duration} min</span>
+                {selectedService && (
+                  <div className="p-4 rounded-xl bg-slate-50">
+                    <p className="text-sm font-semibold text-slate-700 mb-2">{selectedService.title}</p>
+                    <div className="flex justify-between text-sm mb-1">
+                      <span className="text-slate-500">Duration</span>
+                      <span className="text-slate-700">{selectedService.duration} min</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-slate-500">Price</span>
+                      <span className="font-bold text-blue-600">{formatCurrency(selectedService.price)}</span>
+                    </div>
                   </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-slate-500">Price</span>
-                    <span className="font-bold text-blue-600">{formatCurrency(selectedService.price)}</span>
-                  </div>
-                </div>
+                )}
 
                 <Button 
                   className="w-full" 
                   size="lg"
-                  onClick={() => setShowBookingModal(true)}
+                  onClick={() => {
+                    if (!user) {
+                      router.push("/auth/login");
+                      return;
+                    }
+                    setShowBookingModal(true);
+                  }}
+                  disabled={!selectedService}
                 >
                   <Calendar className="w-4 h-4 mr-2" />
-                  Book Appointment
+                  {user ? "Book Appointment" : "Login to Book"}
                 </Button>
 
                 <div className="flex items-center gap-2 text-sm text-slate-400">
@@ -313,85 +306,28 @@ export default function ServiceDetailPage({ params }: { params: Promise<{ id: st
       </div>
 
       {/* Booking Modal */}
-      <Modal
-        isOpen={showBookingModal}
-        onClose={() => setShowBookingModal(false)}
-        title="Book Appointment"
-        size="md"
-      >
-        <div className="space-y-4">
-          <div className="p-4 rounded-xl bg-slate-50">
-            <p className="font-semibold text-slate-900">{selectedService.title}</p>
-            <p className="text-sm text-slate-500">{selectedService.duration} min • {formatCurrency(selectedService.price)}</p>
-          </div>
-
-          <div>
-            <label className="block text-sm font-semibold text-slate-700 mb-2">Select Day</label>
-            <div className="flex flex-wrap gap-2">
-              {availableDates.map((day) => (
-                <button
-                  key={day}
-                  onClick={() => {
-                    setSelectedDate(day);
-                    setSelectedTime("");
-                  }}
-                  className={`px-4 py-2 rounded-lg text-sm font-semibold capitalize transition-all ${
-                    selectedDate === day
-                      ? "bg-blue-600 text-white shadow-lg shadow-blue-600/30"
-                      : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-                  }`}
-                >
-                  {day}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {selectedDate && (
-            <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-2">Select Time</label>
-              <div className="flex flex-wrap gap-2">
-                {selectedDayAvailability.map((time) => (
-                  <button
-                    key={time}
-                    onClick={() => setSelectedTime(time)}
-                    className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
-                      selectedTime === time
-                        ? "bg-blue-600 text-white shadow-lg shadow-blue-600/30"
-                        : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-                    }`}
-                  >
-                    {formatTime(time)}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {selectedDate && selectedTime && (
-            <div className="p-4 rounded-xl border-2 border-blue-500 bg-blue-50">
-              <p className="text-sm text-slate-500">Appointment Summary</p>
-              <p className="font-semibold text-slate-900 capitalize">
-                {selectedDate} at {formatTime(selectedTime)}
-              </p>
-            </div>
-          )}
-
-          <div className="flex gap-3 pt-4">
-            <Button variant="outline" onClick={() => setShowBookingModal(false)} className="flex-1">
-              Cancel
-            </Button>
-            <Button 
-              onClick={handleBooking} 
-              className="flex-1"
-              isLoading={isBooking}
-              disabled={!selectedDate || !selectedTime}
-            >
-              Confirm Booking
-            </Button>
-          </div>
-        </div>
-      </Modal>
+      {professional && (
+        <BookingModal
+          isOpen={showBookingModal}
+          onClose={() => setShowBookingModal(false)}
+          professional={{
+            id: professional.id,
+            userId: professional.id,
+            specialty: professional.specialty,
+            bio: professional.bio,
+            consultationFee: professional.services?.[0]?.price || 100,
+            isVirtual: true,
+            location: professional.location,
+            user: {
+              id: professional.id,
+              name: professional.name,
+              email: "",
+              image: professional.image || undefined,
+            },
+            services: professional.services,
+          }}
+        />
+      )}
     </div>
   );
 }

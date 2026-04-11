@@ -1,45 +1,31 @@
 import type { Metadata } from "next";
-import { Plus_Jakarta_Sans, Inter } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
-import { Navbar, Footer } from "@/components/layout";
+import { Navbar } from "@/components/layout/navbar";
+import { Footer } from "@/components/layout/footer";
 import { ToastProvider } from "@/components/ui/toast";
+import { SessionProvider } from "@/components/providers/session-provider";
 
-const plusJakarta = Plus_Jakarta_Sans({
-  variable: "--font-heading",
-  subsets: ["latin"],
-  weight: ["500", "600", "700", "800"],
-});
-
-const inter = Inter({
-  variable: "--font-sans",
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
-});
+const inter = Inter({ subsets: ["latin"], weight: ["400", "500", "600", "700"] });
 
 export const metadata: Metadata = {
   title: "Vitalia - America's Healthcare Marketplace",
-  description: "Connect with top-verified medical specialists across the United States. Book appointments, pay securely, and track your health.",
-  keywords: ["medical services", "healthcare", "doctors", "appointments", "health tracking"],
+  description: "Connect with top-verified medical specialists across the United States.",
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${plusJakarta.variable} ${inter.variable}`}>
-      <head>
-        <link rel="icon" href="/favicon.ico" />
-      </head>
-      <body className="min-h-screen flex flex-col bg-white antialiased">
-        <ToastProvider>
-          <Navbar />
-          <main className="flex-1 pt-[70px]">
-            {children}
-          </main>
-          <Footer />
-        </ToastProvider>
+    <html lang="en">
+      <body className={`${inter.className} bg-gray-50 text-gray-900`}>
+        <SessionProvider>
+          <ToastProvider>
+            <Navbar />
+            <main className="min-h-screen pt-16">
+              {children}
+            </main>
+            <Footer />
+          </ToastProvider>
+        </SessionProvider>
       </body>
     </html>
   );

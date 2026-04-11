@@ -1,335 +1,387 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { 
-  Search, 
-  Calendar, 
-  Wallet, 
-  Heart,
-  Bell,
-  Menu,
-  X,
-  ChevronDown,
-  User,
-  Settings,
-  LogOut,
-  Plus,
-  Stethoscope,
-  LayoutDashboard,
-  CreditCard,
-  Activity,
-  Users,
-  FileText,
-  BarChart3,
-  Shield
-} from "lucide-react";
+import { signOut } from "next-auth/react";
+import { Heart, Menu, X, Search, User, LogOut, LayoutDashboard, Calendar, Wallet, Heart as HeartIcon, Bell, ChevronDown, Settings, Shield, BarChart3 } from "lucide-react";
+import { useAuthStore } from "@/store";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
 import { Avatar } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 
-const mainNavItems = [
-  { 
-    href: "/search", 
-    label: "Find Doctors", 
-    icon: Search,
-    description: "Search specialists"
-  },
-  { 
-    href: "/dashboard", 
-    label: "Dashboard", 
-    icon: LayoutDashboard,
-    description: "Your overview",
-    submenu: [
-      { href: "/dashboard/appointments", label: "Appointments", icon: Calendar, description: "View & manage appointments" },
-      { href: "/dashboard/wallet", label: "Wallet", icon: CreditCard, description: "Manage funds" },
-      { href: "/dashboard/health", label: "Health", icon: Activity, description: "Track metrics" },
-    ]
-  },
-];
+interface NavDropdown {
+  label: string;
+  items: { label: string; href: string; icon: any; badge?: string | number }[];
+}
+
+const dashboardDropdown: NavDropdown = {
+  label: "Dashboard",
+  items: [
+    { label: "Overview", href: "/dashboard", icon: LayoutDashboard },
+    { label: "My Account", href: "/account", icon: User },
+    { label: "Appointments", href: "/dashboard/appointments", icon: Calendar },
+    { label: "Wallet", href: "/dashboard/wallet", icon: Wallet },
+    { label: "Health", href: "/dashboard/health", icon: HeartIcon },
+  ],
+};
+
+const adminDropdown: NavDropdown = {
+  label: "Admin",
+  items: [
+    { label: "Dashboard", href: "/admin", icon: LayoutDashboard },
+    { label: "Users", href: "/admin/users", icon: User },
+    { label: "Verifications", href: "/admin/professionals", icon: Shield, badge: "5" },
+    { label: "Transactions", href: "/admin/transactions", icon: BarChart3 },
+    { label: "Reports", href: "/admin/reports", icon: BarChart3 },
+  ],
+};
 
 export function Navbar() {
   const pathname = usePathname();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [activeSubmenu, setActiveSubmenu] = useState<string | null>(null);
-  const [userMenuOpen, setUserMenuOpen] = useState(false);
-  const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const router = useRouter();
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const { user, logout } = useAuthStore();
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const mockUser = {
-    name: "John Smith",
-    email: "john@example.com",
-    avatar: undefined
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setOpenDropdown(null);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const handleLogout = async () => {
+    await signOut({ redirect: false });
+    logout();
+    router.push("/");
+    setMobileOpen(false);
   };
 
-  const mockNotifications = [
-    { id: 1, title: "Appointment Confirmed", message: "Your appointment with Dr. Martinez is confirmed", time: "2 hours ago", unread: true },
-    { id: 2, title: "Health Alert", message: "Your blood pressure reading is ready", time: "5 hours ago", unread: true },
-    { id: 3, title: "Payment Received", message: "Your wallet deposit was successful", time: "1 day ago", unread: false },
-  ];
+  const isActive = (href: string) => pathname === href || pathname?.startsWith(href + "/");
 
-  const unreadCount = mockNotifications.filter(n => n.unread).length;
+  const getDropdowns = () => {
+    if (user?.role === "ADMIN") return [dashboardDropdown, adminDropdown];
+    if (user?.role === "PROFESSIONAL") return [dashboardDropdown];
+    return [dashboardDropdown];
+  };
 
   return (
-    <>
-      <header className="navbar">
-        <div className="main-container" style={{ maxWidth: '100%', padding: '0 24px' }}>
-          <div className="navbar-inner">
-            {/* Logo */}
-            <Link href="/" className="navbar-logo" onClick={() => setMobileMenuOpen(false)}>
-              <div className="navbar-logo-icon">
-                <Heart className="w-5 h-5" />
-              </div>
-              <span>Vitalia</span>
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100 shadow-sm">
+      <div className="max-w-7xl mx-auto px-4">
+        <div className="flex items-center justify-between h-16">
+          {/* Logo */}
+          <Link href="/" className="flex items-center gap-2">
+            <div className="w-9 h-9 bg-gradient-to-br from-blue-600 to-teal-500 rounded-xl flex items-center justify-center shadow-md">
+              <Heart className="w-5 h-5 text-white" />
+            </div>
+            <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-teal-500 bg-clip-text text-transparent">
+              Vitalia
+            </span>
+          </Link>
+
+          {/* Desktop Nav */}
+          <div className="hidden md:flex items-center gap-1">
+            {/* Find Doctors - Always visible */}
+            <Link href="/search">
+              <Button variant="ghost" size="sm" className={cn(
+                "gap-2",
+                isActive("/search") && "text-blue-600"
+              )}>
+                <Search className="w-4 h-4" />
+                Find Doctors
+              </Button>
             </Link>
 
-            {/* Desktop Navigation */}
-            <nav className="desktop-nav">
-              {mainNavItems.map((item) => (
-                <div key={item.href} className="nav-item-wrapper">
-                  {item.submenu ? (
-                    <button
-                      className={`nav-link nav-dropdown ${pathname?.startsWith(item.href) ? 'active' : ''}`}
-                      onClick={() => setActiveSubmenu(activeSubmenu === item.label ? null : item.label)}
-                    >
-                      <item.icon className="w-4 h-4" />
-                      <span>{item.label}</span>
-                      <ChevronDown className={`w-4 h-4 transition-transform ${activeSubmenu === item.label ? 'rotate-180' : ''}`} />
-                    </button>
-                  ) : (
-                    <Link 
-                      href={item.href} 
-                      className={`nav-link ${pathname === item.href ? 'active' : ''}`}
-                    >
-                      <item.icon className="w-4 h-4" />
-                      <span>{item.label}</span>
-                    </Link>
+            {/* Dropdowns for logged in users */}
+            {user && getDropdowns().map((dropdown) => (
+              <div key={dropdown.label} className="relative" ref={dropdownRef}>
+                <button
+                  onClick={() => setOpenDropdown(openDropdown === dropdown.label ? null : dropdown.label)}
+                  className={cn(
+                    "flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg transition-colors",
+                    openDropdown === dropdown.label || isActive(dropdown.items[0].href)
+                      ? "text-blue-600 bg-blue-50"
+                      : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
                   )}
-                  
-                  {item.submenu && activeSubmenu === item.label && (
-                    <div className="nav-dropdown-menu">
-                      {item.submenu.map((subitem) => (
-                        <Link
-                          key={subitem.href}
-                          href={subitem.href}
-                          className="nav-dropdown-item"
-                          onClick={() => setActiveSubmenu(null)}
-                        >
-                          <div className="nav-dropdown-icon">
-                            <subitem.icon className="w-5 h-5" />
-                          </div>
-                          <div>
-                            <div className="nav-dropdown-label">{subitem.label}</div>
-                            <div className="nav-dropdown-desc">{subitem.description}</div>
-                          </div>
-                        </Link>
-                      ))}
+                >
+                  {dropdown.label}
+                  <ChevronDown className={cn(
+                    "w-4 h-4 transition-transform",
+                    openDropdown === dropdown.label && "rotate-180"
+                  )} />
+                </button>
+
+                {openDropdown === dropdown.label && (
+                  <div className="absolute top-full left-0 mt-1 w-56 bg-white rounded-xl shadow-lg border border-gray-100 py-2 animate-in fade-in-0 zoom-in-95">
+                    {dropdown.items.map((item) => (
+                      <Link
+                        key={item.label}
+                        href={item.href}
+                        onClick={() => {
+                          setOpenDropdown(null);
+                        }}
+                        className="flex items-center justify-between px-4 py-2.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors"
+                      >
+                        <div className="flex items-center gap-3">
+                          <item.icon className="w-4 h-4" />
+                          {item.label}
+                        </div>
+                        {item.badge && (
+                          <Badge variant="default" className="h-5 min-w-5 px-1.5 text-xs bg-orange-500">
+                            {item.badge}
+                          </Badge>
+                        )}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+
+          {/* Desktop Actions */}
+          <div className="hidden md:flex items-center gap-2">
+            {user ? (
+              <>
+                {/* Notifications */}
+                <Button variant="ghost" size="sm" className="relative">
+                  <Bell className="w-4 h-4" />
+                  <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />
+                </Button>
+
+                {/* User Menu */}
+                <div className="relative" ref={dropdownRef}>
+                  <button
+                    onClick={() => setOpenDropdown(openDropdown === "user" ? null : "user")}
+                    className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-gray-50 transition-colors"
+                  >
+                    <Avatar src={user.avatar || undefined} name={user.name} size="sm" />
+                    <span className="text-sm font-medium text-gray-700 hidden lg:block">
+                      {user.name?.split(" ")[0]}
+                    </span>
+                    <ChevronDown className="w-4 h-4 text-gray-400" />
+                  </button>
+
+                  {openDropdown === "user" && (
+                    <div className="absolute top-full right-0 mt-1 w-56 bg-white rounded-xl shadow-lg border border-gray-100 py-2 animate-in fade-in-0 zoom-in-95">
+                      <div className="px-4 py-3 border-b border-gray-100">
+                        <p className="text-sm font-medium text-gray-900">{user.name}</p>
+                        <p className="text-xs text-gray-500">{user.email}</p>
+                      </div>
+                      <Link
+                        href="/account"
+                        onClick={() => setOpenDropdown(null)}
+                        className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors"
+                      >
+                        <User className="w-4 h-4" />
+                        My Account
+                      </Link>
+                      <Link
+                        href="/account/profile"
+                        onClick={() => setOpenDropdown(null)}
+                        className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors"
+                      >
+                        <Settings className="w-4 h-4" />
+                        Profile
+                      </Link>
+                      <Link
+                        href="/dashboard"
+                        onClick={() => setOpenDropdown(null)}
+                        className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors"
+                      >
+                        <LayoutDashboard className="w-4 h-4" />
+                        Dashboard
+                      </Link>
+                      <div className="border-t border-gray-100 my-1" />
+                      <button
+                        onClick={handleLogout}
+                        className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors"
+                      >
+                        <LogOut className="w-4 h-4" />
+                        Logout
+                      </button>
                     </div>
                   )}
                 </div>
-              ))}
-            </nav>
-
-            {/* Desktop Actions */}
-            <div className="navbar-actions desktop-only">
-              {/* Notifications */}
-              <div className="notification-wrapper">
-                <button 
-                  className="icon-btn"
-                  onClick={() => {
-                    setNotificationsOpen(!notificationsOpen);
-                    setUserMenuOpen(false);
-                  }}
-                >
-                  <Bell className="w-5 h-5" />
-                  {unreadCount > 0 && (
-                    <span className="notification-badge">{unreadCount}</span>
-                  )}
-                </button>
-                
-                {notificationsOpen && (
-                  <div className="notification-dropdown">
-                    <div className="notification-header">
-                      <h4>Notifications</h4>
-                      <button className="text-sm text-blue-600">Mark all read</button>
-                    </div>
-                    <div className="notification-list">
-                      {mockNotifications.map((notif) => (
-                        <div key={notif.id} className={`notification-item ${notif.unread ? 'unread' : ''}`}>
-                          <div className="notification-content">
-                            <div className="notification-title">{notif.title}</div>
-                            <div className="notification-message">{notif.message}</div>
-                            <div className="notification-time">{notif.time}</div>
-                          </div>
-                          {notif.unread && <div className="unread-dot" />}
-                        </div>
-                      ))}
-                    </div>
-                    <Link href="/dashboard/notifications" className="notification-footer" onClick={() => setNotificationsOpen(false)}>
-                      View all notifications
-                    </Link>
-                  </div>
-                )}
-              </div>
-
-              {/* User Menu */}
-              <div className="user-menu-wrapper">
-                <button 
-                  className="user-btn"
-                  onClick={() => {
-                    setUserMenuOpen(!userMenuOpen);
-                    setNotificationsOpen(false);
-                  }}
-                >
-                  <Avatar src={mockUser.avatar} name={mockUser.name} size="sm" />
-                  <span className="user-name">{mockUser.name.split(' ')[0]}</span>
-                  <ChevronDown className={`w-4 h-4 transition-transform ${userMenuOpen ? 'rotate-180' : ''}`} />
-                </button>
-                
-                {userMenuOpen && (
-                  <div className="user-dropdown">
-                    <div className="user-dropdown-header">
-                      <Avatar src={mockUser.avatar} name={mockUser.name} size="md" />
-                      <div>
-                        <div className="font-semibold text-gray-900">{mockUser.name}</div>
-                        <div className="text-sm text-gray-500">{mockUser.email}</div>
-                      </div>
-                    </div>
-                    <div className="user-dropdown-menu">
-                      <Link href="/dashboard" className="user-dropdown-item" onClick={() => setUserMenuOpen(false)}>
-                        <User className="w-4 h-4" />
-                        <span>My Dashboard</span>
-                      </Link>
-                      <Link href="/dashboard/settings" className="user-dropdown-item" onClick={() => setUserMenuOpen(false)}>
-                        <Settings className="w-4 h-4" />
-                        <span>Settings</span>
-                      </Link>
-                      <Link href="/dashboard/health" className="user-dropdown-item" onClick={() => setUserMenuOpen(false)}>
-                        <Activity className="w-4 h-4" />
-                        <span>Health Records</span>
-                      </Link>
-                      <div className="border-t border-gray-100 my-1" />
-                      <button className="user-dropdown-item text-red-600 hover:bg-red-50 w-full text-left" onClick={() => setUserMenuOpen(false)}>
-                        <LogOut className="w-4 h-4" />
-                        <span>Sign Out</span>
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              <Link href="/auth/register" className="btn btn-primary">
-                <Plus className="w-4 h-4" />
-                <span>Sign Up</span>
-              </Link>
-            </div>
-
-            {/* Mobile Menu Button */}
-            <button 
-              className="mobile-menu-btn mobile-only"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            >
-              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-            </button>
+              </>
+            ) : (
+              <>
+                <Link href="/auth/login">
+                  <Button variant="ghost" size="sm">Login</Button>
+                </Link>
+                <Link href="/auth/register">
+                  <Button size="sm" className="bg-gradient-to-r from-blue-600 to-teal-500 hover:from-blue-700 hover:to-teal-600">
+                    Sign Up
+                  </Button>
+                </Link>
+              </>
+            )}
           </div>
+
+          {/* Mobile Menu Button */}
+          <button
+            onClick={() => setMobileOpen(!mobileOpen)}
+            className="md:hidden p-2 text-gray-600 hover:bg-gray-50 rounded-lg"
+          >
+            {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
         </div>
 
         {/* Mobile Menu */}
-        {mobileMenuOpen && (
-          <div className="mobile-menu">
-            <div className="mobile-menu-content">
-              {/* Mobile Nav Links */}
-              <div className="mobile-nav-section">
-                <Link href="/search" className="mobile-nav-link" onClick={() => setMobileMenuOpen(false)}>
-                  <Search className="w-5 h-5" />
-                  <span>Find Doctors</span>
-                </Link>
-                
-                <div className="mobile-nav-dropdown">
-                  <button 
-                    className="mobile-nav-link mobile-dropdown-trigger"
-                    onClick={() => setActiveSubmenu(activeSubmenu === 'Dashboard' ? null : 'Dashboard')}
-                  >
-                    <LayoutDashboard className="w-5 h-5" />
-                    <span>Dashboard</span>
-                    <ChevronDown className={`w-5 h-5 ml-auto transition-transform ${activeSubmenu === 'Dashboard' ? 'rotate-180' : ''}`} />
-                  </button>
-                  
-                  {activeSubmenu === 'Dashboard' && (
-                    <div className="mobile-dropdown-content">
-                      <Link href="/dashboard" className="mobile-dropdown-link" onClick={() => setMobileMenuOpen(false)}>
-                        Overview
-                      </Link>
-                      <Link href="/dashboard/appointments" className="mobile-dropdown-link" onClick={() => setMobileMenuOpen(false)}>
-                        <Calendar className="w-4 h-4 mr-2" />
-                        Appointments
-                      </Link>
-                      <Link href="/dashboard/wallet" className="mobile-dropdown-link" onClick={() => setMobileMenuOpen(false)}>
-                        <CreditCard className="w-4 h-4 mr-2" />
-                        Wallet
-                      </Link>
-                      <Link href="/dashboard/health" className="mobile-dropdown-link" onClick={() => setMobileMenuOpen(false)}>
-                        <Activity className="w-4 h-4 mr-2" />
-                        Health
-                      </Link>
-                    </div>
-                  )}
-                </div>
-              </div>
+        {mobileOpen && (
+          <div className="md:hidden py-4 border-t border-gray-100">
+            <div className="flex flex-col gap-1">
+              {/* Find Doctors */}
+              <Link
+                href="/search"
+                onClick={() => setMobileOpen(false)}
+                className={cn(
+                  "flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg",
+                  isActive("/search")
+                    ? "bg-blue-50 text-blue-600"
+                    : "text-gray-600 hover:bg-gray-50"
+                )}
+              >
+                <Search className="w-5 h-5" />
+                Find Doctors
+              </Link>
 
-              {/* Mobile User Section */}
-              <div className="mobile-user-section">
-                <div className="mobile-user-info">
-                  <Avatar src={mockUser.avatar} name={mockUser.name} size="md" />
-                  <div>
-                    <div className="font-semibold">{mockUser.name}</div>
-                    <div className="text-sm text-gray-500">{mockUser.email}</div>
-                  </div>
-                </div>
-                <div className="mobile-user-menu">
-                  <Link href="/dashboard" className="mobile-user-link" onClick={() => setMobileMenuOpen(false)}>
-                    <LayoutDashboard className="w-5 h-5" />
+              {/* Dashboard Section */}
+              {user && (
+                <>
+                  <div className="px-4 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">
                     Dashboard
+                  </div>
+                  <Link
+                    href="/dashboard"
+                    onClick={() => setMobileOpen(false)}
+                    className={cn(
+                      "flex items-center gap-3 px-4 py-2.5 text-sm rounded-lg ml-2",
+                      isActive("/dashboard") && !isActive("/dashboard/")
+                        ? "bg-blue-50 text-blue-600"
+                        : "text-gray-600 hover:bg-gray-50"
+                    )}
+                  >
+                    <LayoutDashboard className="w-4 h-4" />
+                    Overview
                   </Link>
-                  <Link href="/dashboard/settings" className="mobile-user-link" onClick={() => setMobileMenuOpen(false)}>
-                    <Settings className="w-5 h-5" />
-                    Settings
+                  <Link
+                    href="/dashboard/appointments"
+                    onClick={() => setMobileOpen(false)}
+                    className={cn(
+                      "flex items-center gap-3 px-4 py-2.5 text-sm rounded-lg ml-2",
+                      isActive("/dashboard/appointments")
+                        ? "bg-blue-50 text-blue-600"
+                        : "text-gray-600 hover:bg-gray-50"
+                    )}
+                  >
+                    <Calendar className="w-4 h-4" />
+                    Appointments
                   </Link>
-                  <Link href="/dashboard/health" className="mobile-user-link" onClick={() => setMobileMenuOpen(false)}>
-                    <Activity className="w-5 h-5" />
-                    Health Records
+                  <Link
+                    href="/dashboard/wallet"
+                    onClick={() => setMobileOpen(false)}
+                    className={cn(
+                      "flex items-center gap-3 px-4 py-2.5 text-sm rounded-lg ml-2",
+                      isActive("/dashboard/wallet")
+                        ? "bg-blue-50 text-blue-600"
+                        : "text-gray-600 hover:bg-gray-50"
+                    )}
+                  >
+                    <Wallet className="w-4 h-4" />
+                    Wallet
                   </Link>
-                  <button className="mobile-user-link text-red-600" onClick={() => setMobileMenuOpen(false)}>
-                    <LogOut className="w-5 h-5" />
-                    Sign Out
-                  </button>
-                </div>
-              </div>
+                  <Link
+                    href="/dashboard/health"
+                    onClick={() => setMobileOpen(false)}
+                    className={cn(
+                      "flex items-center gap-3 px-4 py-2.5 text-sm rounded-lg ml-2",
+                      isActive("/dashboard/health")
+                        ? "bg-blue-50 text-blue-600"
+                        : "text-gray-600 hover:bg-gray-50"
+                    )}
+                  >
+                    <HeartIcon className="w-4 h-4" />
+                    Health
+                  </Link>
+                </>
+              )}
 
-              {/* Mobile Auth Buttons */}
-              <div className="mobile-auth-buttons">
-                <Link href="/auth/login" className="btn btn-secondary w-full justify-center" onClick={() => setMobileMenuOpen(false)}>
-                  Log In
-                </Link>
-                <Link href="/auth/register" className="btn btn-primary w-full justify-center" onClick={() => setMobileMenuOpen(false)}>
-                  <Plus className="w-4 h-4" />
-                  Sign Up
-                </Link>
+              {user?.role === "ADMIN" && (
+                <>
+                  <div className="px-4 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider mt-2">
+                    Admin
+                  </div>
+                  <Link
+                    href="/admin/users"
+                    onClick={() => setMobileOpen(false)}
+                    className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-600 hover:bg-gray-50 rounded-lg ml-2"
+                  >
+                    <User className="w-4 h-4" />
+                    Users
+                  </Link>
+                  <Link
+                    href="/admin/professionals"
+                    onClick={() => setMobileOpen(false)}
+                    className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-600 hover:bg-gray-50 rounded-lg ml-2"
+                  >
+                    <Shield className="w-4 h-4" />
+                    Verifications
+                  </Link>
+                  <Link
+                    href="/admin/transactions"
+                    onClick={() => setMobileOpen(false)}
+                    className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-600 hover:bg-gray-50 rounded-lg ml-2"
+                  >
+                    <BarChart3 className="w-4 h-4" />
+                    Transactions
+                  </Link>
+                </>
+              )}
+
+              <div className="border-t border-gray-100 mt-2 pt-2">
+                {user ? (
+                  <>
+                    <Link
+                      href="/dashboard/settings"
+                      onClick={() => setMobileOpen(false)}
+                      className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-600 hover:bg-gray-50 rounded-lg"
+                    >
+                      <Settings className="w-4 h-4" />
+                      Settings
+                    </Link>
+                    <button
+                      onClick={handleLogout}
+                      className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-600 hover:bg-gray-50 rounded-lg"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      Logout
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <Link href="/auth/login" onClick={() => setMobileOpen(false)}>
+                      <Button variant="outline" className="w-full mb-2">Login</Button>
+                    </Link>
+                    <Link href="/auth/register" onClick={() => setMobileOpen(false)}>
+                      <Button className="w-full bg-gradient-to-r from-blue-600 to-teal-500">
+                        Sign Up
+                      </Button>
+                    </Link>
+                  </>
+                )}
               </div>
             </div>
           </div>
         )}
-      </header>
-
-      {/* Click outside handlers */}
-      {(userMenuOpen || notificationsOpen || activeSubmenu) && (
-        <div 
-          className="fixed inset-0 z-40" 
-          onClick={() => {
-            setUserMenuOpen(false);
-            setNotificationsOpen(false);
-            setActiveSubmenu(null);
-          }}
-        />
-      )}
-    </>
+      </div>
+    </nav>
   );
 }
