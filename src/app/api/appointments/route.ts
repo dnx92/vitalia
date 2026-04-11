@@ -1,41 +1,40 @@
-import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
-import { Prisma } from "@prisma/client";
+import { NextRequest } from 'next/server';
+import { prisma } from '@/lib/prisma';
+import { appointmentCreateSchema } from '@/lib/validations';
+import {
+  successResponse,
+  errorResponse,
+  createdResponse,
+  paginatedResponse,
+} from '@/lib/api/response';
+import { ValidationError, NotFoundError } from '@/lib/api/errors';
 
-type AppointmentWithRelations = Prisma.AppointmentGetPayload<{
-  include: {
-    patient: { select: { id: true; name: true; email: true; image: true } };
-    professional: {
-      include: { user: { select: { id: true; name: true; email: true; image: true } } };
-    };
-    service: { select: { id: true; title: true; price: true; duration: true } };
-  };
-}>;
-
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
-    const userId = searchParams.get("userId");
-    const status = searchParams.get("status");
-    const page = parseInt(searchParams.get("page") || "1");
-    const limit = parseInt(searchParams.get("limit") || "20");
+    const searchParams = new URL(request.url).searchParams;
+    const userId = searchParams.get('userId');
+    const professionalId = searchParams.get('professionalId');
+    const status = searchParams.get('status');
+    const page = parseInt(searchParams.get('page') || '1');
+    const limit = parseInt(searchParams.get('limit') || '20');
 
-    if (!userId) {
-      return NextResponse.json(
-        { error: "User ID is required" },
-        { status: 400 }
-      );
+    const where: Record<string, unknown> = {};
+
+    if (userId) {
+      where.patientId = userId;
     }
 
-    const where: Prisma.AppointmentWhereInput = {
-      OR: [
-        { patientId: userId },
-        { professional: { userId } },
-      ],
-    };
+    if (professionalId) {
+      where.professionalId = professionalId;
+    }
 
-    if (status && status !== "all") {
-      where.status = status.toUpperCase() as any;
+    if (status) {
+      const statuses = status.split(',').map((s) => s.trim());
+      if (statuses.length === 1) {
+        where.status = statuses[0];
+      } else {
+        where.status = { in: statuses };
+      }
     }
 
     const [appointments, total] = await Promise.all([
@@ -43,26 +42,14 @@ export async function GET(request: Request) {
         where,
         skip: (page - 1) * limit,
         take: limit,
-        orderBy: { date: "desc" },
+        orderBy: { date: 'desc' },
         include: {
           patient: {
-            select: {
-              id: true,
-              name: true,
-              email: true,
-              image: true,
-            },
+            select: { id: true, name: true, email: true, image: true, avatar: true },
           },
           professional: {
             include: {
-              user: {
-                select: {
-                  id: true,
-                  name: true,
-                  email: true,
-                  image: true,
-                },
-              },
+              user: { select: { id: true, name: true, email: true, image: true, avatar: true } },
             },
           },
           service: {
@@ -71,69 +58,91 @@ export async function GET(request: Request) {
               title: true,
               price: true,
               duration: true,
+              isVirtual: true,
+              location: true,
             },
           },
+          review: { select: { id: true, rating: true } },
         },
       }),
       prisma.appointment.count({ where }),
     ]);
 
-    const formattedAppointments = appointments.map((apt: AppointmentWithRelations) => ({
+    const formattedAppointments = appointments.map((apt) => ({
       id: apt.id,
       professional: {
         id: apt.professional.id,
-        name: apt.professional.user.name || "Unknown",
+        name: apt.professional.user?.name || 'Unknown',
         specialty: apt.professional.specialty,
-        location: "US",
-        avatar: apt.professional.user.image,
+        title: apt.professional.title,
+        avatar: apt.professional.user?.avatar || apt.professional.user?.image,
+        rating: apt.professional.rating ? Number(apt.professional.rating) : null,
+        reviewCount: apt.professional.reviewCount,
+        location: apt.professional.location,
       },
-      service: apt.service.title,
+      service: {
+        id: apt.service?.id,
+        title: apt.service?.title,
+        price: Number(apt.service?.price || 0),
+        duration: apt.service?.duration,
+        isVirtual: apt.service?.isVirtual,
+        location: apt.service?.location,
+      },
       date: apt.date,
       startTime: apt.startTime,
       endTime: apt.endTime,
+      duration: apt.duration,
       status: apt.status,
-      price: Number(apt.totalAmount),
-      isVirtual: false,
+      isVirtual: apt.isVirtual,
+      meetingLink: apt.meetingLink,
+      location: apt.location,
       notes: apt.notes,
+      totalAmount: Number(apt.totalAmount),
+      paymentStatus: apt.paymentStatus,
+      hasReview: !!apt.review,
+      createdAt: apt.createdAt,
     }));
 
-    return NextResponse.json({
-      appointments: formattedAppointments,
-      total,
-      page,
-      limit,
-      totalPages: Math.ceil(total / limit),
-    });
+    return paginatedResponse(formattedAppointments, page, limit, total);
   } catch (error) {
-    console.error("Error fetching appointments:", error);
-    return NextResponse.json(
-      { error: "Failed to fetch appointments" },
-      { status: 500 }
-    );
+    return errorResponse(error as Error);
   }
 }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { patientId, professionalId, serviceId, date, startTime, endTime, notes } = body;
 
-    if (!patientId || !professionalId || !serviceId || !date || !startTime) {
-      return NextResponse.json(
-        { error: "Missing required fields" },
-        { status: 400 }
-      );
+    const result = appointmentCreateSchema.safeParse(body);
+    if (!result.success) {
+      const errors: Record<string, string[]> = {};
+      result.error.issues.forEach((issue) => {
+        const path = issue.path.join('.');
+        if (!errors[path]) errors[path] = [];
+        errors[path].push(issue.message);
+      });
+      throw new ValidationError('Validation failed', errors);
     }
 
-    const service = await prisma.service.findUnique({
-      where: { id: serviceId },
-    });
+    const { professionalId, serviceId, patientId, date, startTime, notes, isVirtual } = result.data;
+
+    const [service, professional] = await Promise.all([
+      prisma.service.findUnique({
+        where: { id: serviceId },
+        include: { professional: { include: { user: true } } },
+      }),
+      prisma.professional.findUnique({
+        where: { id: professionalId },
+        include: { user: true },
+      }),
+    ]);
 
     if (!service) {
-      return NextResponse.json(
-        { error: "Service not found" },
-        { status: 404 }
-      );
+      throw new NotFoundError('Service');
+    }
+
+    if (!professional) {
+      throw new NotFoundError('Professional');
     }
 
     const appointment = await prisma.appointment.create({
@@ -143,48 +152,62 @@ export async function POST(request: Request) {
         serviceId,
         date: new Date(date),
         startTime,
-        endTime: endTime || startTime,
+        endTime: body.endTime || startTime,
+        duration: service.duration,
         totalAmount: service.price,
+        platformFee: Number(service.price) * 0.05,
+        professionalEarning: Number(service.price) * 0.95,
         notes,
-        status: "PENDING",
+        patientNotes: body.patientNotes,
+        isVirtual: isVirtual ?? service.isVirtual,
+        location: isVirtual === false ? body.location || service.location : null,
+        status: 'PENDING',
+        paymentStatus: 'PENDING',
       },
       include: {
         professional: {
-          include: { user: true },
+          include: { user: { select: { id: true, name: true, email: true, avatar: true } } },
         },
         service: true,
-        patient: true,
+        patient: { select: { id: true, name: true, email: true, avatar: true } },
       },
     });
 
-    return NextResponse.json({
+    return createdResponse({
       appointment,
-      message: "Appointment created successfully",
+      message: 'Appointment created successfully. Proceed to payment.',
     });
   } catch (error) {
-    console.error("Error creating appointment:", error);
-    return NextResponse.json(
-      { error: "Failed to create appointment" },
-      { status: 500 }
-    );
+    return errorResponse(error as Error);
   }
 }
 
-export async function PATCH(request: Request) {
+export async function PATCH(request: NextRequest) {
   try {
     const body = await request.json();
-    const { appointmentId, status, userId } = body;
+    const { appointmentId, status, meetingLink, cancellationReason } = body;
 
-    if (!appointmentId || !status) {
-      return NextResponse.json(
-        { error: "Missing required fields" },
-        { status: 400 }
-      );
+    if (!appointmentId) {
+      throw new ValidationError('Appointment ID is required');
+    }
+
+    const updateData: Record<string, unknown> = {};
+
+    if (status) {
+      updateData.status = status.toUpperCase();
+      if (status.toUpperCase() === 'CANCELLED') {
+        updateData.cancelledAt = new Date();
+        updateData.cancellationReason = cancellationReason;
+      }
+    }
+
+    if (meetingLink) {
+      updateData.meetingLink = meetingLink;
     }
 
     const appointment = await prisma.appointment.update({
       where: { id: appointmentId },
-      data: { status: status.toUpperCase() },
+      data: updateData,
       include: {
         professional: { include: { user: true } },
         service: true,
@@ -192,15 +215,11 @@ export async function PATCH(request: Request) {
       },
     });
 
-    return NextResponse.json({
+    return successResponse({
       appointment,
-      message: "Appointment updated successfully",
+      message: 'Appointment updated successfully',
     });
   } catch (error) {
-    console.error("Error updating appointment:", error);
-    return NextResponse.json(
-      { error: "Failed to update appointment" },
-      { status: 500 }
-    );
+    return errorResponse(error as Error);
   }
 }
