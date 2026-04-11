@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import React from "react";
-import Link from "next/link";
-import { 
+import React from 'react';
+import Link from 'next/link';
+import {
   Calendar,
   Users,
   DollarSign,
@@ -13,12 +13,12 @@ import {
   FileText,
   Settings,
   ArrowRight,
-  BarChart3
-} from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Avatar } from "@/components/ui/avatar";
+  BarChart3,
+} from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Avatar } from '@/components/ui/avatar';
 
 const mockStats = {
   totalPatients: 156,
@@ -28,14 +28,38 @@ const mockStats = {
 };
 
 const mockAppointments = [
-  { id: "1", patient: "John Smith", service: "Cardiology Consultation", time: "10:00 AM", date: "Today" },
-  { id: "2", patient: "Sarah Johnson", service: "Follow-up", time: "11:30 AM", date: "Today" },
-  { id: "3", patient: "Michael Brown", service: "Initial Consultation", time: "2:00 PM", date: "Tomorrow" },
+  {
+    id: '1',
+    patient: 'John Smith',
+    service: 'Cardiology Consultation',
+    time: '10:00 AM',
+    date: 'Today',
+  },
+  { id: '2', patient: 'Sarah Johnson', service: 'Follow-up', time: '11:30 AM', date: 'Today' },
+  {
+    id: '3',
+    patient: 'Michael Brown',
+    service: 'Initial Consultation',
+    time: '2:00 PM',
+    date: 'Tomorrow',
+  },
 ];
 
 const mockReviews = [
-  { id: "1", patient: "Emily Davis", rating: 5, comment: "Excellent doctor, very thorough.", date: "2 days ago" },
-  { id: "2", patient: "Robert Wilson", rating: 5, comment: "Great experience, highly recommend.", date: "1 week ago" },
+  {
+    id: '1',
+    patient: 'Emily Davis',
+    rating: 5,
+    comment: 'Excellent doctor, very thorough.',
+    date: '2 days ago',
+  },
+  {
+    id: '2',
+    patient: 'Robert Wilson',
+    rating: 5,
+    comment: 'Great experience, highly recommend.',
+    date: '1 week ago',
+  },
 ];
 
 export default function ProfessionalDashboard() {
@@ -44,7 +68,9 @@ export default function ProfessionalDashboard() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Professional Dashboard</h1>
+          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">
+            Professional Dashboard
+          </h1>
           <p className="text-slate-500 font-medium mt-1">Manage your practice and appointments</p>
         </div>
         <div className="flex items-center gap-3">
@@ -70,7 +96,9 @@ export default function ProfessionalDashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-slate-500">Total Patients</p>
-                <p className="text-3xl font-bold text-slate-900 tracking-tight mt-1">{mockStats.totalPatients}</p>
+                <p className="text-3xl font-bold text-slate-900 tracking-tight mt-1">
+                  {mockStats.totalPatients}
+                </p>
               </div>
               <div className="h-12 w-12 rounded-xl bg-blue-50 flex items-center justify-center">
                 <Users className="h-6 w-6 text-blue-600" />
@@ -84,7 +112,9 @@ export default function ProfessionalDashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-slate-500">Upcoming</p>
-                <p className="text-3xl font-bold text-slate-900 tracking-tight mt-1">{mockStats.upcomingAppointments}</p>
+                <p className="text-3xl font-bold text-slate-900 tracking-tight mt-1">
+                  {mockStats.upcomingAppointments}
+                </p>
               </div>
               <div className="h-12 w-12 rounded-xl bg-emerald-50 flex items-center justify-center">
                 <Calendar className="h-6 w-6 text-emerald-600" />
@@ -98,7 +128,9 @@ export default function ProfessionalDashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-slate-500">Monthly Earnings</p>
-                <p className="text-3xl font-bold text-emerald-600 tracking-tight mt-1">${(mockStats.monthlyEarnings / 100).toLocaleString()}</p>
+                <p className="text-3xl font-bold text-emerald-600 tracking-tight mt-1">
+                  ${(mockStats.monthlyEarnings / 100).toLocaleString()}
+                </p>
               </div>
               <div className="h-12 w-12 rounded-xl bg-emerald-50 flex items-center justify-center">
                 <DollarSign className="h-6 w-6 text-emerald-600" />
@@ -145,7 +177,10 @@ export default function ProfessionalDashboard() {
           <CardContent className="p-6">
             <div className="space-y-4">
               {mockAppointments.map((apt) => (
-                <div key={apt.id} className="flex items-center gap-4 p-4 rounded-xl bg-slate-50/50 hover:bg-slate-100/50 transition-colors">
+                <div
+                  key={apt.id}
+                  className="flex items-center gap-4 p-4 rounded-xl bg-slate-50/50 hover:bg-slate-100/50 transition-colors"
+                >
                   <Avatar name={apt.patient} size="md" />
                   <div className="flex-1">
                     <p className="font-semibold text-slate-900">{apt.patient}</p>
@@ -187,11 +222,16 @@ export default function ProfessionalDashboard() {
                     </div>
                     <div className="flex items-center gap-1">
                       {[...Array(5)].map((_, i) => (
-                        <Star key={i} className={`w-4 h-4 ${i < review.rating ? "fill-amber-400 text-amber-400" : "text-slate-200"}`} />
+                        <Star
+                          key={i}
+                          className={`w-4 h-4 ${i < review.rating ? 'fill-amber-400 text-amber-400' : 'text-slate-200'}`}
+                        />
                       ))}
                     </div>
                   </div>
-                  <p className="text-slate-600 font-medium text-sm">&ldquo;{review.comment}&rdquo;</p>
+                  <p className="text-slate-600 font-medium text-sm">
+                    &ldquo;{review.comment}&rdquo;
+                  </p>
                   <p className="text-xs text-slate-400 font-medium mt-2">{review.date}</p>
                 </div>
               ))}

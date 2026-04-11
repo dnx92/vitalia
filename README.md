@@ -93,16 +93,16 @@ Password: demo123
 
 ## Pages
 
-| Page | Description |
-|------|-------------|
-| `/` | Landing page |
-| `/auth/login` | User login |
-| `/auth/register` | User registration |
-| `/search` | Find medical services |
-| `/service/[id]` | Service detail & booking |
-| `/dashboard` | User dashboard |
-| `/dashboard/wallet` | Wallet management |
-| `/dashboard/health` | Health metrics tracking |
+| Page                | Description              |
+| ------------------- | ------------------------ |
+| `/`                 | Landing page             |
+| `/auth/login`       | User login               |
+| `/auth/register`    | User registration        |
+| `/search`           | Find medical services    |
+| `/service/[id]`     | Service detail & booking |
+| `/dashboard`        | User dashboard           |
+| `/dashboard/wallet` | Wallet management        |
+| `/dashboard/health` | Health metrics tracking  |
 
 ## Next Steps for Production
 

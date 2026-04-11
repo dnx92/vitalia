@@ -1,156 +1,170 @@
-"use client";
+'use client';
 
-import React, { useState, lazy, Suspense } from "react";
-import { 
+import React, { useState, useEffect, lazy, Suspense } from 'react';
+import {
   Heart,
   Plus,
-  TrendingUp,
-  TrendingDown,
   Activity,
   AlertTriangle,
   Calendar,
   Bell,
-  Droplets
-} from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { Select } from "@/components/ui/select";
-import { Modal } from "@/components/ui/modal";
-import { Skeleton } from "@/components/ui/skeleton";
+  Droplets,
+  Loader2,
+} from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Select } from '@/components/ui/select';
+import { Modal } from '@/components/ui/modal';
+import { Skeleton } from '@/components/ui/skeleton';
+import { useAuthStore } from '@/store';
+import { formatDate } from '@/lib/utils';
 
-const ChartComponents = lazy(() => import("@/components/ui/chart"));
+const ChartComponents = lazy(() => import('@/components/ui/chart'));
 
-const mockMetrics = [
+type HealthMetric = {
+  id: string;
+  name: string;
+  value: number;
+  date: string;
+  type?: string;
+  recordedAt?: string;
+};
+
+type HealthAlert = {
+  id: string;
+  message: string;
+  severity: string;
+};
+
+const defaultMetrics = [
   {
-    id: "1",
-    name: "Blood Pressure",
-    unit: "mmHg",
+    id: 'blood_pressure',
+    name: 'Blood Pressure',
+    unit: 'mmHg',
     icon: Activity,
-    color: "#EF4444",
-    bgColor: "bg-red-50",
-    currentValue: "120/80",
+    color: '#EF4444',
     minValue: 90,
     maxValue: 140,
-    trend: "stable",
-    readings: [
-      { date: "Mon", value: 118 },
-      { date: "Tue", value: 122 },
-      { date: "Wed", value: 120 },
-      { date: "Thu", value: 125 },
-      { date: "Fri", value: 120 },
-      { date: "Sat", value: 118 },
-      { date: "Sun", value: 120 },
-    ],
   },
   {
-    id: "2",
-    name: "Heart Rate",
-    unit: "bpm",
+    id: 'heart_rate',
+    name: 'Heart Rate',
+    unit: 'bpm',
     icon: Heart,
-    color: "#EC4899",
-    bgColor: "bg-pink-50",
-    currentValue: "72",
+    color: '#EC4899',
     minValue: 60,
     maxValue: 100,
-    trend: "up",
-    readings: [
-      { date: "Mon", value: 70 },
-      { date: "Tue", value: 72 },
-      { date: "Wed", value: 68 },
-      { date: "Thu", value: 74 },
-      { date: "Fri", value: 72 },
-      { date: "Sat", value: 70 },
-      { date: "Sun", value: 72 },
-    ],
   },
   {
-    id: "3",
-    name: "Weight",
-    unit: "kg",
+    id: 'weight',
+    name: 'Weight',
+    unit: 'kg',
     icon: Activity,
-    color: "#6366F1",
-    bgColor: "bg-indigo-50",
-    currentValue: "70",
-    minValue: 60,
-    maxValue: 80,
-    trend: "down",
-    readings: [
-      { date: "Mon", value: 71 },
-      { date: "Tue", value: 70.5 },
-      { date: "Wed", value: 70.2 },
-      { date: "Thu", value: 70 },
-      { date: "Fri", value: 70 },
-      { date: "Sat", value: 70.1 },
-      { date: "Sun", value: 70 },
-    ],
+    color: '#6366F1',
+    minValue: 50,
+    maxValue: 150,
   },
   {
-    id: "4",
-    name: "Blood Sugar",
-    unit: "mg/dL",
+    id: 'blood_sugar',
+    name: 'Blood Sugar',
+    unit: 'mg/dL',
     icon: Droplets,
-    color: "#F59E0B",
-    bgColor: "bg-amber-50",
-    currentValue: "105",
+    color: '#F59E0B',
     minValue: 70,
     maxValue: 140,
-    trend: "stable",
-    readings: [
-      { date: "Mon", value: 100 },
-      { date: "Tue", value: 108 },
-      { date: "Wed", value: 105 },
-      { date: "Thu", value: 110 },
-      { date: "Fri", value: 105 },
-      { date: "Sat", value: 102 },
-      { date: "Sun", value: 105 },
-    ],
-  },
-];
-
-const mockAlerts = [
-  {
-    id: "1",
-    type: "warning",
-    message: "Your blood sugar has been slightly elevated this week",
-    metric: "Blood Sugar",
-    createdAt: new Date(),
   },
 ];
 
 const metricOptions = [
-  { value: "blood_pressure", label: "Blood Pressure" },
-  { value: "heart_rate", label: "Heart Rate" },
-  { value: "weight", label: "Weight" },
-  { value: "blood_sugar", label: "Blood Sugar" },
+  { value: 'blood_pressure', label: 'Blood Pressure' },
+  { value: 'heart_rate', label: 'Heart Rate' },
+  { value: 'weight', label: 'Weight' },
+  { value: 'blood_sugar', label: 'Blood Sugar' },
 ];
 
 export default function HealthPage() {
+  const { user } = useAuthStore();
   const [showAddModal, setShowAddModal] = useState(false);
   const [showLogModal, setShowLogModal] = useState(false);
-  const [selectedMetric, setSelectedMetric] = useState("");
-  const [logValue, setLogValue] = useState("");
-  const [logNotes, setLogNotes] = useState("");
+  const [selectedMetric, setSelectedMetric] = useState('');
+  const [logValue, setLogValue] = useState('');
+  const [logNotes, setLogNotes] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
+  const [healthMetrics, setHealthMetrics] = useState<HealthMetric[]>([]);
+  const [alerts, setAlerts] = useState<HealthAlert[]>([]);
   const [newMetric, setNewMetric] = useState({
-    name: "",
-    unit: "",
-    minValue: "",
-    maxValue: "",
+    name: '',
+    unit: '',
+    minValue: '',
+    maxValue: '',
   });
 
-  const handleLogValue = () => {
-    console.log("Logging:", { metric: selectedMetric, value: logValue, notes: logNotes });
+  useEffect(() => {
+    if (!user?.id) return;
+
+    const fetchHealthData = async () => {
+      setIsLoading(true);
+      try {
+        const response = await fetch(`/api/health?userId=${user.id}`);
+        const data = await response.json();
+
+        if (data.metrics) {
+          setHealthMetrics(data.metrics);
+        }
+      } catch (error) {
+        console.error('Error fetching health data:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchHealthData();
+  }, [user?.id]);
+
+  const handleLogValue = async () => {
+    if (!selectedMetric || !logValue || !user?.id) return;
+
+    const metricDef = defaultMetrics.find((m) => m.id === selectedMetric);
+    if (!metricDef) return;
+
+    try {
+      const response = await fetch('/api/health', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: user.id,
+          type: selectedMetric,
+          value: parseFloat(logValue),
+          unit: metricDef.unit,
+          notes: logNotes,
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setHealthMetrics((prev) => [data.metric, ...prev]);
+      }
+    } catch (error) {
+      console.error('Error logging metric:', error);
+    }
+
     setShowLogModal(false);
-    setLogValue("");
-    setLogNotes("");
-    setSelectedMetric("");
+    setLogValue('');
+    setLogNotes('');
+    setSelectedMetric('');
+  };
+
+  const getLatestValue = (type: string) => {
+    const metric = healthMetrics.find((m) => m.type === type);
+    return metric ? metric.value : null;
   };
 
   const handleAddMetric = () => {
-    console.log("Adding metric:", newMetric);
+    console.log('Adding metric:', newMetric);
     setShowAddModal(false);
-    setNewMetric({ name: "", unit: "", minValue: "", maxValue: "" });
+    setNewMetric({ name: '', unit: '', minValue: '', maxValue: '' });
   };
 
   return (
@@ -167,7 +181,7 @@ export default function HealthPage() {
       </div>
 
       {/* Alerts */}
-      {mockAlerts.length > 0 && (
+      {alerts.length > 0 && (
         <Card className="border-amber-200 bg-amber-50/50">
           <CardContent className="p-4">
             <div className="flex items-start gap-3">
@@ -176,9 +190,11 @@ export default function HealthPage() {
               </div>
               <div className="flex-1">
                 <p className="font-semibold text-slate-900">Health Alert</p>
-                <p className="text-sm text-slate-600 font-medium">{mockAlerts[0].message}</p>
+                <p className="text-sm text-slate-600 font-medium">{alerts[0].message}</p>
               </div>
-              <Button variant="outline" size="sm" className="shrink-0">Dismiss</Button>
+              <Button variant="outline" size="sm" className="shrink-0">
+                Dismiss
+              </Button>
             </div>
           </CardContent>
         </Card>
@@ -186,61 +202,96 @@ export default function HealthPage() {
 
       {/* Metrics Grid */}
       <div className="grid gap-6 md:grid-cols-2">
-        {mockMetrics.map((metric) => (
-          <Card key={metric.id} className="overflow-hidden hover:-translate-y-1 transition-all duration-300">
-            <CardHeader className="flex flex-row items-center justify-between pb-2 bg-slate-50/50 border-b border-slate-100">
-              <div className="flex items-center gap-3">
-                <div 
-                  className="h-12 w-12 rounded-xl flex items-center justify-center"
-                  style={{ backgroundColor: `${metric.color}15` }}
+        {defaultMetrics.map((metricDef) => {
+          const latestValue = getLatestValue(metricDef.id);
+          const readings = healthMetrics
+            .filter((m) => m.type === metricDef.id)
+            .slice(0, 7)
+            .reverse()
+            .map((m) => ({
+              date: formatDate(new Date(m.recordedAt || m.date)).slice(0, 3),
+              value: m.value,
+            }));
+
+          return (
+            <Card
+              key={metricDef.id}
+              className="overflow-hidden hover:-translate-y-1 transition-all duration-300"
+            >
+              <CardHeader className="flex flex-row items-center justify-between pb-2 bg-slate-50/50 border-b border-slate-100">
+                <div className="flex items-center gap-3">
+                  <div
+                    className="h-12 w-12 rounded-xl flex items-center justify-center"
+                    style={{ backgroundColor: `${metricDef.color}15` }}
+                  >
+                    <metricDef.icon className="h-6 w-6" style={{ color: metricDef.color }} />
+                  </div>
+                  <div>
+                    <CardTitle className="text-base text-slate-900">{metricDef.name}</CardTitle>
+                    <p className="text-sm text-slate-500 font-medium">
+                      Normal: {metricDef.minValue}-{metricDef.maxValue}
+                    </p>
+                  </div>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                  onClick={() => {
+                    setSelectedMetric(metricDef.id);
+                    setShowLogModal(true);
+                  }}
                 >
-                  <metric.icon className="h-6 w-6" style={{ color: metric.color }} />
-                </div>
-                <div>
-                  <CardTitle className="text-base text-slate-900">{metric.name}</CardTitle>
-                  <p className="text-sm text-slate-500 font-medium">Normal: {metric.minValue}-{metric.maxValue}</p>
-                </div>
-              </div>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
-                onClick={() => {
-                  setSelectedMetric(metric.id);
-                  setShowLogModal(true);
-                }}
-              >
-                Log
-              </Button>
-            </CardHeader>
-            <CardContent className="p-6">
-              <div className="flex items-end justify-between mb-4">
-                <div>
-                  <p className="text-3xl font-bold text-slate-900 tracking-tight">
-                    {metric.currentValue}
-                  </p>
-                  <p className="text-sm text-slate-500 font-medium">{metric.unit}</p>
-                </div>
-                <div className={`flex items-center gap-1 text-sm font-semibold ${
-                  metric.trend === "up" 
-                    ? "text-emerald-600" 
-                    : metric.trend === "down" 
-                    ? "text-rose-600" 
-                    : "text-slate-500"
-                }`}>
-                  {metric.trend === "up" && <TrendingUp className="h-4 w-4" />}
-                  {metric.trend === "down" && <TrendingDown className="h-4 w-4" />}
-                  {metric.trend === "stable" ? "Stable" : metric.trend === "up" ? "Up" : "Down"}
-                </div>
-              </div>
-              <div className="h-36 min-h-[144px]">
-                <Suspense fallback={<Skeleton className="h-full w-full" />}>
-                  <ChartComponents data={metric.readings} color={metric.color} />
-                </Suspense>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+                  Log
+                </Button>
+              </CardHeader>
+              <CardContent className="p-6">
+                {isLoading ? (
+                  <div className="space-y-4">
+                    <div className="h-10 w-24 bg-slate-200 rounded animate-pulse" />
+                    <div className="h-36 bg-slate-100 rounded-xl animate-pulse" />
+                  </div>
+                ) : latestValue ? (
+                  <>
+                    <div className="flex items-end justify-between mb-4">
+                      <div>
+                        <p className="text-3xl font-bold text-slate-900 tracking-tight">
+                          {latestValue}
+                        </p>
+                        <p className="text-sm text-slate-500 font-medium">{metricDef.unit}</p>
+                      </div>
+                      <div className="text-sm font-semibold text-slate-500">
+                        {readings.length > 1 ? 'Tracking' : 'Last recorded'}
+                      </div>
+                    </div>
+                    {readings.length > 1 && (
+                      <div className="h-36 min-h-[144px]">
+                        <Suspense fallback={<Skeleton className="h-full w-full" />}>
+                          <ChartComponents data={readings} color={metricDef.color} />
+                        </Suspense>
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <div className="text-center py-8">
+                    <metricDef.icon className="h-12 w-12 mx-auto text-slate-300 mb-3" />
+                    <p className="text-slate-500 font-medium">No data recorded</p>
+                    <Button
+                      size="sm"
+                      className="mt-3"
+                      onClick={() => {
+                        setSelectedMetric(metricDef.id);
+                        setShowLogModal(true);
+                      }}
+                    >
+                      Log your first reading
+                    </Button>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          );
+        })}
       </div>
 
       {/* Reminders */}
@@ -252,22 +303,45 @@ export default function HealthPage() {
         <CardContent className="p-6">
           <div className="grid gap-4 md:grid-cols-2">
             {[
-              { icon: Calendar, color: "text-blue-600", bg: "bg-blue-50", title: "Weekly Check-in", desc: "Get reminded to log your vitals every Monday morning", status: "Active" },
-              { icon: AlertTriangle, color: "text-amber-600", bg: "bg-amber-50", title: "Abnormal Value Alert", desc: "Get notified if any metric goes outside normal range", status: "Active" },
+              {
+                icon: Calendar,
+                color: 'text-blue-600',
+                bg: 'bg-blue-50',
+                title: 'Weekly Check-in',
+                desc: 'Get reminded to log your vitals every Monday morning',
+                status: 'Active',
+              },
+              {
+                icon: AlertTriangle,
+                color: 'text-amber-600',
+                bg: 'bg-amber-50',
+                title: 'Abnormal Value Alert',
+                desc: 'Get notified if any metric goes outside normal range',
+                status: 'Active',
+              },
             ].map((item, i) => (
-              <div key={i} className="p-5 rounded-xl border border-slate-200 bg-slate-50/50 hover:bg-slate-100/50 transition-colors">
+              <div
+                key={i}
+                className="p-5 rounded-xl border border-slate-200 bg-slate-50/50 hover:bg-slate-100/50 transition-colors"
+              >
                 <div className="flex items-start gap-3 mb-3">
-                  <div className={`h-10 w-10 rounded-lg ${item.bg} flex items-center justify-center`}>
+                  <div
+                    className={`h-10 w-10 rounded-lg ${item.bg} flex items-center justify-center`}
+                  >
                     <item.icon className={`h-5 w-5 ${item.color}`} />
                   </div>
                   <div>
                     <p className="font-semibold text-slate-900">{item.title}</p>
-                    <p className="text-sm text-slate-500 font-medium leading-relaxed mt-1">{item.desc}</p>
+                    <p className="text-sm text-slate-500 font-medium leading-relaxed mt-1">
+                      {item.desc}
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-center justify-between">
                   <Badge variant="success">{item.status}</Badge>
-                  <Button variant="ghost" size="sm" className="text-slate-600">Configure</Button>
+                  <Button variant="ghost" size="sm" className="text-slate-600">
+                    Configure
+                  </Button>
                 </div>
               </div>
             ))}
@@ -307,7 +381,11 @@ export default function HealthPage() {
             <Button variant="outline" onClick={() => setShowLogModal(false)} className="flex-1">
               Cancel
             </Button>
-            <Button onClick={handleLogValue} className="flex-1" disabled={!selectedMetric || !logValue}>
+            <Button
+              onClick={handleLogValue}
+              className="flex-1"
+              disabled={!selectedMetric || !logValue}
+            >
               Save
             </Button>
           </div>
@@ -354,7 +432,11 @@ export default function HealthPage() {
             <Button variant="outline" onClick={() => setShowAddModal(false)} className="flex-1">
               Cancel
             </Button>
-            <Button onClick={handleAddMetric} className="flex-1" disabled={!newMetric.name || !newMetric.unit}>
+            <Button
+              onClick={handleAddMetric}
+              className="flex-1"
+              disabled={!newMetric.name || !newMetric.unit}
+            >
               Add Metric
             </Button>
           </div>

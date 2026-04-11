@@ -1,16 +1,16 @@
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import "./globals.css";
-import { Navbar } from "@/components/layout/navbar";
-import { Footer } from "@/components/layout/footer";
-import { ToastProvider } from "@/components/ui/toast";
-import { SessionProvider } from "@/components/providers/session-provider";
+import type { Metadata } from 'next';
+import { Inter } from 'next/font/google';
+import './globals.css';
+import { Navbar } from '@/components/layout/navbar';
+import { Footer } from '@/components/layout/footer';
+import { ToastProvider } from '@/components/ui/toast';
+import { SessionProvider } from '@/components/providers/session-provider';
 
-const inter = Inter({ subsets: ["latin"], weight: ["400", "500", "600", "700"] });
+const inter = Inter({ subsets: ['latin'], weight: ['400', '500', '600', '700'] });
 
 export const metadata: Metadata = {
   title: "Vitalia - America's Healthcare Marketplace",
-  description: "Connect with top-verified medical specialists across the United States.",
+  description: 'Connect with top-verified medical specialists across the United States.',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -20,9 +20,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <SessionProvider>
           <ToastProvider>
             <Navbar />
-            <main className="min-h-screen pt-16">
-              {children}
-            </main>
+            <main className="min-h-screen pt-16">{children}</main>
             <Footer />
           </ToastProvider>
         </SessionProvider>

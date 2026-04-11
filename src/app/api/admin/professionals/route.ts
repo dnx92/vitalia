@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { NextRequest } from 'next/server';
+import type { Prisma, VerificationStatus } from '@prisma/client';
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -8,8 +9,8 @@ export async function GET(request: NextRequest) {
   const page = parseInt(searchParams.get('page') || '1');
   const limit = parseInt(searchParams.get('limit') || '20');
 
-  const where: any = {};
-  if (status !== 'ALL') where.verificationStatus = status;
+  const where: Prisma.ProfessionalWhereInput = {};
+  if (status !== 'ALL') where.verificationStatus = status as VerificationStatus;
 
   const [professionals, total] = await Promise.all([
     prisma.professional.findMany({

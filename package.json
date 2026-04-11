@@ -8,7 +8,7 @@
     "build": "npm run db:generate && next build",
     "build:force": "npm run db:generate && next build --force",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint src --max-warnings 0",
     "lint:fix": "eslint . --fix && prettier --write",
     "format": "prettier --write .",
     "format:check": "prettier --check .",

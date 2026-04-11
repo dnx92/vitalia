@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import React, { useState, useEffect, use } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { 
+import React, { useState, useEffect, use } from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import {
   ArrowLeft,
   Star,
   MapPin,
@@ -13,17 +13,17 @@ import {
   Calendar,
   ArrowRight,
   MessageSquare,
-  Loader2
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Avatar } from "@/components/ui/avatar";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { formatCurrency, formatDate, formatTime } from "@/lib/utils";
-import { useToast } from "@/components/ui/toast";
-import { useAuthStore } from "@/store";
-import { BookingModal } from "@/components/booking";
+  Loader2,
+} from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Avatar } from '@/components/ui/avatar';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { formatCurrency, formatDate, formatTime } from '@/lib/utils';
+import { useToast } from '@/components/ui/toast';
+import { useAuthStore } from '@/store';
+import { BookingModal } from '@/components/booking';
 
 interface ProfessionalData {
   id: string;
@@ -63,7 +63,9 @@ export default function ServiceDetailPage({ params }: { params: Promise<{ id: st
   const [showBookingModal, setShowBookingModal] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [professional, setProfessional] = useState<ProfessionalData | null>(null);
-  const [selectedService, setSelectedService] = useState<ProfessionalData['services'][0] | null>(null);
+  const [selectedService, setSelectedService] = useState<ProfessionalData['services'][0] | null>(
+    null
+  );
 
   useEffect(() => {
     const fetchProfessional = async () => {
@@ -77,7 +79,7 @@ export default function ServiceDetailPage({ params }: { params: Promise<{ id: st
           }
         }
       } catch (error) {
-        console.error("Error fetching professional:", error);
+        console.error('Error fetching professional:', error);
       } finally {
         setIsLoading(false);
       }
@@ -112,8 +114,8 @@ export default function ServiceDetailPage({ params }: { params: Promise<{ id: st
   return (
     <div className="min-h-screen bg-slate-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <Link 
-          href="/search" 
+        <Link
+          href="/search"
           className="inline-flex items-center gap-2 text-slate-500 hover:text-blue-600 mb-6 transition-colors"
         >
           <ArrowLeft className="h-4 w-4" />
@@ -141,7 +143,9 @@ export default function ServiceDetailPage({ params }: { params: Promise<{ id: st
                   <div className="flex items-center gap-4 text-sm text-slate-500">
                     <div className="flex items-center gap-1">
                       <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
-                      <span className="font-semibold text-slate-900">{professional.rating.toFixed(1)}</span>
+                      <span className="font-semibold text-slate-900">
+                        {professional.rating.toFixed(1)}
+                      </span>
                       <span>({professional.reviewCount || 0} reviews)</span>
                     </div>
                     <div className="flex items-center gap-1">
@@ -151,7 +155,9 @@ export default function ServiceDetailPage({ params }: { params: Promise<{ id: st
                   </div>
                   <div className="flex flex-wrap gap-2 mt-3">
                     {professional.languages?.map((lang) => (
-                      <Badge key={lang} variant="secondary">{lang}</Badge>
+                      <Badge key={lang} variant="secondary">
+                        {lang}
+                      </Badge>
                     ))}
                   </div>
                 </div>
@@ -167,20 +173,26 @@ export default function ServiceDetailPage({ params }: { params: Promise<{ id: st
             {/* Services & Reviews Tabs */}
             <Tabs defaultValue="services">
               <TabsList className="mb-4">
-                <TabsTrigger value="services">Services ({professional.services?.length || 0})</TabsTrigger>
-                <TabsTrigger value="reviews">Reviews ({professional.reviews?.length || 0})</TabsTrigger>
+                <TabsTrigger value="services">
+                  Services ({professional.services?.length || 0})
+                </TabsTrigger>
+                <TabsTrigger value="reviews">
+                  Reviews ({professional.reviews?.length || 0})
+                </TabsTrigger>
               </TabsList>
               <TabsContent value="services" className="space-y-4">
                 {professional.services?.map((service) => (
-                  <Card 
-                    key={service.id} 
+                  <Card
+                    key={service.id}
                     hover
-                    className={`p-6 transition-all ${selectedService?.id === service.id ? "border-blue-500 ring-2 ring-blue-500/20" : ""}`}
+                    className={`p-6 transition-all ${selectedService?.id === service.id ? 'border-blue-500 ring-2 ring-blue-500/20' : ''}`}
                   >
                     <div className="flex justify-between items-start">
                       <div className="flex-1">
                         <h3 className="font-bold text-slate-900 text-lg mb-1">{service.title}</h3>
-                        <p className="text-sm text-slate-500 font-medium mb-3">{service.description}</p>
+                        <p className="text-sm text-slate-500 font-medium mb-3">
+                          {service.description}
+                        </p>
                         <div className="flex items-center gap-4 text-sm text-slate-400">
                           <div className="flex items-center gap-1">
                             <Clock className="w-4 h-4" />
@@ -193,13 +205,15 @@ export default function ServiceDetailPage({ params }: { params: Promise<{ id: st
                         </div>
                       </div>
                       <div className="text-right ml-4">
-                        <p className="text-2xl font-bold text-slate-900">{formatCurrency(service.price)}</p>
-                        <Button 
-                          size="sm" 
+                        <p className="text-2xl font-bold text-slate-900">
+                          {formatCurrency(service.price)}
+                        </p>
+                        <Button
+                          size="sm"
                           className="mt-2"
                           onClick={() => {
                             if (!user) {
-                              router.push("/auth/login");
+                              router.push('/auth/login');
                               return;
                             }
                             setSelectedService(service);
@@ -226,9 +240,9 @@ export default function ServiceDetailPage({ params }: { params: Promise<{ id: st
                           </div>
                           <div className="flex items-center gap-0.5">
                             {[...Array(5)].map((_, i) => (
-                              <Star 
-                                key={i} 
-                                className={`w-4 h-4 ${i < review.rating ? "fill-amber-400 text-amber-400" : "text-slate-200"}`} 
+                              <Star
+                                key={i}
+                                className={`w-4 h-4 ${i < review.rating ? 'fill-amber-400 text-amber-400' : 'text-slate-200'}`}
                               />
                             ))}
                           </div>
@@ -253,38 +267,44 @@ export default function ServiceDetailPage({ params }: { params: Promise<{ id: st
                   <p className="text-sm font-semibold text-slate-700 mb-2">Select Service</p>
                   <select
                     className="w-full h-12 px-4 text-sm font-medium bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 cursor-pointer"
-                    value={selectedService?.id || ""}
+                    value={selectedService?.id || ''}
                     onChange={(e) => {
-                      const service = professional.services?.find(s => s.id === e.target.value);
+                      const service = professional.services?.find((s) => s.id === e.target.value);
                       if (service) setSelectedService(service);
                     }}
                   >
-                    {professional.services?.map(s => (
-                      <option key={s.id} value={s.id}>{s.title}</option>
+                    {professional.services?.map((s) => (
+                      <option key={s.id} value={s.id}>
+                        {s.title}
+                      </option>
                     ))}
                   </select>
                 </div>
 
                 {selectedService && (
                   <div className="p-4 rounded-xl bg-slate-50">
-                    <p className="text-sm font-semibold text-slate-700 mb-2">{selectedService.title}</p>
+                    <p className="text-sm font-semibold text-slate-700 mb-2">
+                      {selectedService.title}
+                    </p>
                     <div className="flex justify-between text-sm mb-1">
                       <span className="text-slate-500">Duration</span>
                       <span className="text-slate-700">{selectedService.duration} min</span>
                     </div>
                     <div className="flex justify-between text-sm">
                       <span className="text-slate-500">Price</span>
-                      <span className="font-bold text-blue-600">{formatCurrency(selectedService.price)}</span>
+                      <span className="font-bold text-blue-600">
+                        {formatCurrency(selectedService.price)}
+                      </span>
                     </div>
                   </div>
                 )}
 
-                <Button 
-                  className="w-full" 
+                <Button
+                  className="w-full"
                   size="lg"
                   onClick={() => {
                     if (!user) {
-                      router.push("/auth/login");
+                      router.push('/auth/login');
                       return;
                     }
                     setShowBookingModal(true);
@@ -292,7 +312,7 @@ export default function ServiceDetailPage({ params }: { params: Promise<{ id: st
                   disabled={!selectedService}
                 >
                   <Calendar className="w-4 h-4 mr-2" />
-                  {user ? "Book Appointment" : "Login to Book"}
+                  {user ? 'Book Appointment' : 'Login to Book'}
                 </Button>
 
                 <div className="flex items-center gap-2 text-sm text-slate-400">
@@ -321,7 +341,7 @@ export default function ServiceDetailPage({ params }: { params: Promise<{ id: st
             user: {
               id: professional.id,
               name: professional.name,
-              email: "",
+              email: '',
               image: professional.image || undefined,
             },
             services: professional.services,

@@ -1,20 +1,12 @@
-"use client";
+'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { 
-  BarChart3, 
-  TrendingUp, 
-  Users, 
-  DollarSign,
-  Calendar,
-  Download,
-  Filter
-} from "lucide-react";
-import { useAuthStore } from "@/store";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { BarChart3, TrendingUp, Users, DollarSign, Calendar, Download, Filter } from 'lucide-react';
+import { useAuthStore } from '@/store';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 
 export default function AdminReportsPage() {
   const { user: currentUser, isAuthenticated } = useAuthStore();
@@ -22,40 +14,40 @@ export default function AdminReportsPage() {
 
   useEffect(() => {
     if (!isAuthenticated) {
-      router.push("/auth/login");
+      router.push('/auth/login');
     } else if (currentUser && !currentUser.isAdmin) {
-      router.push("/dashboard");
+      router.push('/dashboard');
     }
   }, [isAuthenticated, currentUser, router]);
 
   const reportCards = [
     {
-      title: "User Growth",
-      description: "Track new registrations over time",
+      title: 'User Growth',
+      description: 'Track new registrations over time',
       icon: Users,
-      color: "text-blue-500",
-      bgColor: "bg-blue-500/10",
+      color: 'text-blue-500',
+      bgColor: 'bg-blue-500/10',
     },
     {
-      title: "Revenue Report",
-      description: "Analyze platform earnings and revenue",
+      title: 'Revenue Report',
+      description: 'Analyze platform earnings and revenue',
       icon: DollarSign,
-      color: "text-green-500",
-      bgColor: "bg-green-500/10",
+      color: 'text-green-500',
+      bgColor: 'bg-green-500/10',
     },
     {
-      title: "Appointment Statistics",
-      description: "Booking trends and patterns",
+      title: 'Appointment Statistics',
+      description: 'Booking trends and patterns',
       icon: Calendar,
-      color: "text-purple-500",
-      bgColor: "bg-purple-500/10",
+      color: 'text-purple-500',
+      bgColor: 'bg-purple-500/10',
     },
     {
-      title: "Professional Performance",
-      description: "Top performers and ratings",
+      title: 'Professional Performance',
+      description: 'Top performers and ratings',
       icon: TrendingUp,
-      color: "text-orange-500",
-      bgColor: "bg-orange-500/10",
+      color: 'text-orange-500',
+      bgColor: 'bg-orange-500/10',
     },
   ];
 
@@ -64,9 +56,7 @@ export default function AdminReportsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Reports & Analytics</h1>
-          <p className="text-[--text-secondary]">
-            Generate and download detailed reports
-          </p>
+          <p className="text-[--text-secondary]">Generate and download detailed reports</p>
         </div>
         <Button variant="outline">
           <Download className="mr-2 h-4 w-4" />
@@ -76,7 +66,10 @@ export default function AdminReportsPage() {
 
       <div className="grid gap-6 md:grid-cols-2">
         {reportCards.map((report) => (
-          <Card key={report.title} className="cursor-pointer hover:border-[--primary] transition-colors">
+          <Card
+            key={report.title}
+            className="cursor-pointer hover:border-[--primary] transition-colors"
+          >
             <CardContent className="p-6">
               <div className="flex items-start justify-between">
                 <div className={`p-3 rounded-[--radius-md] ${report.bgColor}`}>
@@ -85,9 +78,7 @@ export default function AdminReportsPage() {
                 <Badge variant="outline">Coming Soon</Badge>
               </div>
               <h3 className="mt-4 font-semibold">{report.title}</h3>
-              <p className="mt-1 text-sm text-[--text-secondary]">
-                {report.description}
-              </p>
+              <p className="mt-1 text-sm text-[--text-secondary]">{report.description}</p>
               <Button variant="outline" className="mt-4 w-full" disabled>
                 Generate Report
               </Button>

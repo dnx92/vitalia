@@ -1,22 +1,15 @@
-"use client";
+'use client';
 
-import { useEffect, useState, useCallback } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Skeleton } from "@/components/ui/skeleton";
-import { 
-  ArrowUpRight,
-  ArrowDownLeft,
-  Wallet,
-  RefreshCw,
-  Lock,
-  Filter
-} from "lucide-react";
-import { formatCurrency, formatDate } from "@/lib/utils";
-import { useAuthStore } from "@/store";
-import { useRouter } from "next/navigation";
+import { useEffect, useState, useCallback } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Skeleton } from '@/components/ui/skeleton';
+import { ArrowUpRight, ArrowDownLeft, Wallet, RefreshCw, Lock, Filter } from 'lucide-react';
+import { formatCurrency, formatDate } from '@/lib/utils';
+import { useAuthStore } from '@/store';
+import { useRouter } from 'next/navigation';
 
 interface Transaction {
   id: string;
@@ -42,8 +35,8 @@ const typeIcons: Record<string, React.ReactNode> = {
 export default function AdminTransactionsPage() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
-  const [type, setType] = useState("ALL");
-  const [status, setStatus] = useState("ALL");
+  const [type, setType] = useState('ALL');
+  const [status, setStatus] = useState('ALL');
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const { user: currentUser, isAuthenticated } = useAuthStore();
@@ -51,18 +44,18 @@ export default function AdminTransactionsPage() {
 
   useEffect(() => {
     if (!isAuthenticated) {
-      router.push("/auth/login");
+      router.push('/auth/login');
     } else if (currentUser && !currentUser.isAdmin) {
-      router.push("/dashboard");
+      router.push('/dashboard');
     }
   }, [isAuthenticated, currentUser, router]);
 
   const fetchTransactions = useCallback(async () => {
     setLoading(true);
     try {
-      const params = new URLSearchParams({ page: page.toString(), limit: "50" });
-      if (type !== "ALL") params.set("type", type);
-      if (status !== "ALL") params.set("status", status);
+      const params = new URLSearchParams({ page: page.toString(), limit: '50' });
+      if (type !== 'ALL') params.set('type', type);
+      if (status !== 'ALL') params.set('status', status);
       const res = await fetch(`/api/admin/transactions?${params}`);
       if (res.ok) {
         const data = await res.json();
@@ -70,7 +63,7 @@ export default function AdminTransactionsPage() {
         setTotalPages(data.totalPages);
       }
     } catch (error) {
-      console.error("Failed to fetch transactions:", error);
+      console.error('Failed to fetch transactions:', error);
     } finally {
       setLoading(false);
     }
@@ -84,13 +77,13 @@ export default function AdminTransactionsPage() {
 
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case "COMPLETED":
+      case 'COMPLETED':
         return <Badge variant="default">Completed</Badge>;
-      case "PENDING":
+      case 'PENDING':
         return <Badge variant="secondary">Pending</Badge>;
-      case "FAILED":
+      case 'FAILED':
         return <Badge variant="danger">Failed</Badge>;
-      case "CANCELLED":
+      case 'CANCELLED':
         return <Badge variant="outline">Cancelled</Badge>;
       default:
         return <Badge variant="outline">{status}</Badge>;
@@ -108,7 +101,13 @@ export default function AdminTransactionsPage() {
       </div>
 
       <div className="flex flex-wrap gap-4">
-        <Tabs value={type} onValueChange={(v) => { setType(v); setPage(1); }}>
+        <Tabs
+          value={type}
+          onValueChange={(v) => {
+            setType(v);
+            setPage(1);
+          }}
+        >
           <TabsList>
             <TabsTrigger value="ALL">All Types</TabsTrigger>
             <TabsTrigger value="DEPOSIT">Deposits</TabsTrigger>
@@ -117,8 +116,14 @@ export default function AdminTransactionsPage() {
             <TabsTrigger value="ESCROW_HOLD">Escrow</TabsTrigger>
           </TabsList>
         </Tabs>
-        
-        <Tabs value={status} onValueChange={(v) => { setStatus(v); setPage(1); }}>
+
+        <Tabs
+          value={status}
+          onValueChange={(v) => {
+            setStatus(v);
+            setPage(1);
+          }}
+        >
           <TabsList>
             <TabsTrigger value="ALL">All Status</TabsTrigger>
             <TabsTrigger value="COMPLETED">Completed</TabsTrigger>
@@ -146,12 +151,24 @@ export default function AdminTransactionsPage() {
                 {loading ? (
                   [...Array(5)].map((_, i) => (
                     <tr key={i} className="border-b border-[--border]">
-                      <td className="p-4"><Skeleton className="h-4 w-32" /></td>
-                      <td className="p-4"><Skeleton className="h-4 w-24" /></td>
-                      <td className="p-4"><Skeleton className="h-6 w-20" /></td>
-                      <td className="p-4"><Skeleton className="h-4 w-20" /></td>
-                      <td className="p-4"><Skeleton className="h-6 w-20" /></td>
-                      <td className="p-4"><Skeleton className="h-4 w-24" /></td>
+                      <td className="p-4">
+                        <Skeleton className="h-4 w-32" />
+                      </td>
+                      <td className="p-4">
+                        <Skeleton className="h-4 w-24" />
+                      </td>
+                      <td className="p-4">
+                        <Skeleton className="h-6 w-20" />
+                      </td>
+                      <td className="p-4">
+                        <Skeleton className="h-4 w-20" />
+                      </td>
+                      <td className="p-4">
+                        <Skeleton className="h-6 w-20" />
+                      </td>
+                      <td className="p-4">
+                        <Skeleton className="h-4 w-24" />
+                      </td>
                     </tr>
                   ))
                 ) : transactions.length === 0 ? (
@@ -162,40 +179,37 @@ export default function AdminTransactionsPage() {
                   </tr>
                 ) : (
                   transactions.map((t) => (
-                    <tr key={t.id} className="border-b border-[--border] last:border-0 hover:bg-[--background]">
+                    <tr
+                      key={t.id}
+                      className="border-b border-[--border] last:border-0 hover:bg-[--background]"
+                    >
                       <td className="p-4">
                         <div className="flex items-center gap-2">
                           {typeIcons[t.type] || <Wallet className="h-4 w-4" />}
-                          <span className="text-sm font-mono">
-                            {t.id.slice(0, 8)}...
-                          </span>
+                          <span className="text-sm font-mono">{t.id.slice(0, 8)}...</span>
                         </div>
                         {t.description && (
-                          <p className="text-xs text-[--text-secondary] mt-1">
-                            {t.description}
-                          </p>
+                          <p className="text-xs text-[--text-secondary] mt-1">{t.description}</p>
                         )}
                       </td>
                       <td className="p-4">
-                        <p className="text-sm font-medium">
-                          {t.wallet.user.name || "Anonymous"}
-                        </p>
-                        <p className="text-xs text-[--text-secondary]">
-                          {t.wallet.user.email}
-                        </p>
+                        <p className="text-sm font-medium">{t.wallet.user.name || 'Anonymous'}</p>
+                        <p className="text-xs text-[--text-secondary]">{t.wallet.user.email}</p>
                       </td>
                       <td className="p-4">
                         <Badge variant="outline" className="capitalize">
-                          {t.type.replace("_", " ").toLowerCase()}
+                          {t.type.replace('_', ' ').toLowerCase()}
                         </Badge>
                       </td>
                       <td className="p-4">
-                        <span className={`font-medium ${
-                          t.type.includes("WITHDRAWAL") || t.type === "ESCROW_HOLD"
-                            ? "text-red-500"
-                            : "text-green-500"
-                        }`}>
-                          {t.type.includes("WITHDRAWAL") || t.type === "ESCROW_HOLD" ? "-" : "+"}
+                        <span
+                          className={`font-medium ${
+                            t.type.includes('WITHDRAWAL') || t.type === 'ESCROW_HOLD'
+                              ? 'text-red-500'
+                              : 'text-green-500'
+                          }`}
+                        >
+                          {t.type.includes('WITHDRAWAL') || t.type === 'ESCROW_HOLD' ? '-' : '+'}
                           {formatCurrency(Number(t.amount))}
                         </span>
                       </td>

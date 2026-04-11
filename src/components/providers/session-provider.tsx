@@ -1,9 +1,18 @@
-"use client";
+'use client';
 
-import { SessionProvider as NextAuthSessionProvider } from "next-auth/react";
-import { useEffect } from "react";
-import { useAuthStore } from "@/store";
-import type { Session } from "next-auth";
+import { SessionProvider as NextAuthSessionProvider } from 'next-auth/react';
+import { useEffect } from 'react';
+import { useAuthStore } from '@/store';
+import type { Session } from 'next-auth';
+
+type SessionUser = {
+  id?: string;
+  email?: string | null;
+  name?: string | null;
+  image?: string | null;
+  role?: 'ADMIN' | 'PATIENT' | 'PROFESSIONAL';
+  isAdmin?: boolean;
+};
 
 interface Props {
   children: React.ReactNode;
@@ -15,13 +24,14 @@ function AuthSync({ session }: { session: Session | null | undefined }) {
 
   useEffect(() => {
     if (session?.user) {
+      const user = session.user as SessionUser;
       login({
-        id: session.user.id,
-        email: session.user.email || "",
-        name: session.user.name || "",
-        avatar: session.user.image || "",
-        role: (session.user as any).role || "PATIENT",
-        isAdmin: (session.user as any).isAdmin || false,
+        id: user.id || '',
+        email: user.email || '',
+        name: user.name || '',
+        avatar: user.image || '',
+        role: user.role || 'PATIENT',
+        isAdmin: user.isAdmin || false,
       });
       setLoading(false);
     } else {

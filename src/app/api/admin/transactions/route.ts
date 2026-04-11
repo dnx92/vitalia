@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { NextRequest } from 'next/server';
+import type { Prisma, TransactionType, TransactionStatus } from '@prisma/client';
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -9,9 +10,9 @@ export async function GET(request: NextRequest) {
   const page = parseInt(searchParams.get('page') || '1');
   const limit = parseInt(searchParams.get('limit') || '50');
 
-  const where: any = {};
-  if (type && type !== 'ALL') where.type = type;
-  if (status && status !== 'ALL') where.status = status;
+  const where: Prisma.TransactionWhereInput = {};
+  if (type && type !== 'ALL') where.type = type as TransactionType;
+  if (status && status !== 'ALL') where.status = status as TransactionStatus;
 
   const [transactions, total, volumeByType] = await Promise.all([
     prisma.transaction.findMany({

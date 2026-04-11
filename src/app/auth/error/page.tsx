@@ -1,39 +1,39 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { Suspense } from "react";
-import { Heart, AlertCircle, ArrowLeft } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Suspense } from 'react';
+import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
+import { Heart, AlertCircle, ArrowLeft } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 function getErrorMessage(error: string | null) {
   switch (error) {
-    case "OAuthSignin":
-      return "Error starting the sign-in process.";
-    case "OAuthCallback":
-      return "Error during the OAuth callback.";
-    case "OAuthCreateAccount":
-      return "Could not create your account.";
-    case "EmailCreateAccount":
-      return "Could not create your account with email.";
-    case "Callback":
-      return "Callback error occurred.";
-    case "OAuthAccountNotLinked":
-      return "This email is already linked to another account.";
-    case "EmailSignin":
-      return "Could not send you a sign-in email.";
-    case "CredentialsSignin":
-      return "Invalid credentials.";
-    case "default":
+    case 'OAuthSignin':
+      return 'Error starting the sign-in process.';
+    case 'OAuthCallback':
+      return 'Error during the OAuth callback.';
+    case 'OAuthCreateAccount':
+      return 'Could not create your account.';
+    case 'EmailCreateAccount':
+      return 'Could not create your account with email.';
+    case 'Callback':
+      return 'Callback error occurred.';
+    case 'OAuthAccountNotLinked':
+      return 'This email is already linked to another account.';
+    case 'EmailSignin':
+      return 'Could not send you a sign-in email.';
+    case 'CredentialsSignin':
+      return 'Invalid credentials.';
+    case 'default':
     default:
-      return "An error occurred during authentication.";
+      return 'An error occurred during authentication.';
   }
 }
 
 function ErrorContent() {
-  const { useSearchParams } = require("next/navigation");
   const searchParams = useSearchParams();
-  const error = searchParams.get("error");
-  const callbackUrl = searchParams.get("callbackUrl");
+  const error = searchParams.get('error');
+  const callbackUrl = searchParams.get('callbackUrl');
 
   return (
     <>
@@ -98,7 +98,7 @@ export default function AuthErrorPage() {
         </div>
 
         <p className="mt-6 text-center text-sm text-gray-500">
-          Need help?{" "}
+          Need help?{' '}
           <Link href="/support" className="text-blue-600 hover:text-blue-700 font-medium">
             Contact Support
           </Link>

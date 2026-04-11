@@ -1,17 +1,17 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { cn } from "@/lib/utils";
-import { Avatar } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { useAuthStore } from "@/store";
-import { useState } from "react";
-import { 
-  LayoutDashboard, 
-  FileCheck, 
-  Calendar, 
-  Users, 
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { cn } from '@/lib/utils';
+import { Avatar } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
+import { useAuthStore } from '@/store';
+import { useState } from 'react';
+import {
+  LayoutDashboard,
+  FileCheck,
+  Calendar,
+  Users,
   Wallet,
   Settings,
   LogOut,
@@ -20,60 +20,54 @@ import {
   ChevronRight,
   ChevronDown,
   PlusCircle,
-  LayoutTemplate
-} from "lucide-react";
+  LayoutTemplate,
+} from 'lucide-react';
 
 const professionalNavItems = [
-  { 
-    label: "Overview", 
-    href: "/professional", 
-    icon: LayoutDashboard 
+  {
+    label: 'Overview',
+    href: '/professional',
+    icon: LayoutDashboard,
   },
-  { 
-    label: "My Services", 
-    href: "/professional/services", 
+  {
+    label: 'My Services',
+    href: '/professional/services',
     icon: FileCheck,
     children: [
-      { label: "All Services", href: "/professional/services", icon: FileCheck },
-      { label: "Add Service", href: "/professional/services/new", icon: PlusCircle },
-    ]
+      { label: 'All Services', href: '/professional/services', icon: FileCheck },
+      { label: 'Add Service', href: '/professional/services/new', icon: PlusCircle },
+    ],
   },
-  { 
-    label: "Calendar", 
-    href: "/professional/calendar", 
-    icon: Calendar 
+  {
+    label: 'Calendar',
+    href: '/professional/calendar',
+    icon: Calendar,
   },
-  { 
-    label: "Patients", 
-    href: "/professional/patients", 
-    icon: Users 
+  {
+    label: 'Patients',
+    href: '/professional/patients',
+    icon: Users,
   },
-  { 
-    label: "Earnings", 
-    href: "/professional/earnings", 
-    icon: Wallet 
+  {
+    label: 'Earnings',
+    href: '/professional/earnings',
+    icon: Wallet,
   },
 ];
 
-export default function ProfessionalLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function ProfessionalLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const { user } = useAuthStore();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [expandedItems, setExpandedItems] = useState<string[]>(["My Services"]);
+  const [expandedItems, setExpandedItems] = useState<string[]>(['My Services']);
 
   const toggleExpanded = (label: string) => {
-    setExpandedItems(prev => 
-      prev.includes(label) 
-        ? prev.filter(item => item !== label)
-        : [...prev, label]
+    setExpandedItems((prev) =>
+      prev.includes(label) ? prev.filter((item) => item !== label) : [...prev, label]
     );
   };
 
-  const isActive = (href: string) => pathname === href || pathname?.startsWith(href + "/");
+  const isActive = (href: string) => pathname === href || pathname?.startsWith(href + '/');
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -95,7 +89,7 @@ export default function ProfessionalLayout({
                 <span className="text-xl font-bold text-slate-900">Professional Portal</span>
               </Link>
             </div>
-            
+
             <div className="flex items-center gap-4">
               <Link href="/dashboard" className="text-sm text-slate-500 hover:text-slate-700">
                 Back to Dashboard
@@ -105,7 +99,9 @@ export default function ProfessionalLayout({
                 <span className="text-sm font-medium text-slate-700 hidden sm:block">
                   {user?.name}
                 </span>
-                <Badge variant="success" className="text-xs">Professional</Badge>
+                <Badge variant="success" className="text-xs">
+                  Professional
+                </Badge>
               </div>
             </div>
           </div>
@@ -115,10 +111,7 @@ export default function ProfessionalLayout({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="lg:grid lg:grid-cols-12 lg:gap-8">
           {/* Sidebar */}
-          <aside className={cn(
-            "lg:col-span-3",
-            mobileMenuOpen ? "block" : "hidden lg:block"
-          )}>
+          <aside className={cn('lg:col-span-3', mobileMenuOpen ? 'block' : 'hidden lg:block')}>
             <nav className="bg-white rounded-xl border border-slate-200 p-2 sticky top-24">
               {professionalNavItems.map((item) => {
                 const hasChildren = item.children && item.children.length > 0;
@@ -131,10 +124,10 @@ export default function ProfessionalLayout({
                       <button
                         onClick={() => toggleExpanded(item.label)}
                         className={cn(
-                          "w-full flex items-center justify-between gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
+                          'w-full flex items-center justify-between gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors',
                           isItemActive
-                            ? "bg-blue-50 text-blue-600"
-                            : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                            ? 'bg-blue-50 text-blue-600'
+                            : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
                         )}
                       >
                         <div className="flex items-center gap-3">
@@ -147,7 +140,7 @@ export default function ProfessionalLayout({
                           <ChevronRight className="h-4 w-4" />
                         )}
                       </button>
-                      
+
                       {isExpanded && (
                         <div className="ml-4 mt-1 space-y-0.5">
                           {item.children!.map((child) => (
@@ -156,10 +149,10 @@ export default function ProfessionalLayout({
                               href={child.href}
                               onClick={() => setMobileMenuOpen(false)}
                               className={cn(
-                                "flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors",
+                                'flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors',
                                 isActive(child.href)
-                                  ? "bg-blue-100 text-blue-700 font-medium"
-                                  : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
+                                  ? 'bg-blue-100 text-blue-700 font-medium'
+                                  : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
                               )}
                             >
                               <child.icon className="h-4 w-4" />
@@ -178,10 +171,10 @@ export default function ProfessionalLayout({
                     href={item.href}
                     onClick={() => setMobileMenuOpen(false)}
                     className={cn(
-                      "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors mb-1",
+                      'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors mb-1',
                       isActive(item.href)
-                        ? "bg-blue-50 text-blue-600"
-                        : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                        ? 'bg-blue-50 text-blue-600'
+                        : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
                     )}
                   >
                     <item.icon className="h-5 w-5" />
@@ -189,15 +182,15 @@ export default function ProfessionalLayout({
                   </Link>
                 );
               })}
-              
+
               <div className="pt-4 mt-4 border-t border-slate-200">
                 <Link
                   href="/professional/settings"
                   className={cn(
-                    "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors mb-1",
-                    isActive("/professional/settings")
-                      ? "bg-blue-50 text-blue-600"
-                      : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                    'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors mb-1',
+                    isActive('/professional/settings')
+                      ? 'bg-blue-50 text-blue-600'
+                      : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
                   )}
                 >
                   <Settings className="h-5 w-5" />
@@ -222,9 +215,7 @@ export default function ProfessionalLayout({
           </aside>
 
           {/* Main Content */}
-          <main className="lg:col-span-9 mt-8 lg:mt-0">
-            {children}
-          </main>
+          <main className="lg:col-span-9 mt-8 lg:mt-0">{children}</main>
         </div>
       </div>
     </div>

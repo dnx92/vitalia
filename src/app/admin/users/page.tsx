@@ -1,23 +1,16 @@
-"use client";
+'use client';
 
-import { useEffect, useState, useCallback } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Avatar } from "@/components/ui/avatar";
-import { Skeleton } from "@/components/ui/skeleton";
-import { 
-  Search, 
-  UserPlus, 
-  MoreVertical,
-  Shield,
-  UserX,
-  Mail
-} from "lucide-react";
-import { formatDate } from "@/lib/utils";
-import { useAuthStore } from "@/store";
-import { useRouter } from "next/navigation";
+import { useEffect, useState, useCallback } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Avatar } from '@/components/ui/avatar';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Search, UserPlus, MoreVertical, Shield, UserX, Mail } from 'lucide-react';
+import { formatDate } from '@/lib/utils';
+import { useAuthStore } from '@/store';
+import { useRouter } from 'next/navigation';
 
 interface User {
   id: string;
@@ -33,7 +26,7 @@ interface User {
 export default function AdminUsersPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const { user: currentUser, isAuthenticated } = useAuthStore();
@@ -41,17 +34,17 @@ export default function AdminUsersPage() {
 
   useEffect(() => {
     if (!isAuthenticated) {
-      router.push("/auth/login");
+      router.push('/auth/login');
     } else if (currentUser && !currentUser.isAdmin) {
-      router.push("/dashboard");
+      router.push('/dashboard');
     }
   }, [isAuthenticated, currentUser, router]);
 
   const fetchUsers = useCallback(async () => {
     setLoading(true);
     try {
-      const params = new URLSearchParams({ page: page.toString(), limit: "20" });
-      if (search) params.set("search", search);
+      const params = new URLSearchParams({ page: page.toString(), limit: '20' });
+      if (search) params.set('search', search);
       const res = await fetch(`/api/admin/users?${params}`);
       if (res.ok) {
         const data = await res.json();
@@ -59,7 +52,7 @@ export default function AdminUsersPage() {
         setTotalPages(data.totalPages);
       }
     } catch (error) {
-      console.error("Failed to fetch users:", error);
+      console.error('Failed to fetch users:', error);
     } finally {
       setLoading(false);
     }
@@ -72,16 +65,16 @@ export default function AdminUsersPage() {
   }, [isAuthenticated, currentUser, fetchUsers]);
 
   const handleToggleAdmin = async (userId: string, makeAdmin: boolean) => {
-    const action = makeAdmin ? "toggleAdmin" : "removeAdmin";
+    const action = makeAdmin ? 'toggleAdmin' : 'removeAdmin';
     try {
       const res = await fetch(`/api/admin/users?id=${userId}&action=${action}`, {
-        method: "PATCH",
+        method: 'PATCH',
       });
       if (res.ok) {
         fetchUsers();
       }
     } catch (error) {
-      console.error("Failed to update user:", error);
+      console.error('Failed to update user:', error);
     }
   };
 
@@ -138,10 +131,18 @@ export default function AdminUsersPage() {
                           </div>
                         </div>
                       </td>
-                      <td className="py-3"><Skeleton className="h-6 w-20" /></td>
-                      <td className="py-3"><Skeleton className="h-6 w-24" /></td>
-                      <td className="py-3"><Skeleton className="h-4 w-24" /></td>
-                      <td className="py-3"><Skeleton className="h-8 w-8" /></td>
+                      <td className="py-3">
+                        <Skeleton className="h-6 w-20" />
+                      </td>
+                      <td className="py-3">
+                        <Skeleton className="h-6 w-24" />
+                      </td>
+                      <td className="py-3">
+                        <Skeleton className="h-4 w-24" />
+                      </td>
+                      <td className="py-3">
+                        <Skeleton className="h-8 w-8" />
+                      </td>
                     </tr>
                   ))
                 ) : users.length === 0 ? (
@@ -155,15 +156,15 @@ export default function AdminUsersPage() {
                     <tr key={u.id} className="border-b border-[--border] last:border-0">
                       <td className="py-3">
                         <div className="flex items-center gap-3">
-                          <Avatar src={u.image || undefined} name={u.name || "User"} size="sm" />
+                          <Avatar src={u.image || undefined} name={u.name || 'User'} size="sm" />
                           <div>
-                            <p className="font-medium">{u.name || "Anonymous"}</p>
+                            <p className="font-medium">{u.name || 'Anonymous'}</p>
                             <p className="text-sm text-[--text-secondary]">{u.email}</p>
                           </div>
                         </div>
                       </td>
                       <td className="py-3">
-                        <Badge variant={u.role === "PROFESSIONAL" ? "secondary" : "outline"}>
+                        <Badge variant={u.role === 'PROFESSIONAL' ? 'secondary' : 'outline'}>
                           {u.role}
                         </Badge>
                       </td>
@@ -171,13 +172,13 @@ export default function AdminUsersPage() {
                         {u.isAdmin ? (
                           <Badge variant="default">Admin</Badge>
                         ) : u.professional ? (
-                          <Badge 
+                          <Badge
                             variant={
-                              u.professional.verificationStatus === "APPROVED" 
-                                ? "default" 
-                                : u.professional.verificationStatus === "REJECTED"
-                                ? "danger"
-                                : "secondary"
+                              u.professional.verificationStatus === 'APPROVED'
+                                ? 'default'
+                                : u.professional.verificationStatus === 'REJECTED'
+                                  ? 'danger'
+                                  : 'secondary'
                             }
                           >
                             {u.professional.verificationStatus}
@@ -195,8 +196,8 @@ export default function AdminUsersPage() {
                             <Mail className="h-4 w-4" />
                           </Button>
                           {!u.isAdmin ? (
-                            <Button 
-                              variant="ghost" 
+                            <Button
+                              variant="ghost"
                               size="sm"
                               onClick={() => handleToggleAdmin(u.id, true)}
                               title="Make Admin"
@@ -204,8 +205,8 @@ export default function AdminUsersPage() {
                               <Shield className="h-4 w-4" />
                             </Button>
                           ) : (
-                            <Button 
-                              variant="ghost" 
+                            <Button
+                              variant="ghost"
                               size="sm"
                               onClick={() => handleToggleAdmin(u.id, false)}
                               title="Remove Admin"

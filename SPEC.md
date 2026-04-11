@@ -11,9 +11,11 @@ Vitalia es un marketplace que conecta pacientes con profesionales de la salud a 
 ## 2. Design Language
 
 ### Aesthetic Direction
+
 Medical-tech con alma: inspirando confianza institucional pero sin frialdad. Inspiración: mezcla de Calm app (calma), One Medical (profesionalismo), Airbnb (facilidad de uso).
 
 ### Color Palette
+
 ```
 --primary:        #0D9488    /* Teal 600 - confianza, salud */
 --primary-dark:   #0F766E    /* Teal 700 */
@@ -32,14 +34,17 @@ Medical-tech con alma: inspirando confianza institucional pero sin frialdad. Ins
 ```
 
 ### Typography
+
 ```
 --font-heading: 'Plus Jakarta Sans', sans-serif    /* Headers, títulos */
 --font-body: 'Inter', sans-serif                   /* Cuerpo, legible */
 --font-mono: 'JetBrains Mono', monospace           /* Números, códigos */
 ```
+
 Escala: 12/14/16/18/20/24/30/36/48/60px
 
 ### Spacing System
+
 ```
 --space-1: 4px
 --space-2: 8px
@@ -54,6 +59,7 @@ Escala: 12/14/16/18/20/24/30/36/48/60px
 ```
 
 ### Border Radius
+
 ```
 --radius-sm: 6px
 --radius-md: 10px
@@ -63,6 +69,7 @@ Escala: 12/14/16/18/20/24/30/36/48/60px
 ```
 
 ### Shadows
+
 ```
 --shadow-sm: 0 1px 2px rgba(0,0,0,0.05)
 --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06)
@@ -71,6 +78,7 @@ Escala: 12/14/16/18/20/24/30/36/48/60px
 ```
 
 ### Motion Philosophy
+
 - **Micro-interactions:** 150-200ms, ease-out
 - **Page transitions:** 300ms, ease-in-out
 - **Loading states:** Skeleton con pulse animation
@@ -112,6 +120,7 @@ Escala: 12/14/16/18/20/24/30/36/48/60px
 ```
 
 ### Responsive Strategy
+
 - Mobile-first
 - Breakpoints: 640px (sm), 768px (md), 1024px (lg), 1280px (xl)
 - Sidebar colapsable en mobile
@@ -124,11 +133,13 @@ Escala: 12/14/16/18/20/24/30/36/48/60px
 ### 4.1 Autenticación
 
 **Pacientes:**
+
 - Registro con email + password + nombre
 - Login con email/password o Google OAuth
 - Perfil con: nombre, email, país, teléfono, foto, historial médico básico
 
 **Profesionales:**
+
 - Registro en 3 pasos:
   1. Datos personales + especialidad
   2. Documentos (licencia médica, título, certificados)
@@ -139,6 +150,7 @@ Escala: 12/14/16/18/20/24/30/36/48/60px
 ### 4.2 Marketplace / Búsqueda
 
 **Filtros:**
+
 - Especialidad médica
 - País/ciudad
 - Rango de precio
@@ -148,6 +160,7 @@ Escala: 12/14/16/18/20/24/30/36/48/60px
 - Verificación de credenciales
 
 **Cards de servicio muestran:**
+
 - Foto profesional
 - Nombre + especialidad
 - Ubicación
@@ -159,6 +172,7 @@ Escala: 12/14/16/18/20/24/30/36/48/60px
 ### 4.3 Sistema de Wallet (Escrow)
 
 **Flujo:**
+
 1. Usuario deposita funds (simulado con Stripe/MercadoPago)
 2. Saldo aparece en wallet
 3. Al reservar: funds se "hold" (escrow) - показывается como "pending"
@@ -166,6 +180,7 @@ Escala: 12/14/16/18/20/24/30/36/48/60px
 5. Si cancela: 7 días hold, luego refund si no se concretó
 
 **Transacciones:**
+
 - Deposit (+)
 - Reservation hold (pending)
 - Release to professional (+)
@@ -175,6 +190,7 @@ Escala: 12/14/16/18/20/24/30/36/48/60px
 ### 4.4 Reservas y Calendario
 
 **Flujo de reserva:**
+
 1. Usuario selecciona servicio → ve calendario del profesional
 2. Elige fecha/hora disponible
 3. Confirma reserva → se hace hold en wallet
@@ -189,17 +205,20 @@ Escala: 12/14/16/18/20/24/30/36/48/60px
 ### 4.5 Seguimiento de Salud
 
 **Para el paciente:**
+
 - Agregar métricas custom (peso, presión, azúcar, custom)
 - Gráficos de evolución
 - Notas por fecha
 - Alertas configurables (tomar meds, cita de seguimiento)
 
 **Para el profesional:**
+
 - Puede prescribir métricas a seguir
 - Ve historial del paciente (con consentimiento)
 - Puede dejar notas en el perfil del paciente
 
 **Métricas predefinidas:**
+
 - Presión arterial (sistólica/diastólica)
 - Frecuencia cardíaca
 - Peso
@@ -208,6 +227,7 @@ Escala: 12/14/16/18/20/24/30/36/48/60px
 - Oxígeno en sangre
 
 **Métricas custom:**
+
 - Nombre custom
 - Unidad (mg/dL, kg, etc.)
 - Rango normal (min/max)
@@ -215,10 +235,12 @@ Escala: 12/14/16/18/20/24/30/36/48/60px
 ### 4.6 Notificaciones
 
 **Canales:**
+
 - In-app (bell icon + dropdown)
 - Email (transaccionales)
 
 **Tipos:**
+
 - Nueva reserva (profesional)
 - Reserva confirmada/cancelada
 - Recordatorio de cita (24h, 1h antes)
@@ -229,22 +251,26 @@ Escala: 12/14/16/18/20/24/30/36/48/60px
 ### 4.7 Panel Admin
 
 **Gestión de Usuarios:**
+
 - Lista de usuarios con filtros
 - Ver detalles, ban/unban
 - Historial de reservas
 
 **Verificación de Profesionales:**
+
 - Cola de verificaciones pendientes
 - Visualizador de documentos subidos
 - Aprobar/rechazar con理由
 - Notificar al profesional
 
 **Transacciones:**
+
 - Todas las transacciones del sistema
 - Historial de wallet
 - Exportar reportes
 
 **Reportes:**
+
 - Ingresos por período
 - Top profesionales
 - Servicios más reservados
@@ -256,51 +282,51 @@ Escala: 12/14/16/18/20/24/30/36/48/60px
 
 ### Atoms
 
-| Component | States | Notes |
-|-----------|--------|-------|
-| Button | default, hover, active, disabled, loading | primary, secondary, outline, ghost, danger |
-| Input | default, focus, error, disabled | Con label + helper text |
-| Select | default, open, disabled | Custom dropdown |
-| Checkbox | unchecked, checked, indeterminate, disabled | |
-| Radio | unselected, selected, disabled | |
-| Badge | variants: primary, secondary, success, warning, danger | |
-| Avatar | image, initials, placeholder | Sizes: sm, md, lg |
-| Icon | SVG component | Lucide icons |
-| Tag | removable, clickable | Para filtros |
-| Tooltip | top, bottom, left, right | |
+| Component | States                                                 | Notes                                      |
+| --------- | ------------------------------------------------------ | ------------------------------------------ |
+| Button    | default, hover, active, disabled, loading              | primary, secondary, outline, ghost, danger |
+| Input     | default, focus, error, disabled                        | Con label + helper text                    |
+| Select    | default, open, disabled                                | Custom dropdown                            |
+| Checkbox  | unchecked, checked, indeterminate, disabled            |                                            |
+| Radio     | unselected, selected, disabled                         |                                            |
+| Badge     | variants: primary, secondary, success, warning, danger |                                            |
+| Avatar    | image, initials, placeholder                           | Sizes: sm, md, lg                          |
+| Icon      | SVG component                                          | Lucide icons                               |
+| Tag       | removable, clickable                                   | Para filtros                               |
+| Tooltip   | top, bottom, left, right                               |                                            |
 
 ### Molecules
 
-| Component | States | Notes |
-|-----------|--------|-------|
-| InputGroup | with icon, with addon | |
-| SearchInput | default, loading, with results | |
-| SelectFilter | single, multi-select | |
-| DatePicker | single, range | Calendar popup |
-| TimePicker | with slots | Based on professional availability |
-| Card | default, hover, selected | |
-| Modal | default, danger, success | Sizes: sm, md, lg |
-| Toast | success, error, warning, info | Auto-dismiss |
-| Dropdown | default, with icons | |
-| Tabs | underline, pill | |
-| Skeleton | text, avatar, card | Pulse animation |
-| StatCard | with icon, with trend | |
+| Component    | States                         | Notes                              |
+| ------------ | ------------------------------ | ---------------------------------- |
+| InputGroup   | with icon, with addon          |                                    |
+| SearchInput  | default, loading, with results |                                    |
+| SelectFilter | single, multi-select           |                                    |
+| DatePicker   | single, range                  | Calendar popup                     |
+| TimePicker   | with slots                     | Based on professional availability |
+| Card         | default, hover, selected       |                                    |
+| Modal        | default, danger, success       | Sizes: sm, md, lg                  |
+| Toast        | success, error, warning, info  | Auto-dismiss                       |
+| Dropdown     | default, with icons            |                                    |
+| Tabs         | underline, pill                |                                    |
+| Skeleton     | text, avatar, card             | Pulse animation                    |
+| StatCard     | with icon, with trend          |                                    |
 
 ### Organisms
 
-| Component | Notes |
-|-----------|-------|
-| Navbar | Logo, nav links, user menu, notifications |
-| Sidebar | Collapsible, with active state |
-| Footer | Links, social, copyright |
-| ServiceCard | For search results |
-| ProfessionalCard | Profile preview |
-| AppointmentCard | With status badge, actions |
-| WalletCard | Balance + quick actions |
-| MetricChart | Line chart for health tracking |
-| CalendarView | Month/week/day, with events |
-| DocumentUploader | Drag & drop, preview |
-| VerificationQueue | Admin table |
+| Component         | Notes                                     |
+| ----------------- | ----------------------------------------- |
+| Navbar            | Logo, nav links, user menu, notifications |
+| Sidebar           | Collapsible, with active state            |
+| Footer            | Links, social, copyright                  |
+| ServiceCard       | For search results                        |
+| ProfessionalCard  | Profile preview                           |
+| AppointmentCard   | With status badge, actions                |
+| WalletCard        | Balance + quick actions                   |
+| MetricChart       | Line chart for health tracking            |
+| CalendarView      | Month/week/day, with events               |
+| DocumentUploader  | Drag & drop, preview                      |
+| VerificationQueue | Admin table                               |
 
 ### Templates
 
@@ -314,6 +340,7 @@ Escala: 12/14/16/18/20/24/30/36/48/60px
 ## 6. Technical Approach
 
 ### Stack
+
 ```
 Frontend:     Next.js 14 (App Router) + TypeScript
 Styling:      Tailwind CSS
@@ -458,6 +485,7 @@ GET    /api/admin/reports
 ```
 
 ### Security Considerations
+
 - Todos los passwords hasheados con bcrypt
 - JWT tokens para sesiones
 - Rate limiting en APIs
@@ -471,6 +499,7 @@ GET    /api/admin/reports
 ## 7. Implementation Phases
 
 ### Phase 1: Foundation
+
 - [x] Setup Next.js + TypeScript + Tailwind
 - [ ] Shadcn/ui installation + customization
 - [ ] Database schema (Prisma)
@@ -478,41 +507,48 @@ GET    /api/admin/reports
 - [ ] Layouts (auth, dashboard, public, admin)
 
 ### Phase 2: Core Auth + Users
+
 - [ ] Registration flow (patient + professional)
 - [ ] Login (email + Google)
 - [ ] Profile management
 - [ ] Document upload for professionals
 
 ### Phase 3: Marketplace
+
 - [ ] Service CRUD
 - [ ] Search + filters
 - [ ] Service detail page
 - [ ] Professional profile
 
 ### Phase 4: Wallet + Payments
+
 - [ ] Wallet creation on user register
 - [ ] Deposit flow (Stripe demo)
 - [ ] Hold/Release logic
 - [ ] Transaction history
 
 ### Phase 5: Appointments
+
 - [ ] Calendar component
 - [ ] Booking flow
 - [ ] Status management
 - [ ] Notifications
 
 ### Phase 6: Health Tracking
+
 - [ ] Metrics CRUD
 - [ ] Readings + charts
 - [ ] Alerts system
 - [ ] Professional prescriptions
 
 ### Phase 7: Admin
+
 - [ ] User management
 - [ ] Verification queue
 - [ ] Reports dashboard
 
 ### Phase 8: Polish
+
 - [ ] Animations + transitions
 - [ ] Loading states
 - [ ] Error handling

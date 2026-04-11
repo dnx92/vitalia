@@ -1,22 +1,22 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
-import { 
-  Users, 
-  UserCheck, 
-  ShieldCheck, 
-  Wallet, 
+import { useEffect, useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
+import {
+  Users,
+  UserCheck,
+  ShieldCheck,
+  Wallet,
   TrendingUp,
   Clock,
   DollarSign,
-  Activity
-} from "lucide-react";
-import { formatCurrency, formatDate } from "@/lib/utils";
-import { useAuthStore } from "@/store";
-import { useRouter } from "next/navigation";
+  Activity,
+} from 'lucide-react';
+import { formatCurrency, formatDate } from '@/lib/utils';
+import { useAuthStore } from '@/store';
+import { useRouter } from 'next/navigation';
 
 interface Stats {
   totalUsers: number;
@@ -55,17 +55,17 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     if (!isAuthenticated) {
-      router.push("/auth/login");
+      router.push('/auth/login');
       return;
     }
     if (user && !user.isAdmin) {
-      router.push("/dashboard");
+      router.push('/dashboard');
       return;
     }
 
     async function fetchStats() {
       try {
-        const res = await fetch("/api/admin/stats");
+        const res = await fetch('/api/admin/stats');
         if (res.ok) {
           const data = await res.json();
           setStats(data.stats);
@@ -73,7 +73,7 @@ export default function AdminDashboard() {
           setRecentTransactions(data.recentTransactions);
         }
       } catch (error) {
-        console.error("Failed to fetch stats:", error);
+        console.error('Failed to fetch stats:', error);
       } finally {
         setLoading(false);
       }
@@ -186,13 +186,16 @@ export default function AdminDashboard() {
                 <p className="text-sm text-[--text-secondary]">No users yet</p>
               ) : (
                 recentUsers.map((u) => (
-                  <div key={u.id} className="flex items-center justify-between border-b border-[--border] pb-3 last:border-0 last:pb-0">
+                  <div
+                    key={u.id}
+                    className="flex items-center justify-between border-b border-[--border] pb-3 last:border-0 last:pb-0"
+                  >
                     <div>
-                      <p className="font-medium">{u.name || "Anonymous"}</p>
+                      <p className="font-medium">{u.name || 'Anonymous'}</p>
                       <p className="text-sm text-[--text-secondary]">{u.email}</p>
                     </div>
                     <div className="text-right">
-                      <Badge variant={u.role === "PROFESSIONAL" ? "secondary" : "outline"}>
+                      <Badge variant={u.role === 'PROFESSIONAL' ? 'secondary' : 'outline'}>
                         {u.role}
                       </Badge>
                       <p className="text-xs text-[--text-secondary] mt-1">
@@ -219,22 +222,23 @@ export default function AdminDashboard() {
                 <p className="text-sm text-[--text-secondary]">No transactions yet</p>
               ) : (
                 recentTransactions.map((t) => (
-                  <div key={t.id} className="flex items-center justify-between border-b border-[--border] pb-3 last:border-0 last:pb-0">
+                  <div
+                    key={t.id}
+                    className="flex items-center justify-between border-b border-[--border] pb-3 last:border-0 last:pb-0"
+                  >
                     <div>
-                      <p className="font-medium">
-                        {t.wallet.user.name || t.wallet.user.email}
-                      </p>
+                      <p className="font-medium">{t.wallet.user.name || t.wallet.user.email}</p>
                       <p className="text-sm text-[--text-secondary]">
-                        {t.type.replace("_", " ").toLowerCase()}
+                        {t.type.replace('_', ' ').toLowerCase()}
                       </p>
                     </div>
                     <div className="text-right">
                       <p className="font-medium">
-                        {t.type.includes("WITHDRAWAL") ? "-" : "+"}
+                        {t.type.includes('WITHDRAWAL') ? '-' : '+'}
                         {formatCurrency(Number(t.amount))}
                       </p>
                       <Badge
-                        variant={t.status === "COMPLETED" ? "default" : "secondary"}
+                        variant={t.status === 'COMPLETED' ? 'default' : 'secondary'}
                         className="text-xs"
                       >
                         {t.status}

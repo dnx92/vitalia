@@ -1,10 +1,7 @@
-import type { NextConfig } from "next";
-import { proxy } from "./src/proxy";
+import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   /* config options here */
 };
-
-export { proxy };
 
 export default nextConfig;

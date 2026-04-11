@@ -1,39 +1,39 @@
-import NextAuth from "next-auth";
-import { PrismaAdapter } from "@auth/prisma-adapter";
-import { prisma } from "@/lib/prisma";
-import GoogleProvider from "next-auth/providers/google";
-import CredentialsProvider from "next-auth/providers/credentials";
-import bcrypt from "bcryptjs";
+import NextAuth from 'next-auth';
+import { PrismaAdapter } from '@auth/prisma-adapter';
+import { prisma } from '@/lib/prisma';
+import GoogleProvider from 'next-auth/providers/google';
+import CredentialsProvider from 'next-auth/providers/credentials';
+import bcrypt from 'bcryptjs';
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter: PrismaAdapter(prisma),
-  session: { 
-    strategy: "jwt",
+  session: {
+    strategy: 'jwt',
     maxAge: 30 * 24 * 60 * 60, // 30 days
   },
   pages: {
-    signIn: "/auth/login",
-    error: "/auth/error",
-    verifyRequest: "/auth/verify",
+    signIn: '/auth/login',
+    error: '/auth/error',
+    verifyRequest: '/auth/verify',
   },
   providers: [
     GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID || "",
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
+      clientId: process.env.GOOGLE_CLIENT_ID || '',
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
       authorization: {
         params: {
-          prompt: "consent",
-          access_type: "offline",
-          response_type: "code",
+          prompt: 'consent',
+          access_type: 'offline',
+          response_type: 'code',
         },
       },
     }),
     CredentialsProvider({
-      id: "credentials",
-      name: "credentials",
+      id: 'credentials',
+      name: 'credentials',
       credentials: {
-        email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" },
+        email: { label: 'Email', type: 'email' },
+        password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
@@ -48,10 +48,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           return null;
         }
 
-        const isValid = await bcrypt.compare(
-          credentials.password as string,
-          user.password
-        );
+        const isValid = await bcrypt.compare(credentials.password as string, user.password);
 
         if (!isValid) {
           return null;
@@ -69,16 +66,16 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     }),
   ],
   callbacks: {
-    async signIn({ user, account, profile }) {
+    async signIn() {
       return true;
     },
-    async jwt({ token, user, account, trigger, session }) {
+    async jwt({ token, user, account }) {
       if (user) {
-        token.id = user.id as string;
-        token.email = user.email as string;
-        token.name = user.name as string;
-        token.picture = (user as any).image || (user as any).avatar;
-        
+        token.id = user.id;
+        token.email = user.email;
+        token.name = user.name;
+        token.picture = (user as { image?: string }).image || (user as { avatar?: string }).avatar;
+
         const dbUser = await prisma.user.findUnique({
           where: { email: user.email as string },
         });
@@ -87,11 +84,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           token.isAdmin = dbUser.isAdmin;
         }
       }
-      
+
       if (account) {
         token.provider = account.provider;
       }
-      
+
       return token;
     },
     async session({ session, token }) {
@@ -100,19 +97,22 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         session.user.email = token.email as string;
         session.user.name = token.name as string;
         session.user.image = token.picture as string;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (session.user as any).role = token.role;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (session.user as any).isAdmin = token.isAdmin;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (session.user as any).provider = token.provider;
       }
       return session;
     },
   },
   events: {
-    async signIn({ user, account, profile, isNewUser }) {
-      console.log("SignIn event:", { 
-        user: user?.email, 
+    async signIn({ user, account, isNewUser }) {
+      console.log('SignIn event:', {
+        user: user?.email,
         provider: account?.provider,
-        isNewUser 
+        isNewUser,
       });
     },
   },

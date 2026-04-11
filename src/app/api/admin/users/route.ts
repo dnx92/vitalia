@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { NextRequest } from 'next/server';
+import type { Prisma, UserRole } from '@prisma/client';
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -9,8 +10,8 @@ export async function GET(request: NextRequest) {
   const role = searchParams.get('role');
   const search = searchParams.get('search');
 
-  const where: any = {};
-  if (role) where.role = role;
+  const where: Prisma.UserWhereInput = {};
+  if (role) where.role = role as UserRole;
   if (search) {
     where.OR = [
       { name: { contains: search, mode: 'insensitive' } },

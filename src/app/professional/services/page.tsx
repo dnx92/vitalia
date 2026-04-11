@@ -1,56 +1,56 @@
-"use client";
+'use client';
 
-import React, { useState } from "react";
-import Link from "next/link";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Modal } from "@/components/ui/modal";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { formatCurrency } from "@/lib/utils";
-import { 
-  Plus, 
-  Edit, 
-  Trash2, 
-  Clock, 
-  MapPin, 
+import React, { useState } from 'react';
+import Link from 'next/link';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Modal } from '@/components/ui/modal';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { formatCurrency } from '@/lib/utils';
+import {
+  Plus,
+  Edit,
+  Trash2,
+  Clock,
+  MapPin,
   DollarSign,
   Eye,
   Copy,
-  MoreVertical
-} from "lucide-react";
+  MoreVertical,
+} from 'lucide-react';
 
 const mockServices = [
-  { 
-    id: "1", 
-    title: "Cardiology Consultation", 
-    description: "Initial consultation for cardiovascular assessment",
+  {
+    id: '1',
+    title: 'Cardiology Consultation',
+    description: 'Initial consultation for cardiovascular assessment',
     price: 15000,
     duration: 45,
-    location: "New York, NY",
+    location: 'New York, NY',
     isActive: true,
-    bookings: 24
+    bookings: 24,
   },
-  { 
-    id: "2", 
-    title: "Follow-up Visit", 
-    description: "Follow-up consultation for existing patients",
+  {
+    id: '2',
+    title: 'Follow-up Visit',
+    description: 'Follow-up consultation for existing patients',
     price: 8500,
     duration: 30,
-    location: "New York, NY",
+    location: 'New York, NY',
     isActive: true,
-    bookings: 56
+    bookings: 56,
   },
-  { 
-    id: "3", 
-    title: "ECG Test", 
-    description: "Electrocardiogram with full analysis",
+  {
+    id: '3',
+    title: 'ECG Test',
+    description: 'Electrocardiogram with full analysis',
     price: 20000,
     duration: 60,
-    location: "New York, NY",
+    location: 'New York, NY',
     isActive: false,
-    bookings: 12
+    bookings: 12,
   },
 ];
 
@@ -81,8 +81,8 @@ export default function ServicesPage() {
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-2">
                     <h3 className="text-lg font-bold text-slate-900">{service.title}</h3>
-                    <Badge variant={service.isActive ? "success" : "secondary"}>
-                      {service.isActive ? "Active" : "Inactive"}
+                    <Badge variant={service.isActive ? 'success' : 'secondary'}>
+                      {service.isActive ? 'Active' : 'Inactive'}
                     </Badge>
                   </div>
                   <p className="text-slate-500 font-medium mb-4">{service.description}</p>
@@ -112,7 +112,11 @@ export default function ServicesPage() {
                   <Button variant="ghost" size="sm">
                     <Edit className="w-4 h-4" />
                   </Button>
-                  <Button variant="ghost" size="sm" className="text-red-600 hover:text-red-700 hover:bg-red-50">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                  >
                     <Trash2 className="w-4 h-4" />
                   </Button>
                 </div>
@@ -130,7 +134,9 @@ export default function ServicesPage() {
               <Plus className="w-10 h-10 text-slate-400" />
             </div>
             <h3 className="text-lg font-bold text-slate-900 mb-2">No services yet</h3>
-            <p className="text-slate-500 mb-6">Create your first service to start accepting appointments</p>
+            <p className="text-slate-500 mb-6">
+              Create your first service to start accepting appointments
+            </p>
             <Button onClick={() => setShowAddModal(true)}>
               <Plus className="w-4 h-4 mr-2" />
               Add Service
@@ -158,9 +164,7 @@ export default function ServicesPage() {
             <Button variant="outline" onClick={() => setShowAddModal(false)}>
               Cancel
             </Button>
-            <Button onClick={() => setShowAddModal(false)}>
-              Create Service
-            </Button>
+            <Button onClick={() => setShowAddModal(false)}>Create Service</Button>
           </div>
         </div>
       </Modal>

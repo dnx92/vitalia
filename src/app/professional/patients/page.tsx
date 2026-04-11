@@ -1,73 +1,65 @@
-"use client";
+'use client';
 
-import React, { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Avatar } from "@/components/ui/avatar";
-import { Input } from "@/components/ui/input";
-import { formatDate } from "@/lib/utils";
-import { 
-  Search, 
-  Filter,
-  Calendar,
-  Phone,
-  Mail,
-  Clock,
-  ChevronRight,
-  FileText
-} from "lucide-react";
+import React, { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Avatar } from '@/components/ui/avatar';
+import { Input } from '@/components/ui/input';
+import { formatDate } from '@/lib/utils';
+import { Search, Filter, Calendar, Phone, Mail, Clock, ChevronRight, FileText } from 'lucide-react';
 
 const mockPatients = [
-  { 
-    id: "1", 
-    name: "John Smith", 
-    email: "john.smith@email.com",
-    phone: "+1 (555) 123-4567",
-    lastVisit: "2026-04-05",
+  {
+    id: '1',
+    name: 'John Smith',
+    email: 'john.smith@email.com',
+    phone: '+1 (555) 123-4567',
+    lastVisit: '2026-04-05',
     totalVisits: 8,
     upcomingAppointments: 2,
-    status: "active"
+    status: 'active',
   },
-  { 
-    id: "2", 
-    name: "Sarah Johnson", 
-    email: "sarah.j@email.com",
-    phone: "+1 (555) 234-5678",
-    lastVisit: "2026-03-28",
+  {
+    id: '2',
+    name: 'Sarah Johnson',
+    email: 'sarah.j@email.com',
+    phone: '+1 (555) 234-5678',
+    lastVisit: '2026-03-28',
     totalVisits: 12,
     upcomingAppointments: 1,
-    status: "active"
+    status: 'active',
   },
-  { 
-    id: "3", 
-    name: "Michael Brown", 
-    email: "m.brown@email.com",
-    phone: "+1 (555) 345-6789",
-    lastVisit: "2026-02-15",
+  {
+    id: '3',
+    name: 'Michael Brown',
+    email: 'm.brown@email.com',
+    phone: '+1 (555) 345-6789',
+    lastVisit: '2026-02-15',
     totalVisits: 3,
     upcomingAppointments: 0,
-    status: "inactive"
+    status: 'inactive',
   },
-  { 
-    id: "4", 
-    name: "Emily Davis", 
-    email: "emily.d@email.com",
-    phone: "+1 (555) 456-7890",
-    lastVisit: "2026-04-08",
+  {
+    id: '4',
+    name: 'Emily Davis',
+    email: 'emily.d@email.com',
+    phone: '+1 (555) 456-7890',
+    lastVisit: '2026-04-08',
     totalVisits: 15,
     upcomingAppointments: 3,
-    status: "active"
+    status: 'active',
   },
 ];
 
 export default function PatientsPage() {
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState('');
   const [patients] = useState(mockPatients);
 
-  const filteredPatients = patients.filter(patient => 
-    patient.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    patient.email.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredPatients = patients.filter(
+    (patient) =>
+      patient.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      patient.email.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
@@ -95,7 +87,9 @@ export default function PatientsPage() {
         <Card className="p-4">
           <CardContent className="p-0">
             <p className="text-sm text-slate-500">Active</p>
-            <p className="text-2xl font-bold text-emerald-600">{patients.filter(p => p.status === "active").length}</p>
+            <p className="text-2xl font-bold text-emerald-600">
+              {patients.filter((p) => p.status === 'active').length}
+            </p>
           </CardContent>
         </Card>
         <Card className="p-4">
@@ -144,7 +138,7 @@ export default function PatientsPage() {
         <CardContent className="p-0">
           <div className="divide-y divide-slate-100">
             {filteredPatients.map((patient) => (
-              <div 
+              <div
                 key={patient.id}
                 className="flex items-center gap-4 p-4 hover:bg-slate-50 transition-colors cursor-pointer"
               >
@@ -152,7 +146,10 @@ export default function PatientsPage() {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <p className="font-semibold text-slate-900 truncate">{patient.name}</p>
-                    <Badge variant={patient.status === "active" ? "success" : "secondary"} className="text-xs">
+                    <Badge
+                      variant={patient.status === 'active' ? 'success' : 'secondary'}
+                      className="text-xs"
+                    >
                       {patient.status}
                     </Badge>
                   </div>

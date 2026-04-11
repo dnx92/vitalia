@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import * as React from "react";
-import { cn } from "@/lib/utils";
-import { X } from "lucide-react";
-import { Button } from "./button";
+import * as React from 'react';
+import { cn } from '@/lib/utils';
+import { X } from 'lucide-react';
+import { Button } from './button';
 
 interface ModalProps {
   isOpen: boolean;
@@ -11,15 +11,15 @@ interface ModalProps {
   title?: string;
   description?: string;
   children: React.ReactNode;
-  size?: "sm" | "md" | "lg" | "xl";
+  size?: 'sm' | 'md' | 'lg' | 'xl';
   showClose?: boolean;
 }
 
 const sizeClasses = {
-  sm: "max-w-sm",
-  md: "max-w-md",
-  lg: "max-w-2xl",
-  xl: "max-w-4xl",
+  sm: 'max-w-sm',
+  md: 'max-w-md',
+  lg: 'max-w-2xl',
+  xl: 'max-w-4xl',
 };
 
 export function Modal({
@@ -28,47 +28,47 @@ export function Modal({
   title,
   description,
   children,
-  size = "md",
+  size = 'md',
   showClose = true,
 }: ModalProps) {
   React.useEffect(() => {
     if (isOpen) {
-      document.body.style.overflow = "hidden";
+      document.body.style.overflow = 'hidden';
     } else {
-      document.body.style.overflow = "unset";
+      document.body.style.overflow = 'unset';
     }
     return () => {
-      document.body.style.overflow = "unset";
+      document.body.style.overflow = 'unset';
     };
   }, [isOpen]);
 
   React.useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === 'Escape') onClose();
     };
     if (isOpen) {
-      document.addEventListener("keydown", handleEscape);
+      document.addEventListener('keydown', handleEscape);
     }
-    return () => document.removeEventListener("keydown", handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
   }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div 
+      <div
         className="absolute inset-0 bg-black/50 backdrop-blur-sm animate-fade-in"
         onClick={onClose}
         aria-hidden="true"
       />
       <div
         className={cn(
-          "relative z-10 w-full bg-white rounded-2xl shadow-2xl animate-scale-in",
+          'relative z-10 w-full bg-white rounded-2xl shadow-2xl animate-scale-in',
           sizeClasses[size]
         )}
         role="dialog"
         aria-modal="true"
-        aria-labelledby={title ? "modal-title" : undefined}
+        aria-labelledby={title ? 'modal-title' : undefined}
       >
         {(title || showClose) && (
           <div className="flex items-start justify-between p-6 pb-0">
@@ -78,11 +78,7 @@ export function Modal({
                   {title}
                 </h2>
               )}
-              {description && (
-                <p className="mt-1 text-sm text-slate-500">
-                  {description}
-                </p>
-              )}
+              {description && <p className="mt-1 text-sm text-slate-500">{description}</p>}
             </div>
             {showClose && (
               <button

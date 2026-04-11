@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import * as React from "react";
-import { cn } from "@/lib/utils";
-import { CheckCircle, XCircle, AlertTriangle, Info, X } from "lucide-react";
+import * as React from 'react';
+import { cn } from '@/lib/utils';
+import { CheckCircle, XCircle, AlertTriangle, Info, X } from 'lucide-react';
 
-type ToastVariant = "success" | "error" | "warning" | "info";
+type ToastVariant = 'success' | 'error' | 'warning' | 'info';
 
 interface Toast {
   id: string;
@@ -15,7 +15,7 @@ interface Toast {
 
 interface ToastContextType {
   toasts: Toast[];
-  addToast: (toast: Omit<Toast, "id">) => void;
+  addToast: (toast: Omit<Toast, 'id'>) => void;
   removeToast: (id: string) => void;
 }
 
@@ -24,7 +24,7 @@ const ToastContext = React.createContext<ToastContextType | undefined>(undefined
 export function ToastProvider({ children }: { children: React.ReactNode }) {
   const [toasts, setToasts] = React.useState<Toast[]>([]);
 
-  const addToast = React.useCallback((toast: Omit<Toast, "id">) => {
+  const addToast = React.useCallback((toast: Omit<Toast, 'id'>) => {
     const id = Math.random().toString(36).substr(2, 9);
     setToasts((prev) => [...prev, { ...toast, id }]);
     setTimeout(() => {
@@ -47,23 +47,24 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
 export function useToast() {
   const context = React.useContext(ToastContext);
   if (!context) {
-    throw new Error("useToast must be used within a ToastProvider");
+    throw new Error('useToast must be used within a ToastProvider');
   }
   return context;
 }
 
-const variantStyles: Record<ToastVariant, { bg: string; border: string; icon: React.ElementType }> = {
-  success: { bg: "bg-emerald-500", border: "border-emerald-600", icon: CheckCircle },
-  error: { bg: "bg-red-500", border: "border-red-600", icon: XCircle },
-  warning: { bg: "bg-amber-500", border: "border-amber-600", icon: AlertTriangle },
-  info: { bg: "bg-blue-500", border: "border-blue-600", icon: Info },
-};
+const variantStyles: Record<ToastVariant, { bg: string; border: string; icon: React.ElementType }> =
+  {
+    success: { bg: 'bg-emerald-500', border: 'border-emerald-600', icon: CheckCircle },
+    error: { bg: 'bg-red-500', border: 'border-red-600', icon: XCircle },
+    warning: { bg: 'bg-amber-500', border: 'border-amber-600', icon: AlertTriangle },
+    info: { bg: 'bg-blue-500', border: 'border-blue-600', icon: Info },
+  };
 
-function ToastContainer({ 
-  toasts, 
-  removeToast 
-}: { 
-  toasts: Toast[]; 
+function ToastContainer({
+  toasts,
+  removeToast,
+}: {
+  toasts: Toast[];
   removeToast: (id: string) => void;
 }) {
   return (
@@ -74,16 +75,14 @@ function ToastContainer({
           <div
             key={toast.id}
             className={cn(
-              "flex items-start gap-3 p-4 rounded-xl shadow-xl border animate-slide-in text-white",
+              'flex items-start gap-3 p-4 rounded-xl shadow-xl border animate-slide-in text-white',
               bg
             )}
           >
             <Icon className="h-5 w-5 shrink-0 mt-0.5" />
             <div className="flex-1 min-w-0">
               <p className="text-sm font-semibold">{toast.title}</p>
-              {toast.message && (
-                <p className="mt-1 text-sm text-white/80">{toast.message}</p>
-              )}
+              {toast.message && <p className="mt-1 text-sm text-white/80">{toast.message}</p>}
             </div>
             <button
               onClick={() => removeToast(toast.id)}
