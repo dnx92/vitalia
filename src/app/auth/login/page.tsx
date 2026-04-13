@@ -21,8 +21,7 @@ export default function LoginPage() {
   const [isSocialLoading, setIsSocialLoading] = useState<string | null>(null);
   const [error, setError] = useState('');
 
-  const isGoogleConfigured =
-    GOOGLE_CLIENT_ID && GOOGLE_CLIENT_ID !== 'your-google-client-id.apps.googleusercontent.com';
+  const isGoogleConfigured = !!GOOGLE_CLIENT_ID;
   const isAppleConfigured = APPLE_CLIENT_ID && APPLE_CLIENT_ID !== 'com.yourapp.vitalia';
 
   const handleSubmit = async (e: React.FormEvent) => {
