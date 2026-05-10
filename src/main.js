@@ -1,6 +1,6 @@
 import './style.css'
 
-const API_URL = 'http://localhost:3000/api/submit-lead';
+const API_URL = import.meta.env.PROD ? '/api/submit-lead' : 'http://localhost:3000/api/submit-lead';
 
 // ===== Form Handling =====
 function setupForm(formId, successId) {
