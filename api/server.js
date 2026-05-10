@@ -109,7 +109,18 @@ async function submitToAirtable(fields) {
 
 // Main endpoint
 // Debug endpoint
-app.get('/api/health', (req, res) => {
+app.get('/api/health', async (req, res) => {
+  let airtableTest = null;
+  try {
+    const atRes = await axios.get(
+      `https://api.airtable.com/v0/${process.env.AIRTABLE_BASE_ID}/${encodeURIComponent(process.env.AIRTABLE_TABLE_NAME)}?maxRecords=1`,
+      { headers: { 'Authorization': `Bearer ${process.env.AIRTABLE_API_KEY}` }, timeout: 10000 }
+    );
+    airtableTest = { ok: true, status: atRes.status };
+  } catch (err) {
+    airtableTest = { ok: false, status: err.response?.status, message: err.response?.data?.error?.message || err.message };
+  }
+
   res.json({
     ok: true,
     env: {
@@ -118,9 +129,9 @@ app.get('/api/health', (req, res) => {
       AIRTABLE_TABLE: !!process.env.AIRTABLE_TABLE_NAME,
       AIRTABLE_KEY: !!process.env.AIRTABLE_API_KEY,
       SMTP_USER: !!process.env.SMTP_USER,
-      SMTP_PASS: !!process.env.SMTP_PASS,
-      PORT: process.env.PORT || 'not set'
-    }
+      SMTP_PASS: !!process.env.SMTP_PASS
+    },
+    airtable: airtableTest
   });
 });
 
