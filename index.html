@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Premium dental care in Buenos Aires. Save up to 70% on high-quality dental treatments. American-standard care at a fraction of US prices." />
+    <title>Vitalia One | Premium Dental Care in Buenos Aires</title>
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <header class="header">
+      <nav class="nav container">
+        <a href="/" class="logo">Vitalia<span>One</span></a>
+        <ul class="nav-links">
+          <li><a href="#services">Services</a></li>
+          <li><a href="#why-us">Why Us</a></li>
+          <li><a href="#testimonials">Testimonials</a></li>
+          <li><a href="#contact" class="btn btn-primary">Book Consultation</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="container">
+          <div class="hero-header">
+            <h1>Premium Dental Care in Buenos Aires</h1>
+            <p class="hero-subtitle">World-class dentistry at 70% less than US prices. Experience Argentina's finest dental treatments with American-standard quality.</p>
+          </div>
+          <div class="hero-body">
+            <div class="hero-map">
+              <iframe 
+                src="https://www.openstreetmap.org/export/embed.html?bbox=-58.5,-34.7,-58.3,-34.5&layer=mapnik&marker=-34.6037,-58.3816"
+                width="100%" 
+                height="450" 
+                style="border:0;" 
+                allowfullscreen="" 
+                loading="lazy">
+              </iframe>
+            </div>
+            <div class="hero-form-wrapper">
+              <div class="hero-form-card">
+                <h3>Request an Appointment</h3>
+                <form id="hero-form" class="hero-form">
+                  <div class="form-group">
+                    <label for="hero-name">Full Name *</label>
+                    <input type="text" id="hero-name" name="name" required />
+                  </div>
+                  <div class="form-group">
+                    <label for="hero-email">Email *</label>
+                    <input type="email" id="hero-email" name="email" required />
+                  </div>
+                  <div class="form-group">
+                    <label for="hero-phone">Phone / WhatsApp *</label>
+                    <input type="tel" id="hero-phone" name="phone" placeholder="+1 (555) 123-4567" required />
+                  </div>
+                  <div class="form-group">
+                    <label for="hero-age">Age Range</label>
+                    <select id="hero-age" name="age">
+                      <option value="">Select age range...</option>
+                      <option value="under-30">Under 30</option>
+                      <option value="30-45">30 - 45</option>
+                      <option value="45-60">45 - 60</option>
+                      <option value="60+">60+</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="hero-location">Location (US State)</label>
+                    <input type="text" id="hero-location" name="location" placeholder="e.g. Florida" />
+                  </div>
+                  <div class="form-group">
+                    <label for="hero-service">Treatment Needed *</label>
+                    <select id="hero-service" name="service" required>
+                      <option value="">Select treatment...</option>
+                      <option value="implants">Dental Implants</option>
+                      <option value="smile-makeover">Smile Makeover / Veneers</option>
+                      <option value="full-restoration">Full Mouth Restoration</option>
+                      <option value="all-on-4">All-on-4 Implants</option>
+                      <option value="crowns-bridges">Crowns & Bridges</option>
+                      <option value="whitening">Teeth Whitening</option>
+                      <option value="root-canal">Root Canal / Endodontics</option>
+                      <option value="checkup">General Checkup & Cleaning</option>
+                      <option value="other">Other / Not Sure</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="hero-budget">Budget *</label>
+                    <select id="hero-budget" name="budget" required>
+                      <option value="">Select budget range...</option>
+                      <option value="under-3k">Under $3,000</option>
+                      <option value="$3k-$7k">$3,000 - $7,000</option>
+                      <option value="$7k-$15k">$7,000 - $15,000</option>
+                      <option value="$15k-$25k">$15,000 - $25,000</option>
+                      <option value="$25k+">$25,000+</option>
+                      <option value="unsure">Not Sure / Need Quote</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="hero-timeline">When Are You Planning to Travel?</label>
+                    <select id="hero-timeline" name="timeline">
+                      <option value="">Select timeframe...</option>
+                      <option value="asap">As soon as possible</option>
+                      <option value="1-month">Within 1 month</option>
+                      <option value="3-months">Within 3 months</option>
+                      <option value="6-months">Within 6 months</option>
+                      <option value="exploring">Just exploring / No rush</option>
+                    </select>
+                  </div>
+                  <div class="form-group full-width">
+                    <label for="hero-message">Medical History / Additional Info</label>
+                    <textarea id="hero-message" name="message" rows="3" placeholder="Previous dental work, allergies, medications, or any specific concerns..."></textarea>
+                  </div>
+                  <button type="submit" class="btn btn-primary btn-lg" style="width:100%;">Get My Treatment Plan</button>
+                </form>
+                <div id="hero-form-success" class="form-success hidden">
+                  <h3>Thank you!</h3>
+                  <p>We've received your information and will contact you within 24 hours with a personalized treatment plan.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="services" class="services parallax-section">
+        <div class="container">
+          <h2 class="reveal">Our Premium Services</h2>
+          <p class="section-subtitle reveal">Comprehensive dental solutions tailored for international patients</p>
+          <div class="services-grid">
+            <div class="service-card reveal delay-1">
+              <div class="service-icon">🦷</div>
+              <h3>Dental Implants</h3>
+              <p>State-of-the-art titanium implants with lifetime warranty. Same quality as US top clinics.</p>
+              <span class="service-price">From $900</span>
+            </div>
+            <div class="service-card reveal delay-2">
+              <div class="service-icon">✨</div>
+              <h3>Smile Makeovers</h3>
+              <p>Complete aesthetic transformations with veneers, whitening, and contouring.</p>
+              <span class="service-price">From $2,500</span>
+            </div>
+            <div class="service-card reveal delay-3">
+              <div class="service-icon">🔧</div>
+              <h3>Full Mouth Restoration</h3>
+              <p>Comprehensive rehabilitation with implants, crowns, and bridges.</p>
+              <span class="service-price">From $8,000</span>
+            </div>
+            <div class="service-card reveal delay-4">
+              <div class="service-icon">😊</div>
+              <h3>All-on-4 Implants</h3>
+              <p>Fixed full-arch restoration in just 24 hours. Walk out with a new smile.</p>
+              <span class="service-price">From $6,500</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="why-us" class="why-us">
+        <div class="container">
+          <h2 class="reveal">Why Choose Vitalia One</h2>
+          <div class="reasons-grid">
+            <div class="reason reveal-left delay-1">
+              <h3>US-Trained Dentists</h3>
+              <p>Our specialists trained at top American universities and stay current with FDA-approved techniques.</p>
+            </div>
+            <div class="reason reveal-right delay-2">
+              <h3>FDA-Approved Materials</h3>
+              <p>We use the same implants, ceramics, and materials as leading US dental clinics.</p>
+            </div>
+            <div class="reason reveal-left delay-3">
+              <h3>Concierge Service</h3>
+              <p>Airport pickup, luxury accommodation arrangements, and 24/7 patient support included.</p>
+            </div>
+            <div class="reason reveal-right delay-4">
+              <h3>Transparent Pricing</h3>
+              <p>No hidden fees. Get a detailed treatment plan and exact quote before you travel.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="stats">
+        <div class="container">
+          <div class="stats-grid">
+            <div class="stat-item reveal delay-1">
+              <span class="stat-icon">🦷</span>
+              <div class="stat-number" data-target="10000" data-suffix="+">0</div>
+              <div class="stat-label">Patients Treated</div>
+            </div>
+            <div class="stat-item reveal delay-2">
+              <span class="stat-icon">💰</span>
+              <div class="stat-number" data-target="70" data-suffix="%">0</div>
+              <div class="stat-label">Average Savings vs US</div>
+            </div>
+            <div class="stat-item reveal delay-3">
+              <span class="stat-icon">👨‍⚕️</span>
+              <div class="stat-number" data-target="50" data-suffix="+">0</div>
+              <div class="stat-label">US-Trained Specialists</div>
+            </div>
+            <div class="stat-item reveal delay-4">
+              <span class="stat-icon">⭐</span>
+              <div class="stat-number" data-target="98" data-suffix="%">0</div>
+              <div class="stat-label">Patient Satisfaction</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="testimonials" class="testimonials">
+        <div class="container">
+          <h2 class="reveal">What Our Patients Say</h2>
+          <div class="testimonials-grid">
+            <blockquote class="testimonial reveal delay-1">
+              <p>"Saved $15,000 on my full mouth restoration. The quality was identical to what I was quoted in Miami."</p>
+              <cite>- Robert K., Florida</cite>
+            </blockquote>
+            <blockquote class="testimonial reveal delay-2">
+              <p>"Dr. Martinez was incredible. Felt like I was at a spa, not a dental clinic. Worth the trip!"</p>
+              <cite>- Jennifer L., Texas</cite>
+            </blockquote>
+            <blockquote class="testimonial reveal delay-3">
+              <p>"Got 6 implants and a smile makeover for less than 3 implants would cost back home. Highly recommend."</p>
+              <cite>- Michael S., California</cite>
+            </blockquote>
+          </div>
+        </div>
+      </section>
+
+      <section id="contact" class="contact">
+        <div class="container">
+          <h2 class="reveal">Request an Appointment</h2>
+          <p class="section-subtitle reveal">Fill out the form below and we'll send you a personalized treatment plan within 24 hours.</p>
+          <form id="contact-form" class="contact-form">
+            <div class="form-group">
+              <label for="name">Full Name *</label>
+              <input type="text" id="name" name="name" required />
+            </div>
+            <div class="form-group">
+              <label for="email">Email *</label>
+              <input type="email" id="email" name="email" required />
+            </div>
+            <div class="form-group">
+              <label for="phone">Phone / WhatsApp *</label>
+              <input type="tel" id="phone" name="phone" placeholder="+1 (555) 123-4567" required />
+            </div>
+            <div class="form-group">
+              <label for="age">Age Range</label>
+              <select id="age" name="age">
+                <option value="">Select age range...</option>
+                <option value="under-30">Under 30</option>
+                <option value="30-45">30 - 45</option>
+                <option value="45-60">45 - 60</option>
+                <option value="60+">60+</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="location">Location (US State)</label>
+              <input type="text" id="location" name="location" placeholder="e.g. Florida" />
+            </div>
+            <div class="form-group">
+              <label for="service">Treatment Needed *</label>
+              <select id="service" name="service" required>
+                <option value="">Select treatment...</option>
+                <option value="implants">Dental Implants</option>
+                <option value="smile-makeover">Smile Makeover / Veneers</option>
+                <option value="full-restoration">Full Mouth Restoration</option>
+                <option value="all-on-4">All-on-4 Implants</option>
+                <option value="crowns-bridges">Crowns & Bridges</option>
+                <option value="whitening">Teeth Whitening</option>
+                <option value="root-canal">Root Canal / Endodontics</option>
+                <option value="checkup">General Checkup & Cleaning</option>
+                <option value="other">Other / Not Sure</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="budget">Budget *</label>
+              <select id="budget" name="budget" required>
+                <option value="">Select budget range...</option>
+                <option value="under-3k">Under $3,000</option>
+                <option value="$3k-$7k">$3,000 - $7,000</option>
+                <option value="$7k-$15k">$7,000 - $15,000</option>
+                <option value="$15k-$25k">$15,000 - $25,000</option>
+                <option value="$25k+">$25,000+</option>
+                <option value="unsure">Not Sure / Need Quote</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="timeline">When Are You Planning to Travel?</label>
+              <select id="timeline" name="timeline">
+                <option value="">Select timeframe...</option>
+                <option value="asap">As soon as possible</option>
+                <option value="1-month">Within 1 month</option>
+                <option value="3-months">Within 3 months</option>
+                <option value="6-months">Within 6 months</option>
+                <option value="exploring">Just exploring / No rush</option>
+              </select>
+            </div>
+            <div class="form-group full-width">
+              <label for="message">Medical History / Additional Info</label>
+              <textarea id="message" name="message" rows="4" placeholder="Previous dental work, allergies, medications, or any specific concerns..."></textarea>
+            </div>
+            <div class="form-group full-width recaptcha-notice">
+              <p><small>This site is protected by reCAPTCHA. The Google <a href="https://policies.google.com/privacy">Privacy Policy</a> and <a href="https://policies.google.com/terms">Terms of Service</a> apply.</small></p>
+            </div>
+            <button type="submit" class="btn btn-primary btn-lg">Get My Treatment Plan</button>
+          </form>
+          <div id="form-success" class="form-success hidden">
+            <h3>Thank you!</h3>
+            <p>We've received your information and will send your personalized treatment plan within 24 hours.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-brand">
+            <h3>Vitalia<span>One</span></h3>
+            <p>Premium dental care in Buenos Aires, Argentina.</p>
+          </div>
+          <div class="footer-contact">
+            <h4>Contact</h4>
+            <p>Email: info@vitaliaone.com</p>
+            <p>WhatsApp: +54 9 11 1234 5678</p>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p>&copy; 2026 Vitalia One. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
