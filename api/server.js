@@ -108,6 +108,22 @@ async function submitToAirtable(fields) {
 }
 
 // Main endpoint
+// Debug endpoint
+app.get('/api/health', (req, res) => {
+  res.json({
+    ok: true,
+    env: {
+      GEMINI: !!process.env.GEMINI_API_KEY,
+      AIRTABLE_BASE: !!process.env.AIRTABLE_BASE_ID,
+      AIRTABLE_TABLE: !!process.env.AIRTABLE_TABLE_NAME,
+      AIRTABLE_KEY: !!process.env.AIRTABLE_API_KEY,
+      SMTP_USER: !!process.env.SMTP_USER,
+      SMTP_PASS: !!process.env.SMTP_PASS,
+      PORT: process.env.PORT || 'not set'
+    }
+  });
+});
+
 app.post('/api/submit-lead', async (req, res) => {
   try {
     const data = req.body;
