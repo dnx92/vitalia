@@ -125,11 +125,11 @@ app.get('/api/health', async (req, res) => {
     ok: true,
     env: {
       GEMINI: !!process.env.GEMINI_API_KEY,
-      AIRTABLE_BASE: !!process.env.AIRTABLE_BASE_ID,
-      AIRTABLE_TABLE: !!process.env.AIRTABLE_TABLE_NAME,
-      AIRTABLE_KEY: !!process.env.AIRTABLE_API_KEY,
-      SMTP_USER: !!process.env.SMTP_USER,
-      SMTP_PASS: !!process.env.SMTP_PASS
+      AIRTABLE_BASE: process.env.AIRTABLE_BASE_ID,
+      AIRTABLE_TABLE: process.env.AIRTABLE_TABLE_NAME,
+      AIRTABLE_KEY_LEN: process.env.AIRTABLE_API_KEY?.length,
+      AIRTABLE_KEY_START: process.env.AIRTABLE_API_KEY?.substring(0, 12),
+      SMTP_USER: !!process.env.SMTP_USER
     },
     airtable: airtableTest
   });
