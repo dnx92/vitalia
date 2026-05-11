@@ -633,6 +633,75 @@ body {
   animation: fadeInRight 1s cubic-bezier(0.16, 1, 0.3, 1) 0.4s forwards;
 }
 
+/* Appointment Banner */
+.appointment-banner {
+  position: relative;
+  height: 70vh;
+  min-height: 500px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background: url('/Cataratas-de-Iguazu.webp') center/cover no-repeat;
+  background-attachment: fixed;
+  overflow: hidden;
+}
+
+.banner-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(26,54,93,0.75), rgba(42,74,127,0.55), rgba(0,0,0,0.4));
+  z-index: 1;
+}
+
+.banner-content {
+  position: relative;
+  z-index: 2;
+  max-width: 800px;
+  padding: 0 24px;
+}
+
+.banner-title {
+  font-size: 56px;
+  font-weight: 700;
+  color: var(--color-white);
+  margin-bottom: 20px;
+  text-shadow: 0 2px 20px rgba(0,0,0,0.3);
+  animation: fadeInUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.banner-subtitle {
+  font-size: 20px;
+  color: rgba(255,255,255,0.9);
+  margin-bottom: 40px;
+  line-height: 1.6;
+  animation: fadeInUp 1s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards;
+  opacity: 0;
+}
+
+.appointment-banner .btn {
+  animation: fadeInUp 1s cubic-bezier(0.16, 1, 0.3, 1) 0.3s forwards;
+  opacity: 0;
+  font-size: 18px;
+  padding: 18px 40px;
+}
+
+@media (max-width: 768px) {
+  .appointment-banner {
+    height: 60vh;
+    min-height: 400px;
+    background-attachment: scroll;
+  }
+
+  .banner-title {
+    font-size: 36px;
+  }
+
+  .banner-subtitle {
+    font-size: 16px;
+  }
+}
+
 /* Service cards */
 .service-card {
   transform-style: preserve-3d;
