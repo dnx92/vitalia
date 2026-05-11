@@ -642,7 +642,7 @@ body {
   align-items: center;
   justify-content: center;
   text-align: center;
-  background: url('/Cataratas-de-Iguazu.webp') center/cover no-repeat;
+  background: url('/Cataratas-de-Iguazu.jpg') center/cover no-repeat;
   background-attachment: fixed;
   overflow: hidden;
 }
@@ -650,7 +650,7 @@ body {
 .banner-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, rgba(26,54,93,0.75), rgba(42,74,127,0.55), rgba(0,0,0,0.4));
+  background: linear-gradient(135deg, rgba(26,54,93,0.5), rgba(42,74,127,0.35), rgba(0,0,0,0.2));
   z-index: 1;
 }
 
