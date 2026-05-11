@@ -36,7 +36,7 @@ async function scrapeWebsite(url) {
 // Gemini scoring function
 async function scoreLead(leadData, websiteData) {
   const prompt = `
-Eres un sistema de puntuación de leads para VitaliaOne turismo dental en Buenos Aires.
+Eres un sistema de puntuación de leads para VitaliaOne, turismo dental en Oberá, Misiones, Argentina.
 Puntuar este lead del 1 al 100:
 
 Paciente: ${leadData.name}

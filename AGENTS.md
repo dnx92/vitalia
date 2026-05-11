@@ -1,6 +1,6 @@
 # vitaliaone.com
 
-Premium dental tourism landing page for US patients seeking care in Buenos Aires, Argentina.
+Premium dental tourism landing page for US patients seeking care in Oberá, Misiones, Argentina.
 
 ## Tech Stack
 

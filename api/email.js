@@ -43,7 +43,7 @@ function confirmationHTML(name, service) {
     <table width="600" cellpadding="0" cellspacing="0" style="background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.1)">
       <tr><td style="background:#1a365d;padding:40px 30px;text-align:center">
         <h1 style="color:#d4af37;margin:0;font-size:28px">Vitalia<span style="color:#fff">One</span></h1>
-        <p style="color:#fff;margin:8px 0 0;font-size:16px;opacity:0.9">Premium Dental Care in Buenos Aires</p>
+        <p style="color:#fff;margin:8px 0 0;font-size:16px;opacity:0.9">Premium Dental Care in Misiones, Argentina</p>
       </td></tr>
       <tr><td style="padding:40px 30px">
         <h2 style="color:#1a365d;margin:0 0 8px">Thank you, ${name}!</h2>
@@ -60,7 +60,7 @@ function confirmationHTML(name, service) {
         <p style="color:#495057;font-size:16px;line-height:1.6">If you have any urgent questions, contact us on <a href="https://wa.me/5491112345678" style="color:#d4af37;text-decoration:none;font-weight:600">WhatsApp</a>.</p>
       </td></tr>
       <tr><td style="background:#f8f9fa;padding:20px 30px;text-align:center;border-top:1px solid #e9ecef">
-        <p style="color:#6c757d;font-size:12px;margin:0">Vitalia One &bull; Buenos Aires, Argentina<br><a href="mailto:info@vitaliaone.com" style="color:#d4af37;text-decoration:none">info@vitaliaone.com</a></p>
+        <p style="color:#6c757d;font-size:12px;margin:0">Vitalia One &bull; Oberá, Misiones, Argentina<br><a href="mailto:info@vitaliaone.com" style="color:#d4af37;text-decoration:none">info@vitaliaone.com</a></p>
       </td></tr>
     </table>
   </td></tr></table>
@@ -78,7 +78,7 @@ function warmEmailHTML(lead) {
     <table width="600" cellpadding="0" cellspacing="0" style="background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.1)">
       <tr><td style="background:linear-gradient(135deg,#1a365d,#2a4a7f);padding:40px 30px;text-align:center">
         <h1 style="color:#d4af37;margin:0;font-size:28px">Vitalia<span style="color:#fff">One</span></h1>
-        <p style="color:#fff;margin:8px 0 0;font-size:16px;opacity:0.9">Premium Dental Care in Buenos Aires</p>
+        <p style="color:#fff;margin:8px 0 0;font-size:16px;opacity:0.9">Premium Dental Care in Misiones, Argentina</p>
       </td></tr>
       <tr><td style="padding:40px 30px">
         <h2 style="color:#1a365d;margin:0 0 16px">Hi ${lead.name}, here's your personalized plan</h2>
@@ -98,14 +98,14 @@ function warmEmailHTML(lead) {
             <strong style="color:#1a365d">What happens next:</strong><br>
             1. We'll prepare a detailed treatment plan with exact pricing<br>
             2. Schedule a free video call with your specialist<br>
-            3. Plan your trip to Buenos Aires &mdash; we handle everything
+             3. Plan your trip to Oberá, Misiones &mdash; we handle everything
           </td></tr>
         </table>
 
         <p style="color:#495057;font-size:16px;line-height:1.6">Have questions? Reply to this email or reach us on <a href="https://wa.me/5491112345678" style="color:#d4af37;text-decoration:none;font-weight:600">WhatsApp</a>. We're here to help!</p>
       </td></tr>
       <tr><td style="background:#f8f9fa;padding:20px 30px;text-align:center;border-top:1px solid #e9ecef">
-        <p style="color:#6c757d;font-size:12px;margin:0">Vitalia One &bull; Buenos Aires, Argentina<br><a href="mailto:info@vitaliaone.com" style="color:#d4af37;text-decoration:none">info@vitaliaone.com</a></p>
+        <p style="color:#6c757d;font-size:12px;margin:0">Vitalia One &bull; Oberá, Misiones, Argentina<br><a href="mailto:info@vitaliaone.com" style="color:#d4af37;text-decoration:none">info@vitaliaone.com</a></p>
       </td></tr>
     </table>
   </td></tr></table>
